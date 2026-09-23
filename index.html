@@ -529,6 +529,16 @@ main{min-width:0;min-height:0}
     .track-row{contain:layout paint style;content-visibility:auto;contain-intrinsic-size:1px 64px}
     .tableWrap{contain:layout style}
     .art img{content-visibility:auto}
+    /* Desktop app polish */
+    body[data-localify-desktop="true"]{background:#080a0d;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+    body[data-localify-desktop="true"] main{overscroll-behavior:contain}
+    body[data-localify-desktop="true"] .topbar{padding-top:12px;padding-bottom:12px}
+    body[data-localify-desktop="true"] .content{padding-bottom:118px}
+    body[data-localify-desktop="true"] .grid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px}
+    body[data-localify-desktop="true"] .viewGrid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px}
+    body[data-localify-desktop="true"] .card:hover{transform:translateY(-3px)}
+    .catalogMoreWrap{display:flex;justify-content:center;padding:18px 0 4px}
+    .catalogMoreBtn{min-width:210px}
 </style>
 </head>
 <body data-localify-desktop="true">
@@ -1166,7 +1176,7 @@ main{min-width:0;min-height:0}
     return restored;
   }
 
-  function setView(v){state.currentView=v;state.selected=[];state.detail=null;render();$("#main").scrollTop=0}
+  function setView(v){state.currentView=v;state.selected=[];state.detail=null;localifyClearPages();render();$("#main").scrollTop=0}
   function empty(title,desc){return `<div class="empty"><h3>${esc(title)}</h3><div>${esc(desc)}</div></div>`}
   function renderNav(){
     $$("#nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===state.currentView));
@@ -1209,6 +1219,26 @@ main{min-width:0;min-height:0}
   function sortAlbumTracks(arr){return [...arr].sort((a,b)=>discNo(a)-discNo(b) || ((trackNo(a)??999999)-(trackNo(b)??999999)) || String(displayTrackTitle(a,true)).localeCompare(String(displayTrackTitle(b,true)),undefined,{numeric:true}));}
 
   function artistList(){return __localifyCatalog().artists}
+  const LOCALIFY_LARGE_PAGE=100;
+  const localifyPages=Object.create(null);
+  function localifyPage(key){return Math.max(1,localifyPages[key]||1)}
+  function localifyClearPages(){for(const k of Object.keys(localifyPages))delete localifyPages[k]}
+  function localifyLoadMoreHtml(key,total,shown){
+    if(shown>=total)return "";
+    return '<div class="catalogMoreWrap"><button class="secondary catalogMoreBtn" data-localify-load-more="'+esc(key)+'">Show more ('+(total-shown)+' remaining)</button></div>';
+  }
+  function localifyPagedHtml(items,renderer,key,wrapper){
+    const list=Array.isArray(items)?items:[];
+    const count=Math.min(list.length,localifyPage(key)*LOCALIFY_LARGE_PAGE);
+    return '<div class="'+(wrapper||"grid")+'">'+list.slice(0,count).map(renderer).join("")+'</div>'+localifyLoadMoreHtml(key,list.length,count);
+  }
+  document.addEventListener("click",e=>{
+    const b=e.target.closest?.("[data-localify-load-more]");
+    if(!b)return;
+    const key=b.getAttribute("data-localify-load-more")||"";
+    localifyPages[key]=localifyPage(key)+1;
+    renderCurrentViewWithoutScroll();
+  });
 
   function renderHome(){
     const recent=state.recent.map(trackById).filter(Boolean).slice(0,8);
@@ -1255,8 +1285,8 @@ main{min-width:0;min-height:0}
   function searchResultsHtml(ft,fa,fr){
     const sections=[];
     if(state.searchFilter==="all"||state.searchFilter==="songs")sections.push(`<div class="section"><div class="sectionHead"><h2>Songs</h2><span>${ft.length}</span></div>${ft.length?`<div class="tableWrap">${trackTable(ft)}</div>`:empty("No songs found","Try another search.")}</div>`);
-    if(state.searchFilter==="all"||state.searchFilter==="albums")sections.push(`<div class="section"><div class="sectionHead"><h2>Albums</h2><span>${fa.length}</span></div>${fa.length?`<div class="grid">${fa.map(albumCard).join("")}</div>`:empty("No albums found","Try another search.")}</div>`);
-    if(state.searchFilter==="all"||state.searchFilter==="artists")sections.push(`<div class="section"><div class="sectionHead"><h2>Artists</h2><span>${fr.length}</span></div>${fr.length?`<div class="viewGrid">${fr.map(artistCard).join("")}</div>`:empty("No artists found","Try another search.")}</div>`);
+    if(state.searchFilter==="all"||state.searchFilter==="albums")sections.push(`<div class="section"><div class="sectionHead"><h2>Albums</h2><span>${fa.length}</span></div>${fa.length?localifyPagedHtml(fa,albumCard,"searchAlbums","grid"):empty("No albums found","Try another search.")}</div>`);
+    if(state.searchFilter==="all"||state.searchFilter==="artists")sections.push(`<div class="section"><div class="sectionHead"><h2>Artists</h2><span>${fr.length}</span></div>${fr.length?localifyPagedHtml(fr,artistCard,"searchArtists","viewGrid"):empty("No artists found","Try another search.")}</div>`);
     return sections.join("");
   }
 
@@ -1272,17 +1302,17 @@ main{min-width:0;min-height:0}
     bindTrackTable();
   }
   function renderAlbums(){
-    $("#content").innerHTML=`<div class="sectionHead"><div><h2 class="viewTitle">Albums</h2><div class="subtle">Create an album first, then add songs. New songs inherit its artist, artwork and credits by default.</div></div><button class="primary" id="newAlbum">${uiIcon("plus")} Create album</button></div>${state.albums.length?`<div class="grid">${albumList().map(albumCard).join("")}</div>`:empty("No albums yet","Create your first album, then add the songs to it.")}`;
+    $("#content").innerHTML=`<div class="sectionHead"><div><h2 class="viewTitle">Albums</h2><div class="subtle">Create an album first, then add songs. New songs inherit its artist, artwork and credits by default.</div></div><button class="primary" id="newAlbum">${uiIcon("plus")} Create album</button></div>${state.albums.length?localifyPagedHtml(albumList(),albumCard,"albums","grid"):empty("No albums yet","Create your first album, then add the songs to it.")}`;
     $("#newAlbum").onclick=()=>editAlbum(null); bindAlbumCards();
   }
 
   function renderArtists(){
-    $("#content").innerHTML=`<div class="sectionHead"><div><h2 class="viewTitle">Artists</h2><div class="subtle">Artists have their own profile, songs and albums u can add!</div></div><button class="primary" id="newArtist">${uiIcon("artist")} Create artist</button></div>${state.artists.length?`<div class="viewGrid">${artistList().map(artistCard).join("")}</div>`:empty("No artists","Create an artist or import music to build your artist index.")}`;
+    $("#content").innerHTML=`<div class="sectionHead"><div><h2 class="viewTitle">Artists</h2><div class="subtle">Artists have their own profile, songs and albums u can add!</div></div><button class="primary" id="newArtist">${uiIcon("artist")} Create artist</button></div>${state.artists.length?localifyPagedHtml(artistList(),artistCard,"artists","viewGrid"):empty("No artists","Create an artist or import music to build your artist index.")}`;
     $("#newArtist").onclick=()=>editArtist(null); $$(".artist-open").forEach(e=>e.onclick=()=>showArtist(e.dataset.id));
   }
 
   function renderPlaylists(){
-    $("#content").innerHTML=`<div class="sectionHead"><div><h2 class="viewTitle">Playlists</h2><div class="subtle">Local playlists, saved automatically on this device.</div></div><button class="primary" id="newPlaylist">${uiIcon("playlist")} New playlist</button></div>${state.playlists.length?`<div class="viewGrid">${state.playlists.map(playlistCard).join("")}</div>`:empty("Make your first playlist","Create a playlist, then add tracks from the song menus or playlist page.")}`;
+    $("#content").innerHTML=`<div class="sectionHead"><div><h2 class="viewTitle">Playlists</h2><div class="subtle">Local playlists, saved automatically on this device.</div></div><button class="primary" id="newPlaylist">${uiIcon("playlist")} New playlist</button></div>${state.playlists.length?localifyPagedHtml(state.playlists,playlistCard,"playlists","viewGrid"):empty("Make your first playlist","Create a playlist, then add tracks from the song menus or playlist page.")}`;
     $("#newPlaylist").onclick=()=>editPlaylist(null); $$(".playlist-open").forEach(e=>e.onclick=()=>showPlaylist(e.dataset.id));
   }
 
@@ -1336,7 +1366,8 @@ main{min-width:0;min-height:0}
   }
   function trackTable(tracks,cleanTrackPrefixes=false,scope=trackTableScope(),defaultKey="title",disableSort=false){
     const list=disableSort?[...tracks]:sortedTrackTableTracks(tracks,scope,defaultKey);
-    return `<table><thead><tr><th style="width:54px"></th><th>${sortHeader("Title","title",scope,disableSort)}</th><th>${sortHeader("Artist","artist",scope,disableSort)}</th><th>${sortHeader("Album","album",scope,disableSort)}</th><th>${sortHeader("Duration","duration",scope,disableSort)}</th><th class="actionsHead"><input class="trackCheck selectAll" type="checkbox" ${list.length&&list.every(t=>state.selected.includes(t.id))?"checked":""} aria-label="Select all"></th></tr></thead><tbody>${list.map(t=>`<tr data-id="${t.id}" class="track-row ${state.currentId===t.id&&!audio.paused?"isPlaying":""}"><td><button class="rowPlay play-row ${state.currentId===t.id&&!audio.paused?"isPlaying":""}" title="${state.currentId===t.id&&!audio.paused?"Pause":"Play"}">${state.currentId===t.id&&!audio.paused?uiIcon("pause"):uiIcon("play")}</button></td><td><div class="trackCell">${artBox(t,"miniArt")}<div class="miniText"><div class="miniTitle">${esc(displayTrackTitle(t,cleanTrackPrefixes))}${t.explicit?`<span class="badge">E</span>`:""}</div><div class="miniSub">${esc(albumArtistName(t))}</div></div></div></td><td>${esc(artistName(t))}</td><td>${esc(albumName(t))}</td><td>${fmt(t.duration)}</td><td><div class="rowActions"><button class="circle like-row ${state.liked.includes(t.id)?"liked":""}" title="Like" aria-label="Like">${uiIcon("heart")}</button><button class="circle more-row iconOnly" title="More" aria-label="More">${uiIcon("more")}</button><input class="trackCheck rowCheck" type="checkbox" ${state.selected.includes(t.id)?"checked":""} aria-label="Select ${esc(t.title)}"></div></td></tr>`).join("")}</tbody></table>`;
+    const pageKey="tracks:"+scope, count=Math.min(list.length,localifyPage(pageKey)*LOCALIFY_LARGE_PAGE),visible=list.slice(0,count);
+    return `<table><thead><tr><th style="width:54px"></th><th>${sortHeader("Title","title",scope,disableSort)}</th><th>${sortHeader("Artist","artist",scope,disableSort)}</th><th>${sortHeader("Album","album",scope,disableSort)}</th><th>${sortHeader("Duration","duration",scope,disableSort)}</th><th class="actionsHead"><input class="trackCheck selectAll" type="checkbox" ${visible.length&&visible.every(t=>state.selected.includes(t.id))?"checked":""} aria-label="Select all"></th></tr></thead><tbody>${visible.map(t=>`<tr data-id="${t.id}" class="track-row ${state.currentId===t.id&&!audio.paused?"isPlaying":""}"><td><button class="rowPlay play-row ${state.currentId===t.id&&!audio.paused?"isPlaying":""}" title="${state.currentId===t.id&&!audio.paused?"Pause":"Play"}">${state.currentId===t.id&&!audio.paused?uiIcon("pause"):uiIcon("play")}</button></td><td><div class="trackCell">${artBox(t,"miniArt")}<div class="miniText"><div class="miniTitle">${esc(displayTrackTitle(t,cleanTrackPrefixes))}${t.explicit?`<span class="badge">E</span>`:""}</div><div class="miniSub">${esc(albumArtistName(t))}</div></div></div></td><td>${esc(artistName(t))}</td><td>${esc(albumName(t))}</td><td>${fmt(t.duration)}</td><td><div class="rowActions"><button class="circle like-row ${state.liked.includes(t.id)?"liked":""}" title="Like" aria-label="Like">${uiIcon("heart")}</button><button class="circle more-row iconOnly" title="More" aria-label="More">${uiIcon("more")}</button><input class="trackCheck rowCheck" type="checkbox" ${state.selected.includes(t.id)?"checked":""} aria-label="Select ${esc(t.title)}"></div></td></tr>`).join("")}</tbody></table>`+localifyLoadMoreHtml(pageKey,list.length,count);
   }
   function selectionBar(tracks){
     const ids=tracks.map(t=>t.id); const selected=ids.filter(id=>state.selected.includes(id));
@@ -1396,7 +1427,7 @@ main{min-width:0;min-height:0}
   function showArtist(id,keepDetail=false){
     __prepareLocalifyDerived();
     const a=artistById(id);if(!a)return; state.detail={type:"artist",id}; const tracks=__localifyCatalog().byArtist.get(id)||[]; const albums=state.albums.filter(x=>artistIdsForAlbum(x).includes(id));
-    $("#content").innerHTML=`<div class="profileHero"><div class="profileArt artist">${a.image?`<img src="${a.image}" alt="">`:fallbackArt("artist")}</div><div><h2 class="viewTitle">${esc(a.name)}</h2><div class="subtle">${tracks.length} songs • ${albums.length} albums</div><div class="metaLine">${(a.genres||[]).map(g=>`<span class="metaPill">${esc(g)}</span>`).join("")}${a.label?`<span class="metaPill">${esc(a.label)}</span>`:""}</div><div class="entityActions"><button class="primary" id="artistPlay">${uiIcon("play")} Play</button><button class="secondary" id="artistEdit">${uiIcon("edit")} Edit artist</button><button class="secondary" id="artistAdd">${uiIcon("plus")} Add songs</button><button class="secondary" id="artistAlbum">${uiIcon("plus")} Create album</button></div></div></div>${a.bio?`<div class="subtle">${esc(a.bio)}</div>`:""}${a.website?`<div class="subtle" style="margin-top:7px">${esc(a.website)}</div>`:""}<div class="section"><div class="sectionHead"><h2>Albums</h2><span>${albums.length}</span></div>${albums.length?`<div class="grid">${albums.map(albumCard).join("")}</div>`:empty("No albums yet","Create an album for this artist.")}</div><div class="section"><div class="sectionHead"><h2>Songs</h2><span>${tracks.length}</span></div>${tracks.length?`<div class="tableWrap">${trackTable(tracks)}</div>`:empty("No songs yet","Add songs to this artist.")}</div>`;
+    $("#content").innerHTML=`<div class="profileHero"><div class="profileArt artist">${a.image?`<img src="${a.image}" alt="">`:fallbackArt("artist")}</div><div><h2 class="viewTitle">${esc(a.name)}</h2><div class="subtle">${tracks.length} songs • ${albums.length} albums</div><div class="metaLine">${(a.genres||[]).map(g=>`<span class="metaPill">${esc(g)}</span>`).join("")}${a.label?`<span class="metaPill">${esc(a.label)}</span>`:""}</div><div class="entityActions"><button class="primary" id="artistPlay">${uiIcon("play")} Play</button><button class="secondary" id="artistEdit">${uiIcon("edit")} Edit artist</button><button class="secondary" id="artistAdd">${uiIcon("plus")} Add songs</button><button class="secondary" id="artistAlbum">${uiIcon("plus")} Create album</button></div></div></div>${a.bio?`<div class="subtle">${esc(a.bio)}</div>`:""}${a.website?`<div class="subtle" style="margin-top:7px">${esc(a.website)}</div>`:""}<div class="section"><div class="sectionHead"><h2>Albums</h2><span>${albums.length}</span></div>${albums.length?localifyPagedHtml(albums,albumCard,"artistAlbums:"+id,"grid"):empty("No albums yet","Create an album for this artist.")}</div><div class="section"><div class="sectionHead"><h2>Songs</h2><span>${tracks.length}</span></div>${tracks.length?`<div class="tableWrap">${trackTable(tracks)}</div>`:empty("No songs yet","Add songs to this artist.")}</div>`;
     $("#artistPlay").onclick=()=>playQueue(tracks,0);$("#artistEdit").onclick=()=>editArtist(id);$("#artistAdd").onclick=()=>pickFiles({artistId:id});$("#artistAlbum").onclick=()=>editAlbum(null,{artistIds:[id]});bindTrackTable();bindAlbumCards();
   }
 
@@ -1820,19 +1851,146 @@ main{min-width:0;min-height:0}
   void loadLocalifyCoverMap();
   void loadLocalifyCoverFileIndex();
 
-  let desktopControlSeq=0;
-  function __localifyNativeDiscordAvailable(){
-    return typeof window.LocalifyDesktop?.setDiscordPresence==="function" ||
-      typeof window.LocalifyDesktop?.discordPresence==="function" ||
-      !!window.chrome?.webview ||
-      typeof window.external?.notify==="function";
+  /* Native Discord IPC for desktop wrappers that expose Node.js. Discord documents
+     the Windows RPC pipe as \\?\pipe\discord-ipc-{n}; frames are 8-byte LE header + JSON. */
+  const LOCALIFY_DISCORD_CLIENT_ID="1550620411740561568";
+  let __localifyDiscordSocket=null,__localifyDiscordConnecting=null,__localifyDiscordBuffer=null,__localifyDiscordLegacyStarted=false;
+
+  function __localifyNodeRequire(){
+    try{
+      if(typeof window.require==="function")return window.require;
+      if(typeof require==="function")return require;
+      if(window.process&&window.process.versions&&window.process.versions.node&&window.module&&typeof window.module.require==="function")return window.module.require.bind(window.module);
+    }catch{}
+    return null;
   }
+  function __localifyRpcFrame(op,payload){
+    const json=Buffer.from(JSON.stringify(payload),"utf8");
+    const frame=Buffer.alloc(8+json.length);
+    frame.writeUInt32LE(op,0);
+    frame.writeUInt32LE(json.length,4);
+    json.copy(frame,8);
+    return frame;
+  }
+  function __localifyAttachDiscordSocket(sock){
+    __localifyDiscordSocket=sock;
+    __localifyDiscordBuffer=Buffer.alloc(0);
+    sock.setNoDelay?.(true);
+    sock.on("data",chunk=>{
+      try{
+        __localifyDiscordBuffer=Buffer.concat([__localifyDiscordBuffer,chunk]);
+        while(__localifyDiscordBuffer.length>=8){
+          const len=__localifyDiscordBuffer.readUInt32LE(4);
+          if(__localifyDiscordBuffer.length<8+len)break;
+          const op=__localifyDiscordBuffer.readUInt32LE(0);
+          const body=__localifyDiscordBuffer.subarray(8,8+len).toString("utf8");
+          __localifyDiscordBuffer=__localifyDiscordBuffer.subarray(8+len);
+          if(op===3){
+            try{const payload=JSON.parse(body);sock.write(__localifyRpcFrame(4,payload))}catch{}
+          }
+        }
+      }catch{}
+    });
+    const gone=()=>{if(__localifyDiscordSocket===sock){__localifyDiscordSocket=null;__localifyDiscordBuffer=null} };
+    sock.on("close",gone);sock.on("error",gone);
+    try{sock.write(__localifyRpcFrame(0,{v:1,client_id:LOCALIFY_DISCORD_CLIENT_ID}))}catch{gone()}
+    return sock;
+  }
+  function __localifyConnectPipe(path,net,timeoutMs){
+    return new Promise((resolve,reject)=>{
+      const sock=net.createConnection({path:path});
+      let settled=false;
+      const finish=(err)=>{
+        if(settled)return;settled=true;clearTimeout(timer);
+        sock.removeListener("connect",onConnect);sock.removeListener("error",onError);sock.removeListener("close",onClose);
+        if(err){try{sock.destroy()}catch{};reject(err)}else resolve(__localifyAttachDiscordSocket(sock));
+      };
+      const onConnect=()=>finish();
+      const onError=err=>finish(err||new Error("Discord pipe error"));
+      const onClose=()=>finish(new Error("Discord pipe closed"));
+      const timer=setTimeout(()=>finish(new Error("Discord pipe timeout")),timeoutMs);
+      sock.once("connect",onConnect);sock.once("error",onError);sock.once("close",onClose);
+    });
+  }
+  async function __localifyConnectDiscordNative(){
+    const req=__localifyNodeRequire();
+    if(!req)return false;
+    if(__localifyDiscordSocket&&!__localifyDiscordSocket.destroyed)return true;
+    if(__localifyDiscordConnecting)return __localifyDiscordConnecting;
+    __localifyDiscordConnecting=(async()=>{
+      let net;
+      try{net=req("net")}catch{return false}
+      for(let i=0;i<10;i++){
+        const names=["\\\\\\\\?\\\\pipe\\\\discord-ipc-"+i,"\\\\\\\\.\\\\pipe\\\\discord-ipc-"+i];
+        for(const name of names){
+          try{await __localifyConnectPipe(name,net,700);if(__localifyDiscordSocket){return true}}catch{}
+        }
+      }
+      return false;
+    })().finally(()=>{__localifyDiscordConnecting=null});
+    return __localifyDiscordConnecting;
+  }
+  function __localifyStartBundledDiscordFallback(){
+    if(__localifyDiscordLegacyStarted)return false;
+    const req=__localifyNodeRequire();if(!req)return false;
+    try{
+      const fs=req("fs"),path=req("path"),cp=req("child_process");
+      const dirs=[];
+      if(typeof __dirname==="string")dirs.push(__dirname);
+      if(window.process&&window.process.cwd)dirs.push(window.process.cwd());
+      const candidates=[];
+      for(const dir of dirs){
+        candidates.push(path.join(dir,"Localify Discord Player.exe"));
+        candidates.push(path.join(dir,"..","Localify Discord Player.exe"));
+      }
+      const exe=candidates.find(x=>fs.existsSync(x));
+      if(!exe)return false;
+      cp.spawn(exe,[],{detached:true,stdio:"ignore",windowsHide:true}).unref();
+      __localifyDiscordLegacyStarted=true;
+      return true;
+    }catch{return false}
+  }
+  async function __localifySetNativeDiscordPresence(p){
+    if(!(await __localifyConnectDiscordNative())){
+      if(__localifyStartBundledDiscordFallback())return false;
+      return false;
+    }
+    try{
+      const req=__localifyNodeRequire(),proc=window.process||globalThis.process;
+      const activity=p&&p.playing?{
+        type:2,
+        name:"Localify Desktop",
+        details:sanitizeDiscordText(p.song,"Unknown song",128),
+        state:sanitizeDiscordText(p.artist,"Unknown Artist",128),
+        status_display_type:1,
+        instance:false
+      }:null;
+      if(activity){
+        if(p.cover&&String(p.cover).length<=800)activity.assets={large_image:String(p.cover),large_text:"Localify Desktop"};
+        if(Number(p.end)>0)activity.timestamps={start:Number(p.start||0),end:Number(p.end||0)};
+      }
+      const command={cmd:"SET_ACTIVITY",args:{pid:Number(proc?.pid||0),activity:activity},nonce:String(Date.now())};
+      __localifyDiscordSocket.write(__localifyRpcFrame(1,command));
+      return true;
+    }catch{
+      try{__localifyDiscordSocket?.destroy()}catch{}
+      __localifyDiscordSocket=null;
+      return false;
+    }
+  }
+  async function __localifyNativeDiscordAvailable(){
+    return !!__localifyNodeRequire();
+  }
+  let desktopControlSeq=0;
   async function sendDesktopBridgeMessage(payload){
+    try{
+      if(LOCALIFY_DESKTOP_MODE && await __localifySetNativeDiscordPresence(payload))return true;
+    }catch{}
     try{
       if(typeof window.LocalifyDesktop?.setDiscordPresence==="function")return await Promise.resolve(window.LocalifyDesktop.setDiscordPresence(payload));
       if(typeof window.LocalifyDesktop?.discordPresence==="function")return await Promise.resolve(window.LocalifyDesktop.discordPresence(payload));
-      if(window.chrome?.webview?.postMessage){window.chrome.webview.postMessage({type:"localify:discord-presence",payload});return true;}
-      if(typeof window.external?.notify==="function"){window.external.notify(JSON.stringify({type:"localify:discord-presence",payload}));return true;}
+    }catch{}
+    try{
       return fetch("http://127.0.0.1:4219/presence",{
         method:"POST",mode:"cors",cache:"no-store",
         headers:{"Content-Type":"application/json"},body:JSON.stringify(payload),keepalive:true
@@ -1840,11 +1998,14 @@ main{min-width:0;min-height:0}
     }catch{return false}
   }
   async function checkDesktopPlayer(){
-    if(__localifyNativeDiscordAvailable()){
-      setDiscordUi("connected","Built-in Discord status ready");
-      const t=trackById(state.currentId);
-      if(t&&!audio.paused)sendDiscordPresence(true);
-      return;
+    if(LOCALIFY_DESKTOP_MODE){
+      const ok=await __localifyConnectDiscordNative();
+      if(ok){
+        setDiscordUi("connected","Built-in Discord status connected");
+        const t=trackById(state.currentId);
+        if(t&&!audio.paused)sendDiscordPresence(true);
+        return;
+      }
     }
     try{
       const r=await fetch("http://127.0.0.1:4219/health",{cache:"no-store"});
@@ -1984,18 +2145,17 @@ main{min-width:0;min-height:0}
     setModal(
       "<div class=\"modalHead\"><h2>Discord</h2><button class=\"circle iconOnly\" id=\"closeModal\" title=\"Close\" aria-label=\"Close\">"+uiIcon("close")+"</button></div>"+
       "<div class=\"discordPanel\">"+
-        "<div class=\"discordConnectCard\"><div class=\"discordConnectIcon\"><svg class=\"svgIcon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"8\"/><path d=\"M8.5 10.5c1.8 1.3 5.2 1.3 7 0\"/><circle cx=\"9\" cy=\"12\" r=\".7\" fill=\"currentColor\" stroke=\"none\"/><circle cx=\"15\" cy=\"12\" r=\".7\" fill=\"currentColor\" stroke=\"none\"/></svg></div><div><div class=\"discordConnectTitle\" id=\"discordModalStatus\">Checking built-in Discord status…</div><div class=\"discordConnectSub\">Localify Desktop sends your current song, artist, timer and cover to Discord through the desktop app bridge.</div></div></div>"+
+        "<div class=\"discordConnectCard\"><div class=\"discordConnectIcon\"><svg class=\"svgIcon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"8\"/><path d=\"M8.5 10.5c1.8 1.3 5.2 1.3 7 0\"/><circle cx=\"9\" cy=\"12\" r=\".7\" fill=\"currentColor\" stroke=\"none\"/><circle cx=\"15\" cy=\"12\" r=\".7\" fill=\"currentColor\" stroke=\"none\"/></svg></div><div><div class=\"discordConnectTitle\" id=\"discordModalStatus\">Built-in Discord integration</div><div class=\"discordConnectSub\">Localify Desktop connects to Discord automatically and updates the status while you listen.</div></div></div>"+
         "<div class=\"modalSection\"><div class=\"modalSectionTitle\">Listening status</div>"+
           "<div style=\"display:flex;align-items:center;gap:10px;padding:7px 0\"><input id=\"discordPresenceToggle\" type=\"checkbox\" "+(enabled?"checked":"")+" style=\"width:18px;height:18px;accent-color:var(--accent)\"><label for=\"discordPresenceToggle\"><strong>Show what I am listening to on Discord</strong></label></div>"+
           "<div class=\"creditsBox\" style=\"margin-top:10px\"><div><strong>Now playing</strong><div class=\"subtle\" style=\"margin-top:3px\">"+currentLine+"</div></div></div>"+
         "</div>"+
-        "<div class=\"modalSection\"><div class=\"modalSectionTitle\">Built-in Discord status</div>"+
-          "<div class=\"discordStep\"><div class=\"discordStepNum\">1</div><div><strong>Open Discord Desktop</strong><p>Discord needs to be running for the status to appear.</p></div></div>"+
-          "<div class=\"discordStep\"><div class=\"discordStepNum\">2</div><div><strong>Keep Localify Desktop open</strong><p>The desktop app sends the status automatically while music is playing.</p></div></div>"+
-          "<div class=\"discordStep\"><div class=\"discordStepNum\">3</div><div><strong>Play music</strong><p>The activity uses the song title as the activity name, the artist as the status line, and the matching cover.</p></div></div>"+
+        "<div class=\"modalSection\"><div class=\"modalSectionTitle\">Automatic desktop Discord</div>"+
+          "<div class=\"discordStep\"><div class=\"discordStepNum\">1</div><div><strong>Open Discord Desktop</strong><p>Localify Desktop detects the Discord IPC connection automatically.</p></div></div>"+
+          "<div class=\"discordStep\"><div class=\"discordStepNum\">2</div><div><strong>Play music</strong><p>The status is updated automatically with the song, artist, timer and matching cover.</p></div></div>"+
         "</div>"+
         "<div class=\"discordActions\"><button class=\"secondary btnIcon\" id=\"discordReconnect\">"+uiIcon("repeat")+" Reconnect</button><button class=\"secondary\" id=\"discordDone\">Done</button></div>"+
-        "<div class=\"help\">The desktop HTML uses the native app bridge when available and keeps the localhost bridge as a compatibility fallback.</div>"+
+        "<div class=\"help\">The desktop build uses Discord's local IPC when the app wrapper exposes Node.js. The existing localhost bridge remains as a fallback.</div>"+
       "</div>"
     );
     $("#closeModal").onclick=()=>closeModal(true);$("#discordDone").onclick=()=>closeModal(true);
@@ -3017,6 +3177,7 @@ main{min-width:0;min-height:0}
   let __localifySearchTimer=0;
   $("#globalSearch").addEventListener("input",e=>{
     state.search=e.target.value;
+    localifyClearPages();
     clearTimeout(__localifySearchTimer);
     __localifySearchTimer=setTimeout(()=>{
       if(state.search.trim()){state.currentView="search";renderSearch()}
@@ -3075,6 +3236,7 @@ main{min-width:0;min-height:0}
       }
     }
     render();
+    if(LOCALIFY_DESKTOP_MODE && state.settings.discordPresence!==false)setTimeout(()=>connectDiscordBridge(),350);
     const warmFirst=()=>{const id=state.currentId||state.recent[0]||state.tracks[0]?.id;if(id)warmTrack(id)};
     if("requestIdleCallback"in window)requestIdleCallback(warmFirst,{timeout:1500});else setTimeout(warmFirst,700);
   })();
