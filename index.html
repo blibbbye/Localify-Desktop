@@ -1987,7 +1987,7 @@ main{min-width:0;min-height:0}
         instance:false
       }:null;
       if(activity){
-        if(p.cover&&String(p.cover).length<=800)activity.assets={large_image:String(p.cover),large_text:"Localify Desktop"};
+        if(p.cover&&String(p.cover).length<=800)activity.assets={large_image:String(p.cover),large_text:"Localify"};
         if(Number(p.end)>0)activity.timestamps={start:Number(p.start||0),end:Number(p.end||0)};
       }
       const command={cmd:"SET_ACTIVITY",args:{pid:Number(proc?.pid||0),activity:activity},nonce:String(Date.now())};
