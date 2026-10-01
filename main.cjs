@@ -1,5 +1,6 @@
 
 const { app, BrowserWindow, Menu, ipcMain, shell } = require("electron");
+const { autoUpdater } = require("electron-updater");
 const path = require("node:path");
 const fs = require("node:fs");
 const net = require("node:net");
@@ -17,6 +18,25 @@ let coverRegistry = null;
 let coverRegistryPromise = null;
 let lastPresenceKey = "";
 let lastPresenceAt = 0;
+
+let updaterReady = false;
+let updaterTimer = null;
+
+function setupAutoUpdater() {
+  if (!app.isPackaged || updaterReady) return;
+  updaterReady = true;
+  autoUpdater.autoDownload = true;
+  autoUpdater.autoInstallOnAppQuit = true;
+  autoUpdater.on("update-available", () => {});
+  autoUpdater.on("update-downloaded", () => {});
+  autoUpdater.on("error", () => {});
+  const check = () => {
+    if (!app.isPackaged) return;
+    autoUpdater.checkForUpdates().catch(() => {});
+  };
+  setTimeout(check, 5000);
+  updaterTimer = setInterval(check, 30 * 60 * 1000);
+}
 
 function isHttpUrl(value) {
   return value.indexOf("http://") === 0 || value.indexOf("https://") === 0;
@@ -371,6 +391,7 @@ app.whenReady().then(function () {
     };
   });
 
+  setupAutoUpdater();
   createWindow();
 });
 
