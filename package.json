@@ -1,7 +1,7 @@
 {
   "name": "localify-desktop",
   "productName": "Localify Desktop",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Localify desktop music player with built-in Discord Rich Presence.",
   "main": "main.cjs",
   "author": "blib",
@@ -22,15 +22,32 @@
     "appId": "com.blibbby.localify.desktop",
     "productName": "Localify Desktop",
     "artifactName": "Localify-Desktop-${version}-${arch}.${ext}",
-    "directories": { "output": "dist" },
+    "directories": {
+      "output": "dist"
+    },
     "files": [
-      "index.html", "main.cjs", "preload.cjs", "package.json",
-      "covers.json", "covers/**/*", "favicon.png"
+      "index.html",
+      "main.cjs",
+      "preload.cjs",
+      "package.json",
+      "covers.json",
+      "covers/**/*",
+      "favicon.png"
     ],
     "win": {
       "target": [
-        { "target": "nsis", "arch": ["x64"] },
-        { "target": "portable", "arch": ["x64"] }
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
       ]
     },
     "nsis": {
@@ -40,6 +57,17 @@
       "createStartMenuShortcut": true,
       "shortcutName": "Localify Desktop",
       "runAfterFinish": false
-    }
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "blibbbye",
+        "repo": "Localify-Desktop",
+        "releaseType": "release"
+      }
+    ]
+  },
+  "dependencies": {
+    "electron-updater": "6.8.9"
   }
 }
