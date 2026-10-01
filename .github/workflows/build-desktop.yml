@@ -1,0 +1,48 @@
+name: Build Localify Desktop
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "index.html"
+      - "main.cjs"
+      - "preload.cjs"
+      - "package.json"
+      - "covers.json"
+      - "scripts/**"
+      - ".github/workflows/build-desktop.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Sync Localify cover system
+        run: npm run sync-covers
+
+      - name: Build installer and portable EXE
+        run: npm run build
+
+      - name: Upload Windows builds
+        uses: actions/upload-artifact@v4
+        with:
+          name: Localify-Desktop-Windows
+          path: |
+            dist/*.exe
+            dist/*.yml
+            dist/*.blockmap
