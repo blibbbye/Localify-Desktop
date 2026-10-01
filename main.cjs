@@ -187,13 +187,13 @@ function normalize(value) {
 function coverUrlFromFile(file) {
   const name = String(file || "").replace(/^\\.\\//, "");
   if (!name) return "";
-  if (/^https?:\\/\\//i.test(name)) return name;
+  if (/^https?:\/\//i.test(name)) return name;
   return SOURCE_RAW + "covers/" + encodeURIComponent(name);
 }
 
 async function resolveCover(payload) {
   const supplied = String(payload?.coverUrl || "").trim();
-  if (/^https?:\\/\\//i.test(supplied)) return supplied;
+  if (/^https?:\/\//i.test(supplied)) return supplied;
 
   const album = String(payload?.album || "").trim();
   if (!album) return "";
@@ -320,7 +320,7 @@ function createWindow() {
   });
 
   win.webContents.setWindowOpenHandler(({ url }) => {
-    if (/^https?:\\/\\//i.test(url)) shell.openExternal(url).catch(() => {});
+    if (/^https?:\/\//i.test(url)) shell.openExternal(url).catch(() => {});
     return { action: "deny" };
   });
 
