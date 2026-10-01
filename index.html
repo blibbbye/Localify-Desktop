@@ -651,6 +651,7 @@ main{min-width:0;min-height:0}
 <script>
 
 (() => {
+  const LOCALIFY_DESKTOP_MODE=true;
   "use strict";
 
   const DB_NAME = "localify-persistent-v10";
@@ -859,7 +860,7 @@ main{min-width:0;min-height:0}
         req.onerror=()=>{storageBlocked=true;reject(req.error||new Error("IndexedDB could not open"))};
       }catch(e){storageBlocked=true;reject(e)}
     }).finally(()=>
-  const LOCALIFY_DESKTOP_MODE=true;{dbPromise=null});
+  {dbPromise=null});
     return dbPromise;
   }
   async function idbGetMeta(){const d=await openDB();return new Promise((resolve,reject)=>{const r=d.transaction("meta","readonly").objectStore("meta").get("app");r.onsuccess=()=>resolve(r.result||null);r.onerror=()=>reject(r.error)})}
@@ -1193,11 +1194,6 @@ main{min-width:0;min-height:0}
       }catch{resolve()}
     });
   }
-  async function load(){
-    await ensureStorageAccess();
-    let restored=false;
-    try{restored=await restoreSaved()}catch(e){console.warn("Localify restore failed",e)}
-    state.settings=Object.assign({volume:.9,shuffle:false,repeat:"off",eq:{bass:0,mid:0,treble:0,gain:0,preset:"flat",compressor:true},discordPresence:true,nowSidebarHidden:false},state.settings||{});
   const DEFAULT_LOCALIFY_THEMES={cyan:{name:"Cyan",mode:"solid",color1:"#7dd3fc",color2:"#7dd3fc"},blue:{name:"Blue",mode:"solid",color1:"#3b82f6",color2:"#3b82f6"},purple:{name:"Purple",mode:"solid",color1:"#8b5cf6",color2:"#8b5cf6"},red:{name:"Red",mode:"solid",color1:"#ef4444",color2:"#ef4444"},pink:{name:"Pink",mode:"solid",color1:"#ec4899",color2:"#ec4899"},green:{name:"Green",mode:"solid",color1:"#22c55e",color2:"#22c55e"},orange:{name:"Orange",mode:"solid",color1:"#f97316",color2:"#f97316"},yellow:{name:"Yellow",mode:"solid",color1:"#eab308",color2:"#eab308"},teal:{name:"Teal",mode:"solid",color1:"#14b8a6",color2:"#14b8a6"},ice:{name:"Ice",mode:"solid",color1:"#60a5fa",color2:"#dbeafe"},sunset:{name:"Sunset",mode:"gradient",color1:"#ef4444",color2:"#f97316"},ocean:{name:"Ocean",mode:"gradient",color1:"#2563eb",color2:"#06b6d4"},aurora:{name:"Aurora",mode:"gradient",color1:"#06b6d4",color2:"#8b5cf6"},forest:{name:"Forest",mode:"gradient",color1:"#22c55e",color2:"#14b8a6"},berry:{name:"Berry",mode:"gradient",color1:"#ec4899",color2:"#8b5cf6"},fire:{name:"Fire",mode:"gradient",color1:"#f97316",color2:"#ef4444"}};
   function hexToRgb(hex){const raw=String(hex||"").replace("#",""),full=raw.length===3?raw.split("").map(c=>c+c).join(""):raw,n=parseInt(full,16);if(!Number.isFinite(n))return [125,211,252];return [(n>>16)&255,(n>>8)&255,n&255]}
   function mixHex(a,b,amount=.25){const A=hexToRgb(a),B=hexToRgb(b),m=Math.max(0,Math.min(1,amount)),v=A.map((x,i)=>Math.round(x+(B[i]-x)*m));return "#"+v.map(x=>x.toString(16).padStart(2,"0")).join("")}
@@ -1205,6 +1201,12 @@ main{min-width:0;min-height:0}
   function applyTheme(){const root=document.documentElement,t=normalizeTheme(state.settings.theme),a=t.color1,b=t.color2,ar=hexToRgb(a),br=hexToRgb(b);state.settings.theme=t;root.style.setProperty("--theme-a",a);root.style.setProperty("--theme-b",b);root.style.setProperty("--accent",a);root.style.setProperty("--accent2",t.mode==="gradient"?b:mixHex(a,"#ffffff",.23));root.style.setProperty("--theme-glow-a",`rgba(${ar[0]},${ar[1]},${ar[2]},.16)`);root.style.setProperty("--theme-glow-b",`rgba(${br[0]},${br[1]},${br[2]},.12)`);document.body.classList.toggle("theme-gradient",t.mode==="gradient");document.body.classList.toggle("theme-solid",t.mode!=="gradient");return t}
     state.settings.eq=Object.assign({bass:0,mid:0,treble:0,gain:0,preset:"flat",compressor:true},state.settings.eq||{});
     state.settings.theme=normalizeTheme(state.settings.theme);applyTheme();
+
+  async function load(){
+    await ensureStorageAccess();
+    let restored=false;
+    try{restored=await restoreSaved()}catch(e){console.warn("Localify restore failed",e)}
+    state.settings=Object.assign({volume:.9,shuffle:false,repeat:"off",eq:{bass:0,mid:0,treble:0,gain:0,preset:"flat",compressor:true},discordPresence:true,nowSidebarHidden:false},state.settings||{});
     if(!Array.isArray(state.selected))state.selected=[]; if(!Array.isArray(state.recent))state.recent=[];
     for(const t of state.tracks){if(!isBlobLike(t.blob))t.blob=null;t._blobDirty=false}
     $("#volume").value=state.settings.volume??.9;audio.volume=state.settings.volume??.9;
