@@ -1224,7 +1224,7 @@ main{min-width:0;min-height:0}
     return restored;
   }
 
-  function setView(v){state.currentView=v;state.selected=[];state.detail=null;localifyClearPages();if(v==="profile"){showProfile();$("#main").scrollTop=0;return}render();$("#main").scrollTop=0}
+  function setView(v){state.currentView=v;state.selected=[];state.detail=null;localifyClearPages();if(v==="profile"){showProfile();$("#main").scrollTop=0;return}if(v==="listeningStats"){showListeningStats();$("#main").scrollTop=0;return}render();$("#main").scrollTop=0}
   function empty(title,desc){return `<div class="empty"><h3>${esc(title)}</h3><div>${esc(desc)}</div></div>`}
   function renderNav(){
     $$("#nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===state.currentView));
@@ -1242,7 +1242,7 @@ main{min-width:0;min-height:0}
     else if(v==="playlists")renderPlaylists();
     else if(v==="liked")renderLiked();
     else if(v==="recent")renderRecent();
-    else if(v==="profile")showProfile();
+    else if(v==="profile")showProfile();else if(v==="listeningStats")showListeningStats();
     renderPlayer();
   }
 
