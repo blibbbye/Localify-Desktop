@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no" />
   <meta name="theme-color" content="#7dd3fc" />
-  <meta name="localify-build" content="2026-10-01-profile-fix-2" />
+  <meta name="localify-build" content="2026-10-01-desktop-profile-settings-3" />
   <meta name="application-name" content="Localify Desktop">
   <meta name="localify-platform" content="desktop">
   <meta name="localify-version" content="3.0">
@@ -2320,7 +2320,7 @@ main{min-width:0;min-height:0}
   function profileWeeklyTopArtists(limit=5){const counts=new Map();for(const e of profileWeekHistory()){const t=trackById(e.id);if(!t)continue;for(const artist of artistNamesForTrack(t)){if(artist===NONE_LABEL)continue;const key=artist.toLocaleLowerCase();const prev=counts.get(key)||{name:artist,count:0};prev.count++;counts.set(key,prev)}}return [...counts.values()].sort((a,b)=>b.count-a.count||a.name.localeCompare(b.name,undefined,{sensitivity:"base"})).slice(0,limit)}
   function profileWeeklyData(){const days=recentAnalyticsDays(7),week=profileWeekRange(),weekDays=days.filter(([key])=>{const parts=key.split("-").map(Number);const d=new Date(Date.UTC(parts[0],parts[1]-1,parts[2]));return d.getTime()>=Date.UTC(week.start.getFullYear(),week.start.getMonth(),week.start.getDate())}),seconds=weekDays.reduce((n,[,sec])=>n+sec,0),history=profileWeekHistory();return {days:weekDays,seconds,plays:history.length,topSongs:profileWeeklyTopSongs(),topArtists:profileWeeklyTopArtists()}}
   function closeProfileMenu(){const m=$("#profileMenu");if(m){m.classList.remove("open");m.setAttribute("aria-hidden","true")}}
-  function openProfileMenu(){const m=$("#profileMenu"),name=String(state.profile?.displayName||"").trim()||"Localify listener";if(!m)return;const avatar=state.profile?.avatar?'<img src="'+esc(state.profile.avatar)+'" alt="">':'<span>'+esc(name.slice(0,1).toUpperCase()||"L")+'</span>';m.innerHTML='<div class="profileMenuHead"><div class="profileMenuAvatar">'+avatar+'</div><div style="min-width:0"><div class="profileMenuName">'+esc(name)+'</div><div class="profileMenuSub">Localify account on this device</div></div></div><button class="profileMenuItem" id="menuProfile"><span class="menuIcon">'+uiIcon("artist")+'</span><span>Profile<small>Your profile and profile picture</small></span></button><button class="profileMenuItem" id="menuStats"><span class="menuIcon">'+uiIcon("clock")+'</span><span>Listening stats<small>Weekly and all-time listening</small></span></button><button class="profileMenuItem" id="menuSettings"><span class="menuIcon">'+uiIcon("equalizer")+'</span><span>Account settings<small>Playback, Discord and themes</small></span></button>';m.classList.add("open");m.setAttribute("aria-hidden","false");$("#menuProfile").onclick=()=>{closeProfileMenu();showProfile()};$("#menuStats").onclick=()=>{closeProfileMenu();showListeningStats()};$("#menuSettings").onclick=()=>{closeProfileMenu();openSettingsPanel()}}
+  function openProfileMenu(){const m=$("#profileMenu"),name=String(state.profile?.displayName||"").trim()||"Localify listener";if(!m)return;const avatar=state.profile?.avatar?'<img src="'+esc(state.profile.avatar)+'" alt="">':'<span>'+esc(name.slice(0,1).toUpperCase()||"L")+'</span>';m.innerHTML='<div class="profileMenuHead"><div class="profileMenuAvatar">'+avatar+'</div><div style="min-width:0"><div class="profileMenuName">'+esc(name)+'</div><div class="profileMenuSub">Localify account on this device</div></div></div><button class="profileMenuItem" id="menuProfile"><span class="menuIcon">'+uiIcon("artist")+'</span><span>Profile<small>Your profile and profile picture</small></span></button><button class="profileMenuItem" id="menuStats"><span class="menuIcon">'+uiIcon("clock")+'</span><span>Listening stats<small>Weekly and all-time listening</small></span></button><button class="profileMenuItem" id="menuSettings"><span class="menuIcon">'+uiIcon("equalizer")+'</span><span>Account settings<small>Playback, Discord and themes</small></span></button>';m.classList.add("open");m.setAttribute("aria-hidden","false");$("#menuProfile").onclick=()=>{closeProfileMenu();showProfile()};$("#menuStats").onclick=()=>{closeProfileMenu();showListeningStats()}; $("#menuSettings").onclick=()=>{closeProfileMenu();showAccountSettings()}}
   function toggleProfileMenu(){const m=$("#profileMenu");if(!m)return;m.classList.contains("open")?closeProfileMenu():openProfileMenu()}
 
   function renderProfileTopButton(){
@@ -2370,80 +2370,44 @@ function editLocalProfile(){
 
   function showAccountSettings(){
     closeProfileMenu();
-    const t=normalizeTheme(state.settings.theme);
-    const themeButtons=Object.entries(DEFAULT_LOCALIFY_THEMES).map(([id,x])=>'<button class="themeChoice '+(t.preset===id?'active':'')+'" data-theme-preset="'+id+'"><div class="themeSwatch" style="background:'+(x.mode==="gradient"?'linear-gradient(135deg,'+x.color1+','+x.color2+')':x.color1)+'"></div><strong>'+esc(x.name)+'</strong><span>'+(x.mode==="gradient"?"2-color blend":"solid color")+'</span></button>').join("");
-    setModal(
-      '<div class="modalHead"><div><h2 style="margin:0">Account settings</h2><div class="settingsSectionSub">Themes, playback and app preferences</div></div><button class="circle iconOnly" id="closeSettings" title="Close" aria-label="Close">'+uiIcon("close")+'</button></div>'+
-      '<div class="settingsGrid">'+
-        '<section class="settingsSection">'+
-          '<div class="settingsSectionHead"><div><div class="settingsSectionTitle">Themes</div><div class="settingsSectionSub">Choose a preset or create your own solid or two-color theme.</div></div></div>'+
-          '<div class="themeGrid">'+themeButtons+'</div>'+
-          '<div style="margin-top:14px;border-top:1px solid #252d36;padding-top:14px">'+
-            '<div class="settingsSectionTitle" style="font-size:13px;margin-bottom:9px">Custom theme</div>'+
-            '<div class="themeModeRow"><button class="themeModeBtn '+(t.mode==="solid"?"active":"")+'" id="themeSolidBtn">Solid color</button><button class="themeModeBtn '+(t.mode==="gradient"?"active":"")+'" id="themeGradientBtn">Blend two colors</button></div>'+
-            '<div class="customThemeControls"><div class="themeColorField"><label>Color 1</label><div class="themeColorRow"><input id="themeColor1" type="color" value="'+esc(t.color1)+'"><span class="themeColorValue" id="themeColor1Value">'+esc(t.color1.toUpperCase())+'</span></div></div><div class="themeColorField"><label>Color 2</label><div class="themeColorRow"><input id="themeColor2" type="color" value="'+esc(t.color2)+'"><span class="themeColorValue" id="themeColor2Value">'+esc(t.color2.toUpperCase())+'</span></div></div></div>'+
-          '</div>'+
-        '</section>'+
-        '<section class="settingsSection">'+
-          '<div class="settingsSectionHead"><div><div class="settingsSectionTitle">Playback & app</div><div class="settingsSectionSub">These preferences are saved locally with Localify.</div></div></div>'+
-          '<div class="settingsToggleRow"><div class="settingsToggleCopy"><strong>Shuffle</strong><span>Randomize the current queue when enabled.</span></div><input type="checkbox" id="settingsShuffle" '+(state.settings.shuffle?"checked":"")+'></div>'+
-          '<div class="settingsToggleRow"><div class="settingsToggleCopy"><strong>Discord Rich Presence</strong><span>Show your current song and artist on Discord.</span></div><input type="checkbox" id="settingsDiscord" '+(state.settings.discordPresence!==false?"checked":"")+'></div>'+
-          '<div class="settingsToggleRow"><div class="settingsToggleCopy"><strong>Now Playing panel</strong><span>Show or hide the side panel.</span></div><input type="checkbox" id="settingsNowPanel" '+(!state.settings.nowSidebarHidden?"checked":"")+'></div>'+
-          '<div style="padding-top:13px"><div class="settingsSectionSub" style="margin-bottom:7px">Volume</div><input class="settingsRange" id="settingsVolume" type="range" min="0" max="1" step="0.01" value="'+esc(state.settings.volume??.9)+'"></div>'+
-        '</section>'+
-        '<section class="settingsSection">'+
-          '<div class="settingsSectionHead"><div><div class="settingsSectionTitle">Library & data</div><div class="settingsSectionSub">Manage your Localify data and portable presets.</div></div></div>'+
-          '<button class="secondary" id="settingsPresets">Open presets</button>'+
-        '</section>'+
-      '</div>'
-    ,{large:true});
-    $("#closeSettings").onclick=()=>closeModal(true);
-    $$("[data-theme-preset]").forEach(b=>b.onclick=async()=>{const p=DEFAULT_LOCALIFY_THEMES[b.dataset.themePreset];if(!p)return;state.settings.theme={preset:b.dataset.themePreset,mode:p.mode,color1:p.color1,color2:p.color2};applyTheme();await save();showAccountSettings()});
-    $("#themeSolidBtn").onclick=async()=>{const n=normalizeTheme(state.settings.theme);state.settings.theme={preset:"custom",mode:"solid",color1:n.color1,color2:n.color2};applyTheme();await save();showAccountSettings()};
-    $("#themeGradientBtn").onclick=async()=>{const n=normalizeTheme(state.settings.theme);state.settings.theme={preset:"custom",mode:"gradient",color1:n.color1,color2:n.color2};applyTheme();await save();showAccountSettings()};
-    const updateCustom=async()=>{const c1=$("#themeColor1"),c2=$("#themeColor2"),mode=state.settings.theme?.mode==="gradient"?"gradient":"solid";state.settings.theme={preset:"custom",mode,color1:c1.value,color2:c2.value};applyTheme();$("#themeColor1Value").textContent=c1.value.toUpperCase();$("#themeColor2Value").textContent=c2.value.toUpperCase();autoSave()};
-    $("#themeColor1").oninput=updateCustom;$("#themeColor2").oninput=updateCustom;
-    $("#settingsShuffle").onchange=async e=>{state.settings.shuffle=e.target.checked;await save();renderPlayer()};
-    $("#settingsDiscord").onchange=async e=>{state.settings.discordPresence=e.target.checked;await save();e.target.checked?connectDiscordBridge():clearDiscordPresence()};
-    $("#settingsNowPanel").onchange=()=>setNowSidebar($("#settingsNowPanel").checked);
-    $("#settingsVolume").oninput=e=>{const v=+e.target.value;state.settings.volume=v;audio.volume=v;autoSave();renderPlayer()};
-    $("#settingsPresets").onclick=()=>{closeModal(true);openPresetsMenu()};
-  }
-  function openSettingsPanel(){
-    closeProfileMenu();
+    state.currentView="accountSettings";state.detail=null;state.selected=[];localifyClearPages();renderNav();
     const t=normalizeTheme(state.settings.theme);
     const presets=Object.entries(DEFAULT_LOCALIFY_THEMES).map(([id,x])=>'<button type="button" class="themeChoice '+(t.preset===id?'active':'')+'" data-theme-preset="'+id+'"><div class="themeSwatch" style="background:'+(x.mode==="gradient"?'linear-gradient(135deg,'+x.color1+','+x.color2+')':x.color1)+'"></div><strong>'+esc(x.name)+'</strong><span>'+(x.mode==="gradient"?"2-color blend":"solid color")+'</span></button>').join("");
-    setModal(
-      '<div class="modalHead"><div><h2 style="margin:0">Account settings</h2><div class="settingsSectionSub">Your Localify settings and themes</div></div><button class="circle iconOnly" id="accountSettingsClose" type="button" aria-label="Close">'+uiIcon("close")+'</button></div>'+
+    $("#content").innerHTML=
+      '<div class="section" style="margin-top:0"><div class="sectionHead"><div><h2 style="font-size:30px;letter-spacing:-1px;margin:0">Account settings</h2><span>Manage your Localify preferences and themes.</span></div><div class="sectionHeadActions"><button class="secondary" id="accountSettingsBack" type="button">Back to profile</button></div></div>'+
       '<div class="settingsGrid">'+
-      '<section class="settingsSection"><div class="settingsSectionHead"><div><div class="settingsSectionTitle">Themes</div><div class="settingsSectionSub">Pick a preset or make your own theme.</div></div></div>'+
-      '<div class="themeGrid">'+presets+'</div>'+
-      '<div style="margin-top:14px;border-top:1px solid #252d36;padding-top:14px"><div class="settingsSectionTitle" style="font-size:13px;margin-bottom:9px">Custom theme</div>'+
-      '<div class="themeModeRow"><button type="button" class="themeModeBtn '+(t.mode==="solid"?"active":"")+'" id="accountThemeSolid">Solid color</button><button type="button" class="themeModeBtn '+(t.mode==="gradient"?"active":"")+'" id="accountThemeGradient">Blend two colors</button></div>'+
-      '<div class="customThemeControls"><div class="themeColorField"><label>Color 1</label><div class="themeColorRow"><input id="accountColor1" type="color" value="'+esc(t.color1)+'"><span class="themeColorValue" id="accountColor1Value">'+esc(t.color1.toUpperCase())+'</span></div></div>'+
-      '<div class="themeColorField"><label>Color 2</label><div class="themeColorRow"><input id="accountColor2" type="color" value="'+esc(t.color2)+'"><span class="themeColorValue" id="accountColor2Value">'+esc(t.color2.toUpperCase())+'</span></div></div></div></div></section>'+
-      '<section class="settingsSection"><div class="settingsSectionHead"><div><div class="settingsSectionTitle">Playback & app</div><div class="settingsSectionSub">These settings save locally.</div></div></div>'+
-      '<div class="settingsToggleRow"><div class="settingsToggleCopy"><strong>Shuffle</strong><span>Randomize the current queue.</span></div><input id="accountShuffle" type="checkbox" '+(state.settings.shuffle?"checked":"")+'></div>'+
-      '<div class="settingsToggleRow"><div class="settingsToggleCopy"><strong>Discord Rich Presence</strong><span>Show your current song and artist on Discord.</span></div><input id="accountDiscord" type="checkbox" '+(state.settings.discordPresence!==false?"checked":"")+'></div>'+
-      '<div class="settingsToggleRow"><div class="settingsToggleCopy"><strong>Now Playing panel</strong><span>Show or hide the side panel.</span></div><input id="accountNowPanel" type="checkbox" '+(!state.settings.nowSidebarHidden?"checked":"")+'></div>'+
-      '<div style="padding-top:13px"><div class="settingsSectionSub" style="margin-bottom:7px">Volume</div><input class="settingsRange" id="accountVolume" type="range" min="0" max="1" step="0.01" value="'+esc(state.settings.volume??.9)+'"></div></section>'+
-      '<section class="settingsSection"><div class="settingsSectionHead"><div><div class="settingsSectionTitle">Library & data</div><div class="settingsSectionSub">Export or import your Localify library.</div></div></div><button class="secondary" id="accountPresets" type="button">Open presets</button></section>'+
-      '</div>'
-    ,{large:true});
-    $("#accountSettingsClose").onclick=()=>closeModal(true);
-    const reopen=()=>{closeModal(true);setTimeout(openSettingsPanel,0)};
-    $$("[data-theme-preset]").forEach(b=>b.onclick=async()=>{const p=DEFAULT_LOCALIFY_THEMES[b.dataset.themePreset];if(!p)return;state.settings.theme={preset:b.dataset.themePreset,mode:p.mode,color1:p.color1,color2:p.color2};applyTheme();await save();reopen()});
-    $("#accountThemeSolid").onclick=async()=>{const n=normalizeTheme(state.settings.theme);state.settings.theme={preset:"custom",mode:"solid",color1:n.color1,color2:n.color2};applyTheme();await save();reopen()};
-    $("#accountThemeGradient").onclick=async()=>{const n=normalizeTheme(state.settings.theme);state.settings.theme={preset:"custom",mode:"gradient",color1:n.color1,color2:n.color2};applyTheme();await save();reopen()};
+        '<section class="settingsSection"><div class="settingsSectionHead"><div><div class="settingsSectionTitle">Themes</div><div class="settingsSectionSub">Choose a preset or make your own solid color or two-color blend.</div></div></div>'+
+          '<div class="themeGrid">'+presets+'</div>'+
+          '<div style="margin-top:14px;border-top:1px solid #252d36;padding-top:14px">'+
+            '<div class="settingsSectionTitle" style="font-size:13px;margin-bottom:9px">Custom theme</div>'+
+            '<div class="themeModeRow"><button type="button" class="themeModeBtn '+(t.mode==="solid"?"active":"")+'" id="accountThemeSolid">Solid color</button><button type="button" class="themeModeBtn '+(t.mode==="gradient"?"active":"")+'" id="accountThemeGradient">Blend two colors</button></div>'+
+            '<div class="customThemeControls"><div class="themeColorField"><label>Color 1</label><div class="themeColorRow"><input id="accountColor1" type="color" value="'+esc(t.color1)+'"><span class="themeColorValue" id="accountColor1Value">'+esc(t.color1.toUpperCase())+'</span></div></div><div class="themeColorField"><label>Color 2</label><div class="themeColorRow"><input id="accountColor2" type="color" value="'+esc(t.color2)+'"><span class="themeColorValue" id="accountColor2Value">'+esc(t.color2.toUpperCase())+'</span></div></div></div>'+
+          '</div>'+
+        '</section>'+
+        '<section class="settingsSection"><div class="settingsSectionHead"><div><div class="settingsSectionTitle">Playback & app</div><div class="settingsSectionSub">Changes are saved locally.</div></div></div>'+
+          '<div class="settingsToggleRow"><div class="settingsToggleCopy"><strong>Shuffle</strong><span>Randomize the current queue when enabled.</span></div><input type="checkbox" id="accountShuffle" '+(state.settings.shuffle?"checked":"")+'></div>'+
+          '<div class="settingsToggleRow"><div class="settingsToggleCopy"><strong>Discord Rich Presence</strong><span>Show your current song and artist on Discord.</span></div><input type="checkbox" id="accountDiscord" '+(state.settings.discordPresence!==false?"checked":"")+'></div>'+
+          '<div class="settingsToggleRow"><div class="settingsToggleCopy"><strong>Now Playing panel</strong><span>Show or hide the side panel.</span></div><input type="checkbox" id="accountNowPanel" '+(!state.settings.nowSidebarHidden?"checked":"")+'></div>'+
+          '<div style="padding-top:13px"><div class="settingsSectionSub" style="margin-bottom:7px">Volume</div><input class="settingsRange" id="accountVolume" type="range" min="0" max="1" step="0.01" value="'+esc(state.settings.volume??.9)+'"></div>'+
+        '</section>'+
+        '<section class="settingsSection"><div class="settingsSectionHead"><div><div class="settingsSectionTitle">Library & data</div><div class="settingsSectionSub">Manage portable Localify presets.</div></div></div><button class="secondary" id="accountPresets" type="button">Open presets</button></section>'+
+      '</div></div>';
+    $("#accountSettingsBack").onclick=()=>showProfile();
+    $$("[data-theme-preset]").forEach(b=>b.onclick=async()=>{const p=DEFAULT_LOCALIFY_THEMES[b.dataset.themePreset];if(!p)return;state.settings.theme={preset:b.dataset.themePreset,mode:p.mode,color1:p.color1,color2:p.color2};applyTheme();await save();showAccountSettings()});
+    $("#accountThemeSolid").onclick=async()=>{const n=normalizeTheme(state.settings.theme);state.settings.theme={preset:"custom",mode:"solid",color1:n.color1,color2:n.color2};applyTheme();await save();showAccountSettings()};
+    $("#accountThemeGradient").onclick=async()=>{const n=normalizeTheme(state.settings.theme);state.settings.theme={preset:"custom",mode:"gradient",color1:n.color1,color2:n.color2};applyTheme();await save();showAccountSettings()};
     const updateTheme=()=>{const c1=$("#accountColor1"),c2=$("#accountColor2");if(!c1||!c2)return;state.settings.theme={preset:"custom",mode:state.settings.theme?.mode==="gradient"?"gradient":"solid",color1:c1.value,color2:c2.value};applyTheme();$("#accountColor1Value").textContent=c1.value.toUpperCase();$("#accountColor2Value").textContent=c2.value.toUpperCase();autoSave()};
     $("#accountColor1").oninput=updateTheme;$("#accountColor2").oninput=updateTheme;
     $("#accountShuffle").onchange=async e=>{state.settings.shuffle=e.target.checked;await save();renderPlayer()};
     $("#accountDiscord").onchange=async e=>{state.settings.discordPresence=e.target.checked;await save();e.target.checked?connectDiscordBridge():clearDiscordPresence()};
     $("#accountNowPanel").onchange=()=>setNowSidebar($("#accountNowPanel").checked);
     $("#accountVolume").oninput=e=>{const v=+e.target.value;state.settings.volume=v;audio.volume=v;autoSave();renderPlayer()};
-    $("#accountPresets").onclick=()=>{closeModal(true);openPresetsMenu()};
+    $("#accountPresets").onclick=()=>{showAccountSettingsPresets()};
   }
 
+  function showAccountSettingsPresets(){openPresetsMenu()}
+  
+  function openSettingsPanel(){showAccountSettings()}
   function openGoogleLoginInfo(){setModal(`<div class="modalHead"><h2>Google account sync</h2><button class="circle iconOnly" id="closeModal" title="Close" aria-label="Close"><svg class="svgIcon" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div class="help">The profile and listening stats are ready locally. Real Google login and cross-device sync still need a Google OAuth client ID. Google supports web-app OAuth clients and the Drive appDataFolder can store per-app data for the signed-in user.</div><div class="modalFoot"><button class="primary" id="googleInfoDone">Done</button></div>`);$("#closeModal").onclick=()=>closeModal(true);$("#googleInfoDone").onclick=()=>closeModal(true)}
   function pushRecent(id){state.recent=[id,...state.recent.filter(x=>x!==id)].slice(0,50)}
 
