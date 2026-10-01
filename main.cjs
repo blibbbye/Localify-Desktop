@@ -268,7 +268,7 @@ async function setPresence(payload) {
 async function clearPresence() {
   lastActivityKey = "";
   lastActivityAt = 0;
-  if (!(await connectDiscord())) return false;
+  if (!discordSocket || discordSocket.destroyed) return false;
 
   try {
     discordSocket.write(rpcFrame(1, {
