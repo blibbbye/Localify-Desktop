@@ -1526,6 +1526,398 @@ main{min-width:0;min-height:0}
   }
 
 
+  // Localify cover system shared by web and desktop builds.
+  // Covers resolve from covers.json first, then built-in aliases, then the public covers folder.
+  let localifyCoverFileIndex=null;
+  let localifyCoverFileIndexPromise=null;
+  const discordCoverCache=new Map();
+  const discordCoverRequests=new Map();
+  const LOCALIFY_GITHUB_RAW_BASE="https://raw.githubusercontent.com/blibbbye/Localify/main/";
+  const LOCALIFY_COVER_DIRECTORY=LOCALIFY_GITHUB_RAW_BASE+"covers/";
+  const LOCALIFY_COVER_MAP_URL=LOCALIFY_GITHUB_RAW_BASE+"covers.json";
+  const LOCALIFY_COVER_EXTENSIONS=[".jpg",".jpeg",".png",".webp",".gif",".avif"];
+  const LOCALIFY_COVER_LOAD_TIMEOUT=3500;
+  const LOCALIFY_COVER_EXCLUSIONS=new Set([]);
+  let localifyCoverMap=null;
+  let localifyCoverMapPromise=null;
+
+  // Built-in cover aliases. covers.json can extend these, and exact
+  // repository mappings are preferred by the live cover registry.
+  const LOCALIFY_BUILTIN_COVER_MAP={
+    "808s":"808s.png","808s & Heartbreak":"808s.png","808s and Heartbreak":"808s.png","808s and heartbreak":"808s.png",
+    "BBP":"BBPB.jpeg","BBPB":"BBPB.jpeg","BBP B":"BBPB.jpeg","BBP V1":"BBPB.jpeg","BBP V2":"BBPB.jpeg","Bad Bitch Playbook":"BBPB.jpeg","Bad Bitch Playbook V1":"BBPB.jpeg","Bad Bitch Playbook V2":"BBPB.jpeg","Bad Bitch Playbook Version 1":"BBPB.jpeg","Bad Bitch Playbook Version 2":"BBPB.jpeg",
+    "Cruel Summer":"cruelsummer.jpg","Cruel Summer V1":"cruelsummer.jpg","Cruel Summer Version 1":"cruelsummer.jpg",
+    "Cruel Winter":"cruelwinter.jpg","Cruel Winter V1":"cruelwinter.jpg","Cruel Winter Version 1":"cruelwinter.jpg",
+    "CUCK":"CUCK.JPG","C.U.C.K.":"CUCK.JPG","CUCK V1":"CUCK.JPG","CUCK V2":"CUCK.JPG","Cuck":"CUCK.JPG","Cuck V1":"CUCK.JPG","C.U.C.K. V1":"CUCK.JPG",
+    "Donda":"donda.jpg","Donda 2021":"donda.jpg","Donda V2":"donda.jpg","Donda Version 2":"donda.jpg",
+    "Donda 2":"donda2.jpg","Donda II":"donda2.jpg","Donda 2 V1":"donda2.jpg","Donda 2 Version 1":"donda2.jpg",
+    "Donda With Child":"DONDACHIILD.jpg","Donda with Child":"DONDACHIILD.jpg","Donda V1":"DONDACHIILD.jpg","Donda 2020":"DONDACHIILD.jpg","Donda 2020 V1":"DONDACHIILD.jpg","Donda With Child V1":"DONDACHIILD.jpg","Donda With Child Version 1":"DONDACHIILD.jpg",
+    "God's Country":"godscountry.jpg","Gods Country":"godscountry.jpg","God's Country V1":"godscountry.jpg","Gods Country V1":"godscountry.jpg","God's Country Version 1":"godscountry.jpg",
+    "Good Ass Job":"Good Ass Job.webp","Good Ass Job V1":"Good Ass Job.webp","Good Ass Job Version 1":"Good Ass Job.webp","GAJ":"Good Ass Job.webp","GAJ V1":"Good Ass Job.webp","GAJ Version 1":"Good Ass Job.webp",
+    "Graduation":"gradutation.jpg","Graduation V1":"gradutation.jpg","Graduation Version 1":"gradutation.jpg",
+    "Jesus Is King":"jesusisking.jpg","Jesus Is King V1":"jesusisking.jpg","Jesus Is King Version 1":"jesusisking.jpg","JIK":"jesusisking.jpg","JIK V1":"jesusisking.jpg",
+    "Jesus Is King V2":"jesusisking2.jpg","Jesus Is King 2":"jesusisking2.jpg","Jesus Is King II":"jesusisking2.jpg","Jesus Is King V2.0":"jesusisking2.jpg","JIK V2":"jesusisking2.jpg","JIK2":"jesusisking2.jpg",
+    "Job Well Done":"JobWellDone.jpg","Job Well Done V1":"JobWellDone.jpg","Job Well Done Version 1":"JobWellDone.jpg","JWD":"JobWellDone.jpg","JWD V1":"JobWellDone.jpg",
+    "Kids See Ghosts":"kidsSeeGhosts.png","Kids See Ghosts V1":"kidsSeeGhosts.png","Kids See Ghosts Version 1":"kidsSeeGhosts.png","KIDS SEE GHOSTS":"kidsSeeGhosts.png","KSG":"kidsSeeGhosts.png","KSG V1":"kidsSeeGhosts.png",
+    "Kids See Ghosts 2":"kidsSeeGhosts2.jpg","Kids See Ghosts II":"kidsSeeGhosts2.jpg","Kids See Ghosts V2":"kidsSeeGhosts2.jpg","Kids See Ghosts Version 2":"kidsSeeGhosts2.jpg","KSG2":"kidsSeeGhosts2.jpg","KSG V2":"kidsSeeGhosts2.jpg",
+    "Late Registration":"latereg.jpg","Late Registration V1":"latereg.jpg","Late Registration Version 1":"latereg.jpg","LateReg":"latereg.jpg","Late Reg":"latereg.jpg","LR":"latereg.jpg",
+    "Love Everyone":"loveeveryone.jpg","Love Everyone V1":"loveeveryone.jpg","Love Everyone Version 1":"loveeveryone.jpg","LOVE EVERYONE":"loveeveryone.jpg","LE":"loveeveryone.jpg","LE V1":"loveeveryone.jpg",
+    "My Beautiful Dark Twisted Fantasy":"MBDTF.jpg","My Beautiful Dark Twisted Fantasy V1":"MBDTF.jpg","MBDTF":"MBDTF.jpg","MBDTF V1":"MBDTF.jpg",
+    "So Help Me God":"SoHelpMeGod.webp","So Help Me God V1":"SoHelpMeGod.webp","So Help Me God Version 1":"SoHelpMeGod.webp","SHMG":"SoHelpMeGod.webp","SHMG V1":"SoHelpMeGod.webp",
+    "Swish":"Swish.jpg","Swish V1":"Swish.jpg","Swish Version 1":"Swish.jpg",
+    "Thank God For Drugs":"ThankGodForDrugs.webp","Thank God For Drugs V1":"ThankGodForDrugs.webp","Thank God For Drugs Version 1":"ThankGodForDrugs.webp","ThankGodForDrugs":"ThankGodForDrugs.webp","TGFD":"ThankGodForDrugs.webp","TGFD V1":"ThankGodForDrugs.webp",
+    "The College Dropout":"thecollegedropout.jpg","The College Dropout V1":"thecollegedropout.jpg","The College Dropout V2":"thecollegedropout.jpg","The College Dropout Version 1":"thecollegedropout.jpg","The College Dropout Version 2":"thecollegedropout.jpg","College Dropout":"thecollegedropout.jpg","College Dropout V1":"thecollegedropout.jpg","TCD":"thecollegedropout.jpg","TCD V1":"thecollegedropout.jpg",
+    "The Life of Pablo":"tlop.jpg","The Life of Pablo V1":"tlop.jpg","The Life of Pablo 2016":"tlop.jpg","The Life of Pablo Version 1":"tlop.jpg","TLOP":"tlop.jpg","TLOP V1":"tlop.jpg",
+    "TurboGrafx-16":"TURBOGRAFX.jpeg","TurboGrafx 16":"TURBOGRAFX.jpeg","Turbografx 16":"TURBOGRAFX.jpeg","Turbografx":"TURBOGRAFX.jpeg","TurboGrafx":"TURBOGRAFX.jpeg","TurboGrafx16":"TURBOGRAFX.jpeg","TurboGrafx 16 V1":"TURBOGRAFX.jpeg","TurboGrafx-16 V1":"TURBOGRAFX.jpeg","TurboGrafx 16 Version 1":"TURBOGRAFX.jpeg",
+    "Vultures 1":"VULTURES 1.png","Vultures I":"VULTURES 1.png","VULTURES 1":"VULTURES 1.png","Vultures 1 V1":"VULTURES 1.png","Vultures I V1":"VULTURES 1.png",
+    "Vultures 3":"VULTURES 3.webp","Vultures III":"VULTURES 3.webp","VULTURES 3":"VULTURES 3.webp","Vultures 3 V1":"VULTURES 3.webp","Vultures III V1":"VULTURES 3.webp",
+    "WAR":"WAR.png","War":"WAR.png","War V1":"WAR.png","War Version 1":"WAR.png",
+    "Watch the Throne":"watchthethrone.jpg","Watch the Throne V1":"watchthethrone.jpg","Watch the Throne Version 1":"watchthethrone.jpg","WTT":"watchthethrone.jpg","WTT V1":"watchthethrone.jpg",
+    "Watch the Throne 2":"watchthethrone2.webp","Watch the Throne II":"watchthethrone2.webp","Watch the Throne V2":"watchthethrone2.webp","Watch the Throne Version 2":"watchthethrone2.webp","WTT2":"watchthethrone2.webp","WTT II":"watchthethrone2.webp","WTT V2":"watchthethrone2.webp",
+    "Waves":"waves.png","Waves V1":"waves.png","Waves Version 1":"waves.png",
+    "Wolves":"wolves.jpg","Wolves V1":"wolves.jpg","Wolves Version 1":"wolves.jpg",
+    "Yandhi":"YANDHI.jpg","Yandhi V1":"YANDHI.jpg","Yandhi V2":"YANDHI.jpg","Yandhi 1":"YANDHI.jpg","Yandhi 2":"YANDHI.jpg","Yandhi Version 1":"YANDHI.jpg","Yandhi Version 2":"YANDHI.jpg","YANDHI":"YANDHI.jpg","YANDHI V1":"YANDHI.jpg","YANDHI V2":"YANDHI.jpg",
+    "Ye":"ye.jpg","Ye V1":"ye.jpg","Ye Version 1":"ye.jpg",
+    "YEBU":"YEBU.jpeg","Yebu":"YEBU.jpeg","YEBU V1":"YEBU.jpeg","YEBU Version 1":"YEBU.jpeg",
+    "Yeezus":"yeezus.png","Yeezus V1":"yeezus.png","Yeezus 1":"yeezus.png","Yeezus OG":"yeezus.png","Yeezus Version 1":"yeezus.png","Yeezus 2":"Yeezus 2.jpg","Yeezus II":"Yeezus 2.jpg","Yeezus V2":"Yeezus 2.jpg","Yeezus Version 2":"Yeezus 2.jpg","Yeezus 2 V1":"Yeezus 2.jpg","Yeezus II V1":"Yeezus 2.jpg"
+  };
+
+
+  function setDiscordUi(state,text){
+    const el=$("#discordStatus"),label=$("#discordStatusText"),top=$("#discordTopBtn");
+    if(el&&label){
+      el.classList.remove("connected","disabled","searching","error");
+      if(state==="connected")el.classList.add("connected");
+      else if(state==="disabled")el.classList.add("disabled");
+      else if(state==="searching")el.classList.add("searching");
+      else if(state==="error")el.classList.add("error");
+      label.textContent=text;
+    }
+    if(top){
+      top.classList.remove("connected","disabled","searching","error");
+      if(state)top.classList.add(state);
+      top.title=`Discord Rich Presence — ${text}`;
+      top.setAttribute("aria-label",`Discord Rich Presence — ${text}`);
+      const modalStatus=$("#discordModalStatus");
+      if(modalStatus){modalStatus.textContent=text;modalStatus.dataset.state=state||"";}
+    }
+  }
+
+  function discordDirectCoverUrl(t){
+    const albumTitle=trackCoverReference(t);
+    const known=knownCoverUrlForTrack(t);
+    if(known)return known;
+    const album=albumById(t?.albumId);
+    const raw=[safeExistingCover(albumTitle,t?.cover),safeExistingCover(albumTitle,album?.cover),...artistIdsForTrack(t).map(id=>artistById(id)?.image)];
+    for(const value of raw){
+      if(typeof value!=="string"||!value.trim())continue;
+      const mapped=coverMapUrl(value);
+      if(mapped)return mapped;
+    }
+    return "";
+  }
+  function normalizeCoverAlbumName(value){
+    return String(value||"")
+      .normalize("NFKC")
+      .replace(/[\u2018\u2019\u201A\u201B\u2032`]/g,"'")
+      .replace(/[\u2013\u2014]/g,"-")
+      .replace(/\s+/g," ")
+      .trim()
+      .toLocaleLowerCase();
+  }
+
+  function canonicalCoverAlbumName(value){
+    return normalizeCoverAlbumName(value)
+      .replace(/&/g,"and")
+      .replace(/[’'`]/g,"")
+      .replace(/[^a-z0-9]+/g,"");
+  }
+
+  function isExcludedCoverAlbum(albumTitle){
+    const n=normalizeCoverAlbumName(albumTitle);
+    return LOCALIFY_COVER_EXCLUSIONS.has(n);
+  }
+
+  function coverMapCandidates(albumTitle){
+    const raw=String(albumTitle||"").trim();
+    if(!raw)return [];
+    const variants=new Set();
+    const add=v=>{
+      const text=String(v||"").trim();
+      if(!text)return;
+      const n=normalizeCoverAlbumName(text),c=canonicalCoverAlbumName(text);
+      if(n)variants.add(n);if(c)variants.add(c);
+    };
+    const addAcronyms=v=>{
+      const words=normalizeCoverAlbumName(v).replace(/&/g," and ").split(/[^a-z0-9]+/).filter(Boolean);
+      const significant=words.filter(w=>!["the","a","an","of","and","to","in","on","for","with","by","from","at"].includes(w));
+      if(words.length>1)add(words.map(w=>w[0]).join(""));
+      if(significant.length>1)add(significant.map(w=>w[0]).join(""));
+      if(significant.length>0)add(significant.join(" "));
+    };
+    add(raw);addAcronyms(raw);
+    add(raw.replace(/[_-]+/g," "));
+    add(raw.replace(/\s+/g," "));
+    add(raw.replace(/[’'`]/g,""));
+    const versionless=raw.replace(/\s*\(?\s*(?:v|ver|version)\.?\s*\d+(?:\.\d+)?\s*\)?\s*$/i,"").trim();
+    if(versionless&&versionless!==raw){add(versionless);addAcronyms(versionless);}
+    const stripped=raw
+      .replace(/\s*\((?:final|complete|deluxe|revised|draft|edition|remastered|expanded|mixtape|mix[- ]?tape|album|official(?:\s+mixtape)?|the official(?:\s+mixtape)?)\)\s*$/i,"").trim()
+      .replace(/\s+(?:final|complete|deluxe|revised|draft|edition|remastered|expanded|mixtape|mix[- ]?tape|album|official(?:\s+mixtape)?|the official(?:\s+mixtape)?)\s*$/i,"").trim();
+    if(stripped&&stripped!==raw){add(stripped);addAcronyms(stripped);}
+    const beforeColon=raw.split(/\s*:\s*/)[0].trim();
+    if(beforeColon&&beforeColon!==raw){add(beforeColon);addAcronyms(beforeColon);}
+    const beforeDash=raw.split(/\s+[–—-]\s+/)[0].trim();
+    if(beforeDash&&beforeDash!==raw){add(beforeDash);addAcronyms(beforeDash);}
+    const artistless=raw.replace(/^(?:kanye west|ye)\s*[-:|]\s*/i,"").replace(/\s*[-:|]\s*(?:kanye west|ye)$/i,"").trim();
+    if(artistless&&artistless!==raw){add(artistless);addAcronyms(artistless);}
+    add(raw.replace(/\bIII\b/gi,"3").replace(/\bII\b/gi,"2").replace(/\bI\b/gi,"1"));
+    add(raw.replace(/\b3\b/gi,"III").replace(/\b2\b/gi,"II").replace(/\b1\b/gi,"I"));
+    return [...variants];
+  }
+  function coverMapUrl(value){
+    if(typeof value!=="string"||!value.trim())return "";
+    const raw=value.trim();
+    try{
+      if(/^https?:\/\//i.test(raw)){
+        const u=new URL(raw);
+        if(u.protocol!=="http:"&&u.protocol!=="https:")return "";
+        if(u.username||u.password)return "";
+        return u.href;
+      }
+      const repoPath=raw.replace(/^\.\//,"").replace(/^\//,"");
+      return new URL(repoPath,LOCALIFY_GITHUB_RAW_BASE).href;
+    }catch{return ""}
+  }
+
+  function coverFileCandidates(albumTitle){
+    const original=String(albumTitle||"").trim();
+    if(!original||/^unknown album$/i.test(original)||isExcludedCoverAlbum(original))return [];
+    const variants=[
+      original,
+      original.replace(/[\\/:*?"<>|]/g,"-").replace(/\s+/g," ").trim(),
+      original.replace(/\s+/g,"_"),
+      original.replace(/\s+/g,"-"),
+      original.replace(/\s*[–—-]\s*/g,"-"),
+      original.replace(/\s*\(?\s*(?:v|ver|version)\.?\s*\d+(?:\.\d+)?\s*\)?\s*$/i,"").trim()
+    ].filter(Boolean);
+    const seen=new Set(),out=[];
+    for(const base of variants){
+      for(const ext of LOCALIFY_COVER_EXTENSIONS){
+        const candidate=base+ext;
+        const key=candidate.toLowerCase();
+        if(!seen.has(key)){seen.add(key);out.push(candidate)}
+      }
+    }
+    return out;
+  }
+
+  let localifyBuiltinCoverLookup=null;
+  let localifyCoverFileIndex=null;
+  let localifyCoverFileIndexPromise=null;
+  function getBuiltinCoverLookup(){
+    if(localifyBuiltinCoverLookup)return localifyBuiltinCoverLookup;
+    const out=new Map();
+    for(const [name,file] of Object.entries(LOCALIFY_BUILTIN_COVER_MAP)){
+      if(typeof file!=="string"||!file.trim())continue;
+      for(const key of coverMapCandidates(name))out.set(key,file.trim());
+    }
+    localifyBuiltinCoverLookup=out;
+    return out;
+  }
+
+  function builtInCoverForAlbum(albumTitle){
+    if(isExcludedCoverAlbum(albumTitle))return "";
+    const lookup=getBuiltinCoverLookup();
+    for(const key of coverMapCandidates(albumTitle)){
+      const file=lookup.get(key);
+      if(!file)continue;
+      return new URL(encodeURIComponent(file),LOCALIFY_COVER_DIRECTORY).href;
+    }
+    return "";
+  }
+
+  function coverVersionInfo(value){
+    const normalized=normalizeCoverAlbumName(value);
+    const tokens=normalized.split(/[^a-z0-9]+/).filter(Boolean);
+    const versions=tokens.filter(t=>/^\\d+(?:\\.\\d+)?$/.test(t));
+    const words=tokens.filter(t=>!/^\\d+(?:\\.\\d+)?$/.test(t)&&!["v","ver","version"].includes(t));
+    return {tokens,versions,words,wordKey:words.join(" "),versionKey:versions.join(".")};
+  }
+  function coverNameSimilarity(a,b){
+    const x=canonicalCoverAlbumName(a),y=canonicalCoverAlbumName(b);
+    if(!x||!y)return 0;
+    const pa=coverVersionInfo(a),pb=coverVersionInfo(b);
+    if(pa.versionKey!==pb.versionKey)return 0;
+    if(x===y)return 1;
+    const aw=pa.words,bw=pb.words;
+    if(!aw.length||!bw.length)return 0;
+    const sa=new Set(aw),sb=new Set(bw);
+    const common=[...sa].filter(w=>sb.has(w));
+    const overlap=common.length/Math.max(sa.size,sb.size);
+    return overlap===1?0.96:0;
+  }
+  function externalCoverForAlbum(albumTitle){
+    if(!localifyCoverMap||isExcludedCoverAlbum(albumTitle))return "";
+    const candidates=coverMapCandidates(albumTitle);
+    for(const key of candidates){
+      const value=localifyCoverMap[key];
+      const mapped=coverMapUrl(value||"");
+      if(mapped)return mapped;
+    }
+    const fileIndex=localifyCoverFileIndex||{};
+    for(const key of candidates){
+      const file=fileIndex[key];
+      if(file){
+        const url=new URL(encodeURIComponent(file),LOCALIFY_COVER_DIRECTORY).href;
+        return url;
+      }
+    }
+    let best="",score=0;
+    for(const [key,value] of Object.entries(localifyCoverMap)){
+      const mapped=coverMapUrl(value||"");
+      if(!mapped)continue;
+      for(const candidate of candidates){
+        const match=coverNameSimilarity(candidate,key);
+        if(match>score){score=match;best=mapped;}
+      }
+    }
+    if(score>=0.96)return best;
+    for(const [key,file] of Object.entries(fileIndex)){
+      for(const candidate of candidates){
+        const match=coverNameSimilarity(candidate,key);
+        if(match>score){score=match;best=new URL(encodeURIComponent(file),LOCALIFY_COVER_DIRECTORY).href;}
+      }
+    }
+    return score>=0.96?best:"";
+  }
+  function knownCoverUrlForAlbum(albumTitle){
+    return externalCoverForAlbum(albumTitle)||builtInCoverForAlbum(albumTitle)||"";
+  }
+  function repoCoverFile(value){
+    if(typeof value!=="string"||!value.trim())return "";
+    const mapped=coverMapUrl(value);
+    if(!mapped||!mapped.startsWith(LOCALIFY_COVER_DIRECTORY))return "";
+    try{return decodeURIComponent(mapped.slice(LOCALIFY_COVER_DIRECTORY.length));}catch{return mapped.slice(LOCALIFY_COVER_DIRECTORY.length);}
+  }
+  function isKnownLocalifyCover(value){
+    const file=repoCoverFile(value);
+    if(!file)return false;
+    if(Object.values(LOCALIFY_BUILTIN_COVER_MAP).some(v=>String(v).trim()===file))return true;
+    if(localifyCoverMap&&Object.values(localifyCoverMap).some(v=>repoCoverFile(v)===file))return true;
+    return false;
+  }
+  function safeExistingCover(albumTitle,existingCover=""){
+    if(!existingCover)return "";
+    const known=knownCoverUrlForAlbum(albumTitle);
+    if(known)return known;
+    if(isKnownLocalifyCover(existingCover))return "";
+    return existingCover;
+  }
+  function coverForAlbum(album,existingCover=""){
+    const title=album?.title||album||"";
+    const known=knownCoverUrlForAlbum(title);
+    return known||safeExistingCover(title,existingCover)||"";
+  }
+  function coverFileStem(name){
+    return String(name||"").replace(/\.[^.\\/]+$/,"").trim();
+  }
+  async function loadLocalifyCoverFileIndex(){
+    if(localifyCoverFileIndex)return localifyCoverFileIndex;
+    if(localifyCoverFileIndexPromise)return localifyCoverFileIndexPromise;
+    localifyCoverFileIndexPromise=(async()=>{
+      const out={};
+      try{
+        const controller=new AbortController();
+        const timeout=setTimeout(()=>controller.abort(),LOCALIFY_COVER_LOAD_TIMEOUT);
+        try{
+          const r=await fetch("https://api.github.com/repos/blibbbye/Localify/contents/covers?ref=main",{cache:"no-store",signal:controller.signal,credentials:"omit"});
+          if(!r.ok)throw new Error(`HTTP ${r.status}`);
+          const files=await r.json();
+          if(Array.isArray(files)){
+            for(const item of files){
+              if(!item||item.type!=="file"||!LOCALIFY_COVER_EXTENSIONS.some(ext=>String(item.name||"").toLowerCase().endsWith(ext)))continue;
+              const file=String(item.name||"");
+              for(const key of coverMapCandidates(coverFileStem(file)))out[key]=file;
+            }
+          }
+        }finally{clearTimeout(timeout)}
+      }catch(e){console.warn("Localify cover directory index could not be loaded.",e)}
+      localifyCoverFileIndex=out;return out;
+    })();
+    return localifyCoverFileIndexPromise;
+  }
+
+  async function loadLocalifyCoverMap(){
+    if(localifyCoverMap)return localifyCoverMap;
+    if(localifyCoverMapPromise)return localifyCoverMapPromise;
+    const out={};
+    // External JSON is an extension, not a replacement. The built-in map is
+    // always available and is intentionally copied under normalized keys.
+    for(const [k,v] of Object.entries(LOCALIFY_BUILTIN_COVER_MAP)){
+      if(typeof v!=="string"||!v.trim())continue;
+      for(const key of coverMapCandidates(k))out[key]=v.trim();
+    }
+    // The registry is hosted publicly, so it can be loaded from any page origin.
+    localifyCoverMapPromise=(async()=>{
+      try{
+        const controller=new AbortController();
+        const timeout=setTimeout(()=>controller.abort(),LOCALIFY_COVER_LOAD_TIMEOUT);
+        try{
+          const r=await fetch(LOCALIFY_COVER_MAP_URL,{cache:"no-store",signal:controller.signal,credentials:"omit"});
+          if(!r.ok)throw new Error(`HTTP ${r.status}`);
+          const data=await r.json();
+          const raw=data&&typeof data.covers==="object"?data.covers:data;
+          if(raw&&typeof raw==="object"&&!Array.isArray(raw)){
+            for(const [k,v] of Object.entries(raw)){
+              if(typeof v!=="string"||!v.trim())continue;
+              const value=v.trim();
+              for(const key of coverMapCandidates(k))out[key]=value;
+            }
+          }
+        }finally{clearTimeout(timeout)}
+      }catch(e){console.warn("Localify covers.json could not be loaded; built-in cover map remains active.",e)}
+      localifyCoverMap=out;return out;
+    })();
+    return localifyCoverMapPromise;
+  }
+
+  function checkImageUrl(url,timeoutMs=LOCALIFY_COVER_LOAD_TIMEOUT){
+    return new Promise(resolve=>{
+      if(!url){resolve(false);return}
+      const img=new Image();let done=false;
+      const timer=setTimeout(()=>finish(false),timeoutMs);
+      const finish=ok=>{if(done)return;done=true;clearTimeout(timer);img.onload=null;img.onerror=null;resolve(!!ok)};
+      img.onload=()=>finish(true);img.onerror=()=>finish(false);img.src=url;
+    });
+  }
+
+  async function resolveGithubAlbumCover(t){
+    if(!t)return "";
+    const album=trackCoverReference(t);
+    const cacheKey=normalizeCoverAlbumName(album);
+    if(!cacheKey||/^unknown album$/.test(cacheKey)||/^none$/.test(cacheKey)||isExcludedCoverAlbum(album)){return ""}
+    if(discordCoverCache.has(cacheKey))return discordCoverCache.get(cacheKey)||"";
+    if(discordCoverRequests.has(cacheKey))return discordCoverRequests.get(cacheKey);
+    const request=(async()=>{
+      await Promise.all([loadLocalifyCoverMap(),loadLocalifyCoverFileIndex()]);
+      const external=externalCoverForAlbum(album);
+      if(external){
+        if(await checkImageUrl(external)){discordCoverCache.set(cacheKey,external);return external;}
+      }
+      const builtin=builtInCoverForAlbum(album);
+      if(builtin){discordCoverCache.set(cacheKey,builtin);return builtin;}
+      for(const filename of coverFileCandidates(album)){
+        const url=new URL(encodeURIComponent(filename),LOCALIFY_COVER_DIRECTORY).href;
+        if(await checkImageUrl(url)){discordCoverCache.set(cacheKey,url);return url}
+      }
+      discordCoverCache.delete(cacheKey);
+      return "";
+    })();
+    discordCoverRequests.set(cacheKey,request);
+    try{return await request}finally{discordCoverRequests.delete(cacheKey)}
+  }
+
   // ================= Built-in Discord Rich Presence =================
   // Direct Discord IPC for desktop wrappers that expose Node.js.
   // No connector, localhost bridge, background player, or separate EXE.
