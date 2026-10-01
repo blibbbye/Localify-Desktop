@@ -1,0 +1,45 @@
+{
+  "name": "localify-desktop",
+  "productName": "Localify Desktop",
+  "version": "1.0.0",
+  "description": "Localify desktop music player with built-in Discord Rich Presence.",
+  "main": "main.cjs",
+  "author": "blib",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --enable-logging",
+    "sync-covers": "node scripts/sync-covers.cjs",
+    "build": "electron-builder --win",
+    "build:dir": "electron-builder --dir"
+  },
+  "devDependencies": {
+    "electron": "44.5.1",
+    "electron-builder": "26.15.3"
+  },
+  "build": {
+    "appId": "com.blibbby.localify.desktop",
+    "productName": "Localify Desktop",
+    "artifactName": "Localify-Desktop-${version}-${arch}.${ext}",
+    "directories": { "output": "dist" },
+    "files": [
+      "index.html", "main.cjs", "preload.cjs", "package.json",
+      "covers.json", "covers/**/*", "favicon.png"
+    ],
+    "win": {
+      "target": [
+        { "target": "nsis", "arch": ["x64"] },
+        { "target": "portable", "arch": ["x64"] }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Localify Desktop",
+      "runAfterFinish": false
+    }
+  }
+}
