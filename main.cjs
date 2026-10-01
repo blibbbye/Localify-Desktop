@@ -1,3 +1,4 @@
+
 const { app, BrowserWindow, Menu, ipcMain, shell } = require("electron");
 const path = require("node:path");
 const fs = require("node:fs");
@@ -5,28 +6,35 @@ const net = require("node:net");
 const https = require("node:https");
 
 const CLIENT_ID = "1550620411740561568";
-const SOURCE_RAW = "https://raw.githubusercontent.com/blibbbye/Localify/main/";
+const COVER_REGISTRY_URL = "https://raw.githubusercontent.com/blibbbye/Localify/main/covers.json";
+const COVER_RAW_BASE = "https://raw.githubusercontent.com/blibbbye/Localify/main/covers/";
 
-let win = null;
+let mainWindow = null;
 let discordSocket = null;
-let discordConnectPromise = null;
+let discordConnecting = null;
 let discordBuffer = Buffer.alloc(0);
-let coversCache = null;
-let coversPromise = null;
-let lastActivityKey = "";
-let lastActivityAt = 0;
+let coverRegistry = null;
+let coverRegistryPromise = null;
+let lastPresenceKey = "";
+let lastPresenceAt = 0;
 
-function rpcFrame(op, payload) {
+function isHttpUrl(value) {
+  return value.indexOf("http://") === 0 || value.indexOf("https://") === 0;
+}
+
+function makeFrame(opcode, payload) {
   const body = Buffer.from(JSON.stringify(payload), "utf8");
-  const frame = Buffer.alloc(8 + body.length);
-  frame.writeUInt32LE(op, 0);
+  const frame = Buffer.alloc(body.length + 8);
+  frame.writeUInt32LE(opcode, 0);
   frame.writeUInt32LE(body.length, 4);
   body.copy(frame, 8);
   return frame;
 }
 
-function closeDiscord() {
-  try { discordSocket?.destroy(); } catch {}
+function disconnectDiscord() {
+  try {
+    if (discordSocket) discordSocket.destroy();
+  } catch (e) {}
   discordSocket = null;
   discordBuffer = Buffer.alloc(0);
 }
@@ -34,9 +42,9 @@ function closeDiscord() {
 function attachDiscord(socket) {
   discordSocket = socket;
   discordBuffer = Buffer.alloc(0);
-  socket.setNoDelay?.(true);
+  if (socket.setNoDelay) socket.setNoDelay(true);
 
-  socket.on("data", chunk => {
+  socket.on("data", function (chunk) {
     try {
       discordBuffer = Buffer.concat([discordBuffer, chunk]);
       while (discordBuffer.length >= 8) {
@@ -48,243 +56,248 @@ function attachDiscord(socket) {
         discordBuffer = discordBuffer.subarray(8 + length);
 
         if (opcode === 3) {
-          try { socket.write(rpcFrame(4, JSON.parse(body))); } catch {}
+          try {
+            socket.write(makeFrame(4, JSON.parse(body)));
+          } catch (e) {}
         }
       }
-    } catch {}
+    } catch (e) {}
   });
 
-  const gone = () => {
-    if (discordSocket === socket) closeDiscord();
-  };
-  socket.once("error", gone);
-  socket.once("close", gone);
+  socket.once("error", function () {
+    if (discordSocket === socket) disconnectDiscord();
+  });
+  socket.once("close", function () {
+    if (discordSocket === socket) disconnectDiscord();
+  });
 
   try {
-    socket.write(rpcFrame(0, { v: 1, client_id: CLIENT_ID }));
-  } catch {
-    gone();
+    socket.write(makeFrame(0, { v: 1, client_id: CLIENT_ID }));
+  } catch (e) {
+    disconnectDiscord();
   }
 }
 
 function connectPipe(pipe) {
-  return new Promise(resolve => {
+  return new Promise(function (resolve) {
     let done = false;
     let socket = null;
 
-    const finish = ok => {
+    function finish(ok) {
       if (done) return;
       done = true;
       clearTimeout(timer);
-      try {
-        socket?.removeListener("connect", onConnect);
-        socket?.removeListener("error", onError);
-        socket?.removeListener("close", onClose);
-      } catch {}
-      if (!ok) {
-        try { socket?.destroy(); } catch {}
+      if (!ok && socket) {
+        try { socket.destroy(); } catch (e) {}
       }
       resolve(ok);
-    };
+    }
 
-    const onConnect = () => {
+    function onConnect() {
       try {
         attachDiscord(socket);
         finish(true);
-      } catch {
+      } catch (e) {
         finish(false);
       }
-    };
-    const onError = () => finish(false);
-    const onClose = () => { if (!done) finish(false); };
-    const timer = setTimeout(() => finish(false), 800);
+    }
+
+    function onError() {
+      finish(false);
+    }
+
+    function onClose() {
+      if (!done) finish(false);
+    }
+
+    const timer = setTimeout(function () {
+      finish(false);
+    }, 900);
 
     try {
       socket = net.createConnection({ path: pipe });
-    } catch {
+      socket.once("connect", onConnect);
+      socket.once("error", onError);
+      socket.once("close", onClose);
+    } catch (e) {
       finish(false);
-      return;
     }
-
-    socket.once("connect", onConnect);
-    socket.once("error", onError);
-    socket.once("close", onClose);
   });
 }
 
 async function connectDiscord() {
   if (discordSocket && !discordSocket.destroyed) return true;
-  if (discordConnectPromise) return discordConnectPromise;
+  if (discordConnecting) return discordConnecting;
 
-  discordConnectPromise = (async () => {
-    for (let i = 0; i < 10; i++) {
-      const pipes = [
-        "\\\\?\\pipe\\discord-ipc-" + i,
-        "\\\\.\\pipe\\discord-ipc-" + i
-      ];
-      for (const pipe of pipes) {
-        if (await connectPipe(pipe) && discordSocket) return true;
-      }
+  const slash = String.fromCharCode(92);
+
+  discordConnecting = (async function () {
+    for (let i = 0; i < 10; i += 1) {
+      const pipeA = slash + slash + "?" + slash + "pipe" + slash + "discord-ipc-" + i;
+      const pipeB = slash + slash + "." + slash + "pipe" + slash + "discord-ipc-" + i;
+
+      if (await connectPipe(pipeA) && discordSocket) return true;
+      if (await connectPipe(pipeB) && discordSocket) return true;
     }
     return false;
-  })().finally(() => {
-    discordConnectPromise = null;
+  })().finally(function () {
+    discordConnecting = null;
   });
 
-  return discordConnectPromise;
+  return discordConnecting;
 }
 
-function httpsGet(url) {
-  return new Promise((resolve, reject) => {
-    https.get(url, { headers: { "User-Agent": "Localify-Desktop" } }, res => {
-      if (res.statusCode !== 200) {
-        res.resume();
-        reject(new Error("HTTP " + res.statusCode));
+function download(url) {
+  return new Promise(function (resolve, reject) {
+    https.get(url, { headers: { "User-Agent": "Localify-Desktop" } }, function (response) {
+      if (response.statusCode !== 200) {
+        response.resume();
+        reject(new Error("HTTP " + response.statusCode));
         return;
       }
+
       const chunks = [];
-      res.on("data", chunk => chunks.push(chunk));
-      res.on("end", () => resolve(Buffer.concat(chunks)));
+      response.on("data", function (chunk) { chunks.push(chunk); });
+      response.on("end", function () {
+        resolve(Buffer.concat(chunks));
+      });
     }).on("error", reject);
   });
-}
-
-async function loadCovers() {
-  if (coversCache) return coversCache;
-  if (coversPromise) return coversPromise;
-
-  coversPromise = (async () => {
-    try {
-      const localPath = path.join(__dirname, "covers.json");
-      if (fs.existsSync(localPath)) {
-        const raw = JSON.parse(fs.readFileSync(localPath, "utf8"));
-        coversCache = raw?.covers && typeof raw.covers === "object" ? raw.covers : raw;
-        return coversCache || {};
-      }
-    } catch {}
-
-    try {
-      const raw = JSON.parse((await httpsGet(SOURCE_RAW + "covers.json")).toString("utf8"));
-      coversCache = raw?.covers && typeof raw.covers === "object" ? raw.covers : raw;
-      return coversCache || {};
-    } catch {}
-
-    coversCache = {};
-    return coversCache;
-  })();
-
-  return coversPromise;
 }
 
 function normalize(value) {
   return String(value || "")
     .normalize("NFKC")
     .toLowerCase()
-    .replace(/[’'\\x60]/g, "")
+    .replace(/[\x27\x60\u2019]/g, "")
     .replace(/[^a-z0-9]+/g, "");
 }
 
-function coverUrlFromFile(file) {
-  const name = String(file || "").replace(/^\\.\\//, "");
-  if (!name) return "";
-  if (/^https?:\/\//i.test(name)) return name;
-  return SOURCE_RAW + "covers/" + encodeURIComponent(name);
+async function getCoverRegistry() {
+  if (coverRegistry) return coverRegistry;
+  if (coverRegistryPromise) return coverRegistryPromise;
+
+  coverRegistryPromise = (async function () {
+    try {
+      const localPath = path.join(__dirname, "covers.json");
+      if (fs.existsSync(localPath)) {
+        const parsed = JSON.parse(fs.readFileSync(localPath, "utf8"));
+        coverRegistry = parsed && parsed.covers && typeof parsed.covers === "object" ? parsed.covers : parsed;
+        return coverRegistry || {};
+      }
+    } catch (e) {}
+
+    try {
+      const parsed = JSON.parse((await download(COVER_REGISTRY_URL)).toString("utf8"));
+      coverRegistry = parsed && parsed.covers && typeof parsed.covers === "object" ? parsed.covers : parsed;
+      return coverRegistry || {};
+    } catch (e) {}
+
+    coverRegistry = {};
+    return coverRegistry;
+  })();
+
+  return coverRegistryPromise;
 }
 
 async function resolveCover(payload) {
-  const supplied = String(payload?.coverUrl || "").trim();
-  if (/^https?:\/\//i.test(supplied)) return supplied;
+  const supplied = String(payload && payload.coverUrl || "").trim();
+  if (isHttpUrl(supplied)) return supplied;
 
-  const album = String(payload?.album || "").trim();
+  const album = String(payload && payload.album || "").trim();
   if (!album) return "";
 
-  const covers = await loadCovers();
-  const key = normalize(album);
+  const registry = await getCoverRegistry();
+  const wanted = normalize(album);
 
-  for (const [name, value] of Object.entries(covers || {})) {
-    if (normalize(name) === key && value) return coverUrlFromFile(value);
+  for (const name of Object.keys(registry || {})) {
+    if (normalize(name) !== wanted) continue;
+
+    const value = String(registry[name] || "").trim();
+    if (!value) return "";
+    if (isHttpUrl(value)) return value;
+
+    return COVER_RAW_BASE + encodeURIComponent(value.replace(/^\.\//, ""));
   }
+
   return "";
 }
 
 async function setPresence(payload) {
-  if (!payload?.playing) return clearPresence();
+  if (!payload || !payload.playing) return clearPresence();
   if (!(await connectDiscord())) return false;
 
+  const song = String(payload.song || "Unknown song").slice(0, 128);
+  const artist = String(payload.artist || "Unknown Artist").slice(0, 128);
   const cover = await resolveCover(payload);
-  const duration = Number(payload.duration || 0);
+  const duration = Math.max(0, Number(payload.duration || 0));
   const position = Math.max(0, Number(payload.currentTime || 0));
+  const start = Date.now() - Math.round(position * 1000);
+
+  const key = song + "|" + artist + "|" + cover + "|" + Math.floor(position / 5) + "|" + Math.round(duration);
+  const now = Date.now();
+  if (key === lastPresenceKey && now - lastPresenceAt < 1500) return true;
+  lastPresenceKey = key;
+  lastPresenceAt = now;
 
   const activity = {
     type: 2,
-    name: String(payload.song || "Unknown song").slice(0, 128),
+    name: song,
     details: "",
-    state: String(payload.artist || "Unknown Artist").slice(0, 128),
+    state: artist,
     status_display_type: 1,
     instance: false
   };
 
-  if (cover && cover.length <= 800) {
+  // Discord supports external image URLs for Rich Presence assets.
+  if (cover && cover.length <= 300) {
     activity.assets = {
       large_image: cover,
       large_text: "Localify Desktop"
     };
   }
 
-  const start = Date.now() - Math.round(position * 1000);
   if (duration > 0) {
     activity.timestamps = {
-      start,
+      start: start,
       end: start + Math.round(duration * 1000)
     };
   }
 
-  const activityKey = [
-    activity.name,
-    activity.state,
-    cover,
-    Math.floor(position / 5),
-    Math.round(duration)
-  ].join("|");
-
-  const now = Date.now();
-  if (activityKey === lastActivityKey && now - lastActivityAt < 1500) return true;
-  lastActivityKey = activityKey;
-  lastActivityAt = now;
-
   try {
-    discordSocket.write(rpcFrame(1, {
+    discordSocket.write(makeFrame(1, {
       cmd: "SET_ACTIVITY",
-      args: { pid: process.pid, activity },
+      args: { pid: process.pid, activity: activity },
       nonce: String(now)
     }));
     return true;
-  } catch {
-    closeDiscord();
+  } catch (e) {
+    disconnectDiscord();
     return false;
   }
 }
 
 async function clearPresence() {
-  lastActivityKey = "";
-  lastActivityAt = 0;
+  lastPresenceKey = "";
+  lastPresenceAt = 0;
+
   if (!discordSocket || discordSocket.destroyed) return false;
 
   try {
-    discordSocket.write(rpcFrame(1, {
+    discordSocket.write(makeFrame(1, {
       cmd: "SET_ACTIVITY",
       args: { pid: process.pid, activity: null },
       nonce: "clear-" + Date.now()
     }));
     return true;
-  } catch {
-    closeDiscord();
+  } catch (e) {
+    disconnectDiscord();
     return false;
   }
 }
 
 function createWindow() {
-  win = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1440,
     height: 900,
     minWidth: 1000,
@@ -301,13 +314,13 @@ function createWindow() {
     }
   });
 
-  // No generic right-click menu on the player.
-  // Editable text fields still get native Cut/Copy/Paste/Select All.
-  win.webContents.on("context-menu", (event, params) => {
+  // Normal right-clicks are disabled throughout the app.
+  // Editable inputs still receive a useful native edit menu.
+  mainWindow.webContents.on("context-menu", function (event, params) {
     event.preventDefault();
     if (!params.isEditable) return;
 
-    const editMenu = Menu.buildFromTemplate([
+    const menu = Menu.buildFromTemplate([
       { role: "undo" },
       { role: "redo" },
       { type: "separator" },
@@ -316,44 +329,57 @@ function createWindow() {
       { role: "paste" },
       { role: "selectall" }
     ]);
-    editMenu.popup({ window: win });
+
+    menu.popup({ window: mainWindow });
   });
 
-  win.webContents.setWindowOpenHandler(({ url }) => {
-    if (/^https?:\/\//i.test(url)) shell.openExternal(url).catch(() => {});
+  mainWindow.webContents.setWindowOpenHandler(function (details) {
+    const url = String(details.url || "");
+    if (isHttpUrl(url)) shell.openExternal(url).catch(function () {});
     return { action: "deny" };
   });
 
-  win.once("ready-to-show", () => win.show());
-  win.loadFile(path.join(__dirname, "index.html"));
+  mainWindow.once("ready-to-show", function () {
+    mainWindow.show();
+  });
 
-  win.on("closed", () => {
-    win = null;
-    void clearPresence();
+  mainWindow.loadFile(path.join(__dirname, "index.html"));
+
+  mainWindow.on("closed", function () {
+    mainWindow = null;
+    clearPresence();
   });
 }
 
 app.setAppUserModelId("com.blibbby.localify.desktop");
 
-app.whenReady().then(() => {
+app.whenReady().then(function () {
   Menu.setApplicationMenu(null);
 
-  ipcMain.handle("discord:setPresence", (_event, payload) => setPresence(payload));
-  ipcMain.handle("discord:clearPresence", () => clearPresence());
-  ipcMain.handle("discord:status", async () => ({
-    connected: await connectDiscord(),
-    clientId: CLIENT_ID
-  }));
+  ipcMain.handle("discord:setPresence", function (_event, payload) {
+    return setPresence(payload);
+  });
+
+  ipcMain.handle("discord:clearPresence", function () {
+    return clearPresence();
+  });
+
+  ipcMain.handle("discord:status", async function () {
+    return {
+      connected: await connectDiscord(),
+      clientId: CLIENT_ID
+    };
+  });
 
   createWindow();
 });
 
-app.on("before-quit", () => {
-  void clearPresence();
-  closeDiscord();
+app.on("before-quit", function () {
+  clearPresence();
+  disconnectDiscord();
 });
 
-app.on("window-all-closed", () => {
-  closeDiscord();
+app.on("window-all-closed", function () {
+  disconnectDiscord();
   if (process.platform !== "darwin") app.quit();
 });
