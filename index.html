@@ -932,6 +932,26 @@ body[data-localify-desktop="true"] .discordTopBtn,body[data-localify-desktop="tr
     });
   }
 
+  function readBe32(bytes,off){return (((bytes[off]||0)<<24)>>>0)|((bytes[off+1]||0)<<16)|((bytes[off+2]||0)<<8)|(bytes[off+3]||0)}
+  function readSyncSafe(bytes,off){return (((bytes[off]||0)&127)<<21)|(((bytes[off+1]||0)&127)<<14)|(((bytes[off+2]||0)&127)<<7)|((bytes[off+3]||0)&127)}
+  function decodeId3Text(bytes){
+    if(!bytes?.length)return "";
+    const enc=bytes[0],data=bytes.subarray(1);
+    try{
+      if(enc===3)return new TextDecoder("utf-8").decode(data).replace(/ +$/,"").trim();
+      if(enc===2){let s="";for(let i=0;i+1<data.length;i+=2)s+=String.fromCharCode((data[i]<<8)|data[i+1]);return s.replace(/ +$/,"").trim()}
+      if(enc===1){let p=0,little=true,s="";if(data.length>=2&&(data[0]===255||data[0]===254)){little=data[0]===254;p=2}for(;p+1<data.length;p+=2)s+=String.fromCharCode(little?(data[p]|data[p+1]<<8):(data[p]<<8|data[p+1]));return s.replace(/ +$/,"").trim()}
+      return new TextDecoder("windows-1252").decode(data).replace(/ +$/,"").trim();
+    }catch{return ""}
+  }
+  async function readMp3V1Metadata(file){
+    try{if((Number(file?.size)||0)<128)return {};const bytes=new Uint8Array(await file.slice(file.size-128,file.size).arrayBuffer());if(bytes[0]!==84||bytes[1]!==65||bytes[2]!==71)return {};const td=new TextDecoder("windows-1252"),clean=x=>td.decode(x).replace(/ +$/,"").trim();return {title:clean(bytes.subarray(3,33)),artist:clean(bytes.subarray(33,63)),album:clean(bytes.subarray(63,93)),year:clean(bytes.subarray(93,97))}}catch{return {}}
+  }
+  async function readMp3Id3Metadata(file){
+    try{const max=Math.min(Number(file?.size)||0,4*1024*1024);if(max<10)return readMp3V1Metadata(file);const bytes=new Uint8Array(await file.slice(0,max).arrayBuffer());if(bytes[0]!==73||bytes[1]!==68||bytes[2]!==51)return readMp3V1Metadata(file);const ver=bytes[3]||3,end=Math.min(bytes.length,10+readSyncSafe(bytes,6));const out={};let p=10;while(p+10<=end){if(bytes[p]===0)break;const id=String.fromCharCode(bytes[p],bytes[p+1],bytes[p+2],bytes[p+3]),sz=ver>=4?readSyncSafe(bytes,p+4):readBe32(bytes,p+4);if(!sz||p+10+sz>end)break;const body=bytes.subarray(p+10,p+10+sz);if(id[0]==="T"){if(id==="TXXX"){const raw=decodeId3Text(body),parts=raw.split(" "),desc=(parts.shift()||"").trim().toLowerCase(),value=parts.join(" ").trim();if(/editor|edit(?:ed|ing)?\s*by|software|encoded\s*by/.test(desc))out.editor=value}else{const value=decodeId3Text(body);if(id==="TIT2")out.title=value;else if(id==="TPE1")out.artist=value;else if(id==="TPE2")out.albumArtist=value;else if(id==="TALB")out.album=value;else if(id==="TDRC"||id==="TYER")out.year=(value.match(/\d{4}/)||[])[0]||value;else if(id==="TCON")out.genre=value.replace(/^\(\d+\)\s*/,"");else if(id==="TRCK")out.track=parseInt((value.match(/\d+/)||[])[0],10)||null;else if(id==="TPOS")out.disc=parseInt((value.match(/\d+/)||[])[0],10)||null}}p+=10+sz}return out}catch{return {}}
+  }
+  async function readEmbeddedAudioMetadata(file){if(/\.mp3$/i.test(file?.name||""))return readMp3Id3Metadata(file);return {}}
+
   function readDuration(t){
     return new Promise(resolve=>{
       const blob=t?.blob;
@@ -1250,6 +1270,7 @@ body[data-localify-desktop="true"] .discordTopBtn,body[data-localify-desktop="tr
   function renderNav(){
     $$("#nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===state.currentView));
     $("#libraryBadge").textContent=`${state.tracks.length} ${state.tracks.length===1?"track":"tracks"}`;
+    renderFolderNav();
   }
   function render(){
     __prepareLocalifyDerived();
@@ -1263,6 +1284,8 @@ body[data-localify-desktop="true"] .discordTopBtn,body[data-localify-desktop="tr
     else if(v==="playlists")renderPlaylists();
     else if(v==="liked")renderLiked();
     else if(v==="recent")renderRecent();
+    else if(v==="folders")renderFolders();
+    else if(v==="folder"&&state.detail?.id)showFolder(state.detail.id);
     else if(v==="profile")showProfile();else if(v==="listeningStats")showListeningStats();else if(v==="accountSettings")showAccountSettings();
     renderPlayer();
   }
@@ -1477,6 +1500,8 @@ body[data-localify-desktop="true"] .discordTopBtn,body[data-localify-desktop="tr
     else if(state.currentView==="playlists")renderPlaylists();
     else if(state.currentView==="liked")renderLiked();
     else if(state.currentView==="recent")renderRecent();
+    else if(state.currentView==="folders")renderFolders();
+    else if(state.currentView==="folder"&&state.detail?.id)showFolder(state.detail.id);
     renderPlayer();
   }
 
@@ -2405,42 +2430,7 @@ function editLocalProfile(){
     $("#profileSave").onclick=async()=>{state.profile.displayName=$("#profileNameInput").value.trim();if(Object.prototype.hasOwnProperty.call(state,"_pendingProfileAvatar")){state.profile.avatar=state._pendingProfileAvatar;delete state._pendingProfileAvatar}await save();closeModal(true);renderProfileTopButton();showProfile()};
   }
 
-  function showAccountSettings(){
-    closeProfileMenu();
-    state.currentView="accountSettings";state.detail=null;state.selected=[];localifyClearPages();renderNav();
-    const t=normalizeTheme(state.settings.theme);
-    const presets=Object.entries(DEFAULT_LOCALIFY_THEMES).map(([id,x])=>'<button type="button" class="themeChoice '+(t.preset===id?'active':'')+'" data-theme-preset="'+id+'"><div class="themeSwatch" style="background:'+(x.mode==="gradient"?'linear-gradient(135deg,'+x.color1+','+x.color2+')':x.color1)+'"></div><strong>'+esc(x.name)+'</strong><span>'+(x.mode==="gradient"?"2-color blend":"solid color")+'</span></button>').join("");
-    $("#content").innerHTML=
-      '<div class="section" style="margin-top:0"><div class="sectionHead"><div><h2 style="font-size:30px;letter-spacing:-1px;margin:0">Account settings</h2><span>Manage your Localify preferences and themes.</span></div><div class="sectionHeadActions"><button class="secondary" id="accountSettingsBack" type="button">Back to profile</button></div></div>'+
-      '<div class="settingsGrid">'+
-        '<section class="settingsSection"><div class="settingsSectionHead"><div><div class="settingsSectionTitle">Themes</div><div class="settingsSectionSub">Choose a preset or make your own solid color or two-color blend.</div></div></div>'+
-          '<div class="themeGrid">'+presets+'</div>'+
-          '<div style="margin-top:14px;border-top:1px solid #252d36;padding-top:14px">'+
-            '<div class="settingsSectionTitle" style="font-size:13px;margin-bottom:9px">Custom theme</div>'+
-            '<div class="themeModeRow"><button type="button" class="themeModeBtn '+(t.mode==="solid"?"active":"")+'" id="accountThemeSolid">Solid color</button><button type="button" class="themeModeBtn '+(t.mode==="gradient"?"active":"")+'" id="accountThemeGradient">Blend two colors</button></div>'+
-            '<div class="customThemeControls"><div class="themeColorField"><label>Color 1</label><div class="themeColorRow"><input id="accountColor1" type="color" value="'+esc(t.color1)+'"><span class="themeColorValue" id="accountColor1Value">'+esc(t.color1.toUpperCase())+'</span></div></div><div class="themeColorField"><label>Color 2</label><div class="themeColorRow"><input id="accountColor2" type="color" value="'+esc(t.color2)+'"><span class="themeColorValue" id="accountColor2Value">'+esc(t.color2.toUpperCase())+'</span></div></div></div>'+
-          '</div>'+
-        '</section>'+
-        '<section class="settingsSection"><div class="settingsSectionHead"><div><div class="settingsSectionTitle">Playback & app</div><div class="settingsSectionSub">Changes are saved locally.</div></div></div>'+
-          '<div class="settingsToggleRow"><div class="settingsToggleCopy"><strong>Shuffle</strong><span>Randomize the current queue when enabled.</span></div><input type="checkbox" id="accountShuffle" '+(state.settings.shuffle?"checked":"")+'></div>'+
-          '<div class="settingsToggleRow"><div class="settingsToggleCopy"><strong>Discord Rich Presence</strong><span>Show your current song and artist on Discord.</span></div><input type="checkbox" id="accountDiscord" '+(state.settings.discordPresence!==false?"checked":"")+'></div>'+
-          '<div class="settingsToggleRow"><div class="settingsToggleCopy"><strong>Now Playing panel</strong><span>Show or hide the side panel.</span></div><input type="checkbox" id="accountNowPanel" '+(!state.settings.nowSidebarHidden?"checked":"")+'></div>'+
-          '<div style="padding-top:13px"><div class="settingsSectionSub" style="margin-bottom:7px">Volume</div><input class="settingsRange" id="accountVolume" type="range" min="0" max="1" step="0.01" value="'+esc(state.settings.volume??.9)+'"></div>'+
-        '</section>'+
-        '<section class="settingsSection"><div class="settingsSectionHead"><div><div class="settingsSectionTitle">Library & data</div><div class="settingsSectionSub">Manage portable Localify presets.</div></div></div><button class="secondary" id="accountPresets" type="button">Open presets</button></section>'+
-      '</div></div>';
-    $("#accountSettingsBack").onclick=()=>showProfile();
-    $$("[data-theme-preset]").forEach(b=>b.onclick=async()=>{const p=DEFAULT_LOCALIFY_THEMES[b.dataset.themePreset];if(!p)return;state.settings.theme={preset:b.dataset.themePreset,mode:p.mode,color1:p.color1,color2:p.color2};applyTheme();await save();showAccountSettings()});
-    $("#accountThemeSolid").onclick=async()=>{const n=normalizeTheme(state.settings.theme);state.settings.theme={preset:"custom",mode:"solid",color1:n.color1,color2:n.color2};applyTheme();await save();showAccountSettings()};
-    $("#accountThemeGradient").onclick=async()=>{const n=normalizeTheme(state.settings.theme);state.settings.theme={preset:"custom",mode:"gradient",color1:n.color1,color2:n.color2};applyTheme();await save();showAccountSettings()};
-    const updateTheme=()=>{const c1=$("#accountColor1"),c2=$("#accountColor2");if(!c1||!c2)return;state.settings.theme={preset:"custom",mode:state.settings.theme?.mode==="gradient"?"gradient":"solid",color1:c1.value,color2:c2.value};applyTheme();$("#accountColor1Value").textContent=c1.value.toUpperCase();$("#accountColor2Value").textContent=c2.value.toUpperCase();autoSave()};
-    $("#accountColor1").oninput=updateTheme;$("#accountColor2").oninput=updateTheme;
-    $("#accountShuffle").onchange=async e=>{state.settings.shuffle=e.target.checked;await save();renderPlayer()};
-    $("#accountDiscord").onchange=async e=>{state.settings.discordPresence=e.target.checked;await save();e.target.checked?connectDiscordBridge():clearDiscordPresence()};
-    $("#accountNowPanel").onchange=()=>setNowSidebar($("#accountNowPanel").checked);
-    $("#accountVolume").oninput=e=>{const v=+e.target.value;state.settings.volume=v;audio.volume=v;autoSave();renderPlayer()};
-    $("#accountPresets").onclick=()=>{showAccountSettingsPresets()};
-  }
+  function showAccountSettings(){closeProfileMenu();state.currentView="accountSettings";state.detail=null;state.selected=[];localifyClearPages();renderNav();$("#content").innerHTML='<div class="section settingsPage" style="margin-top:0"><div class="sectionHead"><div><h2 class="viewTitle" style="font-size:30px">Account settings</h2><div class="subtle">Localify Desktop settings saved on this device.</div></div><button class="secondary" id="accountSettingsBack">Back to profile</button></div><div class="settingsGrid"><section class="settingsSection"><div class="settingsSectionHead"><div><div class="settingsSectionTitle">Playback</div><div class="settingsSectionSub">Control how Localify Desktop plays your music.</div></div></div><div class="settingsToggleRow"><div class="settingsToggleCopy"><strong>Shuffle</strong><span>Randomize the current queue when enabled.</span></div><input type="checkbox" id="accountShuffle" '+(state.settings.shuffle?"checked":"")+'></div><div class="settingsToggleRow"><div class="settingsToggleCopy"><strong>Now Playing panel</strong><span>Show or hide the side panel.</span></div><input type="checkbox" id="accountNowPanel" '+(!state.settings.nowSidebarHidden?"checked":"")+'></div><div style="padding-top:13px"><div class="settingsSectionSub" style="margin-bottom:7px">Volume</div><input class="settingsRange" id="accountVolume" type="range" min="0" max="1" step="0.01" value="'+esc(state.settings.volume??.9)+'"></div></section><section class="settingsSection"><div class="settingsSectionHead"><div><div class="settingsSectionTitle">Discord Rich Presence</div><div class="settingsSectionSub">Discord is built into Localify Desktop and connects automatically. There is no connector to open.</div></div></div><div class="help">Play a song while Discord Desktop is running and Localify will publish the song and artist automatically.</div></section><section class="settingsSection"><div class="settingsSectionHead"><div><div class="settingsSectionTitle">Library & data</div><div class="settingsSectionSub">Manage portable Localify data and folders.</div></div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="secondary" id="accountPresets">Open presets</button><button class="secondary" id="accountNewFolder">New folder</button></div></section></div></div>');$("#accountSettingsBack").onclick=()=>showProfile();$("#accountShuffle").onchange=async e=>{state.settings.shuffle=e.target.checked;await save();renderPlayer()};$("#accountNowPanel").onchange=()=>setNowSidebar($("#accountNowPanel").checked);$("#accountVolume").oninput=e=>{const v=+e.target.value;state.settings.volume=v;audio.volume=v;autoSave();renderPlayer()};$("#accountPresets").onclick=()=>openPresetsMenu();$("#accountNewFolder").onclick=()=>editFolder(null)}
 
   function showAccountSettingsPresets(){openPresetsMenu()}
   
@@ -2546,6 +2536,7 @@ function editLocalProfile(){
     const album=context.albumId?albumById(context.albumId):null;
     const forcedArtist=context.artistId?artistById(context.artistId):album?artistById(firstArtistId(album)):null;
     const playlist=context.playlistId?playlistById(context.playlistId):null;
+    const metaByFile=new Map();let metaCursor=0;const metaWorkers=Array.from({length:Math.min(4,arr.length)},async()=>{while(metaCursor<arr.length){const f=arr[metaCursor++];try{metaByFile.set(f,await readEmbeddedAudioMetadata(f))}catch{metaByFile.set(f,{})}}});await Promise.all(metaWorkers);
     const folderAlbums=new Map();
     const existing=new Set(state.tracks.map(t=>`${t.fileName}|${t.size||t.blob?.size||0}|${t.lastModified||t.blob?.lastModified||0}`));
     const added=[];
@@ -2573,12 +2564,13 @@ function editLocalProfile(){
       const albumArtistIds=al?artistIdsForAlbum(al):[];
       const fallbackArtistIds=artist?[artist.id]:[];
       const fallbackArtist=namesOfIds(fallbackArtistIds).join(", ")||NONE_LABEL;
+      const tags=metaByFile.get(f)||{},fileTrack=inferTrackNumberFromFilename(f.name);
       const t={
-        id:uid(),title:f.name.replace(/\.[^.]+$/,"") ,
-        artist:fallbackArtist,artistIds:fallbackArtistIds,artistId:fallbackArtistIds[0]||null,
-        album:al?.title||NONE_LABEL,albumId:al?.id||null,
-        albumArtist:namesOfIds(albumArtistIds.length?albumArtistIds:fallbackArtistIds).join(", ")||NONE_LABEL,albumArtistIds:albumArtistIds.length?albumArtistIds:fallbackArtistIds,albumArtistId:(albumArtistIds.length?albumArtistIds:fallbackArtistIds)[0]||null,
-        genre:al?.genre||"",year:al?.year||"",track:inferTrackNumberFromFilename(f.name),disc:null,
+        id:uid(),title:String(tags.title||"").trim()||f.name.replace(/\.[^.]+$/,"") ,
+        artist:String(tags.artist||"").trim()||fallbackArtist,artistIds:fallbackArtistIds,artistId:fallbackArtistIds[0]||null,
+        album:String(tags.album||"").trim()||al?.title||NONE_LABEL,albumId:al?.id||null,
+        albumArtist:String(tags.albumArtist||"").trim()||namesOfIds(albumArtistIds.length?albumArtistIds:fallbackArtistIds).join(", ")||NONE_LABEL,albumArtistIds:albumArtistIds.length?albumArtistIds:fallbackArtistIds,albumArtistId:(albumArtistIds.length?albumArtistIds:fallbackArtistIds)[0]||null,
+        genre:String(tags.genre||al?.genre||"").trim(),year:String(tags.year||al?.year||"").trim(),track:Number.isFinite(Number(tags.track))?Number(tags.track):fileTrack,disc:Number.isFinite(Number(tags.disc))?Number(tags.disc):null,fileTrack,metadataEditor:String(tags.editor||""),
         explicit:false,duration:0,fileName:f.name,size:f.size,lastModified:f.lastModified,mimeType:f.type||"",
         blob:f,_blobDirty:true,cover:al?.cover||artist?.image||folderCover||null,
         lyrics:"",credits:normalizeCredits(al?.credits||{}),addedAt:Date.now()
@@ -2588,6 +2580,16 @@ function editLocalProfile(){
       existing.add(sig);
       queueBlob(t.id);
       if(playlist&&!playlist.trackIds.includes(t.id))playlist.trackIds.push(t.id);
+    }
+    for(const t of added){
+      const names=String(t.artist||"").split(/[,;]\s*/).map(x=>x.trim()).filter(x=>x&&x!==NONE_LABEL);
+      if(names.length){const ids=names.map(n=>getOrCreateArtist(n).id);applyArtistIds(t,ids);t.artist=namesOfIds(ids).join(", ")}
+      const albumTitle=String(t.album||"").trim();
+      if(albumTitle&&albumTitle!==NONE_LABEL&&!t.albumId&&!context.folderImport){
+        const a=getOrCreateAlbum(albumTitle,names[0]?getOrCreateArtist(names[0]):null);t.albumId=a.id;t.album=a.title;
+        const aa=String(t.albumArtist||"").split(/[,;]\s*/).map(x=>x.trim()).filter(Boolean).filter(x=>x!==NONE_LABEL).map(n=>getOrCreateArtist(n).id);
+        if(aa.length){applyArtistIds(a,aa);applyAlbumArtistIds(t,aa)}
+      }
     }
     importContext={};
     if(!added.length){toast("Nothing new was imported.");return}
@@ -2810,6 +2812,16 @@ function editLocalProfile(){
   function playlistModalHtml(p){return `<div class="modalHead"><h2>${p?"Edit playlist":"New playlist"}</h2><button class="circle iconOnly" id="closeModal" title="Close" aria-label="Close">${uiIcon("close")}</button></div><div class="coverEdit">${p?.cover?`<img id="entityCover" src="${p.cover}" alt="">`:`<div id="entityCover" class="nowFallback" style="width:92px;height:92px;border-radius:12px">${uiIcon("playlist")}</div>`}<div><button class="secondary" id="entityCoverBtn">Choose artwork</button></div></div><div class="formGrid" style="margin-top:16px">${field("Name","entityTitle",p?.name||"")}<div class="field"><label>Style / mood</label><input id="entityLabel" value="${esc(p?.label||"")}" placeholder="Workout, favorites..."></div><div class="field full"><label>Description</label><textarea id="entityDescription">${esc(p?.description||"")}</textarea></div></div><div class="modalFoot"><button class="secondary" id="cancelEntity">Cancel</button><button class="primary" id="saveEntity">${p?"Save changes":"Create playlist"}</button></div>`}
   function editPlaylist(id,opts={}){
     const p=id?playlistById(id):null;let cover=p?.cover||null;setModal(playlistModalHtml(p));bindModalDirty();$("#closeModal").onclick=()=>closeModal();$("#cancelEntity").onclick=()=>closeModal();$("#entityCoverBtn").onclick=()=>imagePicker(cover,d=>{cover=d;const el=$("#entityCover");el.outerHTML=d?`<img id="entityCover" src="${d}" alt="" style="width:92px;height:92px;object-fit:cover;border-radius:12px">`:`<div id="entityCover" class="nowFallback" style="width:92px;height:92px;border-radius:12px">${uiIcon("playlist")}</div>`;markDirty()});$("#saveEntity").onclick=async()=>{const name=$("#entityTitle").value.trim()||"New playlist";let target=p;if(!target){target={id:uid(),name:"",description:"",label:"",cover:null,trackIds:[]};state.playlists.push(target)}target.name=name;target.label=$("#entityLabel").value;target.description=$("#entityDescription").value;target.cover=cover;if(opts.prefillTracks)target.trackIds=[...new Set([...target.trackIds,...opts.prefillTracks])];await save();closeModal(true);showPlaylist(target.id);toast(p?"Playlist updated.":"Playlist created.")}}
+
+  function folderCollageHtml(f,large=false){const albums=folderAlbumIds(f).slice(0,4);let html='<div class="folderCollage'+(large?' folderDetailCollage':'')+'">';for(let i=0;i<4;i++){const a=albums[i],cover=a?coverForAlbum(a,a.cover):null;html+=cover?'<div class="folderTile"><img src="'+cover+'" alt=""></div>':'<div class="folderTile">'+uiIcon("album")+'</div>'}return html+'</div>'}
+  function folderCard(f){return '<div class="card folderCard folder-open" data-id="'+esc(f.id)+'">'+folderCollageHtml(f)+'<div class="cardTitle">'+esc(f.name)+'</div><div class="cardSub">'+folderAlbumIds(f).length+' albums • '+folderTrackIds(f).length+' songs • '+folderArtistIds(f).length+' artists • '+folderPlaylistIds(f).length+' playlists</div></div>'}
+  function renderFolderNav(){const box=$("#folderNav");if(!box)return;box.innerHTML=state.folders.map(f=>'<button type="button" class="folderNavBtn '+(state.detail?.type==="folder"&&state.detail.id===f.id?"active":"")+'" data-folder-nav="'+esc(f.id)+'"><span>'+uiIcon("folder")+'</span><span>'+esc(f.name)+'</span></button>').join("");$$("[data-folder-nav]").forEach(b=>b.onclick=e=>{e.preventDefault();e.stopPropagation();showFolder(b.dataset.folderNav)})}
+  function renderFolders(){$("#content").innerHTML='<div class="sectionHead"><div><h2 class="viewTitle">Folders</h2><div class="subtle">Organize albums, songs, artists and playlists.</div></div><button class="primary" id="newFolderPage">'+uiIcon("plus")+' New folder</button></div>'+(state.folders.length?'<div class="grid">'+state.folders.map(folderCard).join("")+'</div>':empty("No folders yet","Create a folder to organize your library."));$("#newFolderPage").onclick=()=>editFolder(null);$$(".folder-open").forEach(e=>e.onclick=()=>showFolder(e.dataset.id))}
+  function showFolder(id){const f=folderById(id);if(!f)return;ensureFolderArrays(f);state.currentView="folder";state.detail={type:"folder",id};renderNav();const albums=folderAlbumIds(f),tracks=folderTrackIds(f),artists=folderArtistIds(f),playlists=folderPlaylistIds(f);$("#content").innerHTML='<div class="profileHero"><div>'+folderCollageHtml(f,true)+'</div><div><h2 class="viewTitle">'+esc(f.name)+'</h2><div class="subtle">'+albums.length+' albums • '+tracks.length+' songs • '+artists.length+' artists • '+playlists.length+' playlists</div><div class="entityActions"><button class="primary" id="folderAddItems">'+uiIcon("plus")+' Add items</button><button class="secondary" id="folderEdit">'+uiIcon("edit")+' Rename</button><button class="dangerBtn" id="folderDelete">'+uiIcon("trash")+' Delete</button></div></div></div>'+(albums.length?'<div class="section"><div class="sectionHead"><h2>Albums</h2><span>'+albums.length+'</span></div><div class="grid">'+albums.map(albumCard).join("")+'</div></div>':'')+(tracks.length?'<div class="section"><div class="sectionHead"><h2>Songs</h2><span>'+tracks.length+'</span></div><div class="tableWrap">'+trackTable(tracks)+'</div></div>':'')+(artists.length?'<div class="section"><div class="sectionHead"><h2>Artists</h2><span>'+artists.length+'</span></div><div class="viewGrid">'+artists.map(artistCard).join("")+'</div></div>':'')+(playlists.length?'<div class="section"><div class="sectionHead"><h2>Playlists</h2><span>'+playlists.length+'</span></div><div class="viewGrid">'+playlists.map(playlistCard).join("")+'</div></div>':'')+(!albums.length&&!tracks.length&&!artists.length&&!playlists.length?'<div class="empty"><h3>Folder is empty</h3><div>Use Add items to put library items here.</div></div>':'');$("#folderAddItems").onclick=()=>openFolderAddMenu(f.id);$("#folderEdit").onclick=()=>editFolder(f.id);$("#folderDelete").onclick=async()=>{if(!confirm("Delete this folder? Your music stays in the library."))return;state.folders=state.folders.filter(x=>x.id!==f.id);await save();state.currentView="home";state.detail=null;render()};bindAlbumCards();bindTrackTable();$$(".artist-open").forEach(e=>e.onclick=()=>showArtist(e.dataset.id));$$(".playlist-open").forEach(e=>e.onclick=()=>showPlaylist(e.dataset.id))}
+  function editFolder(id){const f=id?folderById(id):null;setModal('<div class="modalHead"><h2>'+(f?'Rename folder':'New folder')+'</h2><button class="circle iconOnly" id="closeModal">'+uiIcon("close")+'</button></div><div class="field"><label>Folder name</label><input id="folderNameInput" maxlength="80" value="'+esc(f?.name||"")+'" placeholder="My music"></div><div class="help">This is an in-app collection. It does not move files on your computer.</div><div class="modalFoot"><button class="secondary" id="folderCancel">Cancel</button><button class="primary" id="folderSave">'+(f?'Save':'Create')+'</button></div>');$("#closeModal").onclick=()=>closeModal(true);$("#folderCancel").onclick=()=>closeModal(true);$("#folderSave").onclick=async()=>{const n=$("#folderNameInput").value.trim();if(!n){toast("Give the folder a name.");return}const target=f||createFolderEntity(n);target.name=n;await save();closeModal(true);showFolder(target.id)}}
+  function openFolderAddMenu(folderId){const f=folderById(folderId);if(!f)return;setModal('<div class="modalHead"><h2>Add items to '+esc(f.name)+'</h2><button class="circle iconOnly" id="closeModal">'+uiIcon("close")+'</button></div><div class="help">Choose a category.</div><div class="folderTypeGrid" style="margin-top:15px"><button class="folderTypeButton" data-folder-kind="albums">'+uiIcon("album")+'<strong>Albums</strong></button><button class="folderTypeButton" data-folder-kind="tracks">'+uiIcon("music")+'<strong>Songs</strong></button><button class="folderTypeButton" data-folder-kind="artists">'+uiIcon("artist")+'<strong>Artists</strong></button><button class="folderTypeButton" data-folder-kind="playlists">'+uiIcon("playlist")+'<strong>Playlists</strong></button></div>');$("#closeModal").onclick=()=>closeModal(true);$$("[data-folder-kind]").forEach(b=>b.onclick=()=>openFolderCollectionPicker(folderId,b.dataset.folderKind))}
+  function openFolderCollectionPicker(folderId,kind){const f=folderById(folderId);if(!f)return;const lists={albums:state.albums,tracks:state.tracks,artists:state.artists,playlists:state.playlists},items=lists[kind]||[],label=kind==="albums"?"Albums":kind==="tracks"?"Songs":kind==="artists"?"Artists":"Playlists";const itemHtml=x=>{const title=kind==="artists"?artistDisplayName(x):kind==="albums"?x.title:kind==="playlists"?x.name:displayTrackTitle(x,true);const sub=kind==="artists"?(x.genres||[]).join(", "):kind==="albums"?artistNamesForAlbum(x).join(", "):kind==="playlists"?(x.trackIds||[]).length+" songs":artistName(x)+" • "+albumName(x);return '<label class="folderPickerItem"><input type="checkbox" class="folderItemCheck" data-id="'+esc(x.id)+'" '+(folderHasItem(f,kind,x.id)?"checked":"")+'><span class="folderPickerCopy"><strong>'+esc(title)+'</strong><span>'+esc(sub||"")+'</span></span></label>'};const visible=items.slice(0,300);setModal('<div class="modalHead"><h2>Add '+label+'</h2><button class="circle iconOnly" id="closeModal">'+uiIcon("close")+'</button></div><div class="folderPickerToolbar"><button class="secondary small" id="folderSelectAll">Select all shown</button><button class="secondary small" id="folderClearAll">Clear shown</button><span class="subtle">'+items.length+' available</span></div><div class="folderPickerGrid">'+visible.map(itemHtml).join("")+'</div><div class="modalFoot"><button class="secondary" id="folderBack">Back</button><button class="primary" id="folderSaveItems">Save</button></div>');$("#closeModal").onclick=()=>closeModal(true);$("#folderBack").onclick=()=>openFolderAddMenu(folderId);$("#folderSelectAll").onclick=()=>{$$(".folderItemCheck").forEach(x=>x.checked=true)};$("#folderClearAll").onclick=()=>{$$(".folderItemCheck").forEach(x=>x.checked=false)};$("#folderSaveItems").onclick=async()=>{const selected=new Set($$(".folderItemCheck:checked").map(x=>x.dataset.id));for(const item of items)folderToggleItem(f,kind,item.id,selected.has(item.id));await save();closeModal(true);showFolder(folderId)}}
+  function openFolderChooser(kind,id){if(!state.folders.length){editFolder(null);return}const title=kind==="albums"?"album":kind==="tracks"?"song":kind==="artists"?"artist":"playlist";setModal('<div class="modalHead"><h2>Add '+title+' to folders</h2><button class="circle iconOnly" id="closeModal">'+uiIcon("close")+'</button></div><div class="folderPickerGrid">'+state.folders.map(f=>'<label class="folderPickerItem"><input type="checkbox" class="folderItemCheck" data-id="'+esc(f.id)+'" '+(folderHasItem(f,kind,id)?"checked":"")+'><span class="folderPickerCopy"><strong>'+esc(f.name)+'</strong><span>'+folderAlbumIds(f).length+' albums • '+folderTrackIds(f).length+' songs</span></span></label>').join("")+'</div><div class="modalFoot"><button class="secondary" id="folderCancelChooser">Cancel</button><button class="primary" id="folderChooserSave">Save</button></div>');$("#closeModal").onclick=()=>closeModal(true);$("#folderCancelChooser").onclick=()=>closeModal(true);$("#folderChooserSave").onclick=async()=>{for(const f of state.folders){const box=$(".folderItemCheck[data-id='"+f.id+"']");folderToggleItem(f,kind,id,!!box?.checked)}await save();closeModal(true);toast("Folder membership updated.");if(state.currentView==="folder"&&state.detail?.id)showFolder(state.detail.id)}}
 
   function openContext(x,y,id,kind="song"){
     const m=$("#contextMenu");
@@ -3140,6 +3152,7 @@ function editLocalProfile(){
       if(JSON.stringify(ids)!==JSON.stringify(oldIds)){applyArtistIds(a,ids);changed=true;}
     }
     for(const t of state.tracks){
+      if(!Number.isFinite(Number(t.fileTrack)))t.fileTrack=inferTrackNumberFromFilename(t.fileName||t.title||"");
       const oldTitle=t.title;
       if(!nonPlaceholderText(t.title)){
         const fallback=String(t.fileName||t.name||"").replace(/\.[^.\\/]+$/,"").trim();
@@ -3475,6 +3488,8 @@ function editLocalProfile(){
   async function unlockPersistentStorage(){await ensureStorageAccess();try{if(navigator.storage?.persist)await navigator.storage.persist()}catch{};try{await openDB();storageReady=true;storageBlocked=false;toast("Persistent library storage is enabled.")}catch{storageBlocked=true;writeMetaFallback();toast("Your browser/Google Sites embed is blocking persistent storage. Open Localify as its own site for automatic saving.")}}
 
   // Static controls
+  $("[data-mobile-view]").forEach(b=>b.onclick=e=>{e.preventDefault();setView(b.dataset.mobileView)});
+  $("#newFolderBtn").onclick=()=>editFolder(null);
   document.addEventListener("pointerdown",e=>{
     const cardPlay=e.target.closest?.(".play-track");
     const rowPlay=e.target.closest?.(".play-row");
