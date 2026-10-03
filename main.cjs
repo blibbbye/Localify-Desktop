@@ -19,6 +19,7 @@ let coverRegistry = null;
 let coverRegistryPromise = null;
 let lastPresenceKey = "";
 let lastPresenceAt = 0;
+let lastPresencePayload = null;
 
 let updaterReady = false;
 let updaterTimer = null;
@@ -93,6 +94,9 @@ function attachDiscord(socket, onReady) {
             const message = JSON.parse(body);
             if (message && message.evt === "READY") {
               discordReady = true;
+              if (lastPresencePayload && lastPresencePayload.playing) {
+                try { writePresenceActivity(socket, lastPresencePayload); } catch (e) {}
+              }
               if (typeof onReady === "function") onReady(true);
             }
           } catch (e) {}
@@ -258,54 +262,55 @@ async function resolveCover(payload) {
   return "";
 }
 
-async function setPresence(payload) {
-  if (!payload || !payload.playing) return clearPresence();
-  if (!(await connectDiscord())) return false;
-
-  const song = String(payload.song || "Unknown song").slice(0, 128);
-  const artist = String(payload.artist || "Unknown Artist").slice(0, 128);
-  const cover = await resolveCover(payload);
+function writePresenceActivity(socket, payload, resolvedCover="") {
+  if (!socket || socket.destroyed || !payload || !payload.playing) return false;
+  const song = String(payload.song || "Unknown song").replace(/\s+/g, " ").trim().slice(0, 128) || "Unknown song";
+  const artist = String(payload.artist || "Unknown Artist").replace(/\s+/g, " ").trim().slice(0, 128) || "Unknown Artist";
+  const cover = resolvedCover || String(payload.coverUrl || "").trim();
   const duration = Math.max(0, Number(payload.duration || 0));
   const position = Math.max(0, Number(payload.currentTime || 0));
   const start = Date.now() - Math.round(position * 1000);
-
-  const key = song + "|" + artist + "|" + cover + "|" + Math.floor(position / 5) + "|" + Math.round(duration);
-  const now = Date.now();
-  if (key === lastPresenceKey && now - lastPresenceAt < 1500) return true;
-  lastPresenceKey = key;
-  lastPresenceAt = now;
-
   const activity = {
     type: 2,
-    name: song,
-    details: "",
+    details: song,
     state: artist,
-    status_display_type: 1,
     instance: false
   };
-
-  // Discord supports external image URLs for Rich Presence assets.
   if (cover && cover.length <= 300) {
     activity.assets = {
       large_image: cover,
       large_text: "Localify Desktop"
     };
   }
-
   if (duration > 0) {
     activity.timestamps = {
       start: start,
       end: start + Math.round(duration * 1000)
     };
   }
+  socket.write(makeFrame(1, {
+    cmd: "SET_ACTIVITY",
+    args: { pid: process.pid, activity: activity },
+    nonce: String(Date.now())
+  }));
+  return true;
+}
+
+async function setPresence(payload) {
+  if (!payload || !payload.playing) return clearPresence();
+  lastPresencePayload = { ...payload, playing: true };
+  if (!(await connectDiscord())) return false;
+
+  const cover = await resolveCover(payload);
+  const key = String(payload.song || "") + "|" + String(payload.artist || "") + "|" + cover + "|" +
+    Math.floor(Number(payload.currentTime || 0) / 5) + "|" + Math.round(Number(payload.duration || 0));
+  const now = Date.now();
+  if (key === lastPresenceKey && now - lastPresenceAt < 1500) return true;
+  lastPresenceKey = key;
+  lastPresenceAt = now;
 
   try {
-    discordSocket.write(makeFrame(1, {
-      cmd: "SET_ACTIVITY",
-      args: { pid: process.pid, activity: activity },
-      nonce: String(now)
-    }));
-    return true;
+    return writePresenceActivity(discordSocket, payload, cover);
   } catch (e) {
     disconnectDiscord();
     return false;
@@ -315,6 +320,7 @@ async function setPresence(payload) {
 async function clearPresence() {
   lastPresenceKey = "";
   lastPresenceAt = 0;
+  lastPresencePayload = null;
 
   if (!discordSocket || discordSocket.destroyed) return false;
 
@@ -351,6 +357,10 @@ function createWindow() {
 
   // Normal right-clicks are disabled throughout the app.
   // Editable inputs still receive a useful native edit menu.
+  mainWindow.webContents.on("did-finish-load", function () {
+    try { mainWindow.webContents.insertCSS(".discordTopBtn,.discordStatus{display:none!important}"); } catch (e) {}
+  });
+
   mainWindow.webContents.on("context-menu", function (event, params) {
     event.preventDefault();
     if (!params.isEditable) return;
