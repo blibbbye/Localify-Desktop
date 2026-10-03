@@ -13,6 +13,7 @@ const COVER_RAW_BASE = "https://raw.githubusercontent.com/blibbbye/Localify/main
 let mainWindow = null;
 let discordSocket = null;
 let discordConnecting = null;
+let discordReady = false;
 let discordBuffer = Buffer.alloc(0);
 let coverRegistry = null;
 let coverRegistryPromise = null;
@@ -57,11 +58,13 @@ function disconnectDiscord() {
   } catch (e) {}
   discordSocket = null;
   discordBuffer = Buffer.alloc(0);
+  discordReady = false;
 }
 
-function attachDiscord(socket) {
+function attachDiscord(socket, onReady) {
   discordSocket = socket;
   discordBuffer = Buffer.alloc(0);
+  discordReady = false;
   if (socket.setNoDelay) socket.setNoDelay(true);
 
   socket.on("data", function (chunk) {
@@ -76,8 +79,22 @@ function attachDiscord(socket) {
         discordBuffer = discordBuffer.subarray(8 + length);
 
         if (opcode === 3) {
+          try { socket.write(makeFrame(4, JSON.parse(body))); } catch (e) {}
+          continue;
+        }
+
+        if (opcode === 2) {
+          if (typeof onReady === "function") onReady(false);
+          continue;
+        }
+
+        if (opcode === 1) {
           try {
-            socket.write(makeFrame(4, JSON.parse(body)));
+            const message = JSON.parse(body);
+            if (message && message.evt === "READY") {
+              discordReady = true;
+              if (typeof onReady === "function") onReady(true);
+            }
           } catch (e) {}
         }
       }
@@ -85,15 +102,22 @@ function attachDiscord(socket) {
   });
 
   socket.once("error", function () {
-    if (discordSocket === socket) disconnectDiscord();
+    if (discordSocket === socket) {
+      if (typeof onReady === "function") onReady(false);
+      disconnectDiscord();
+    }
   });
   socket.once("close", function () {
-    if (discordSocket === socket) disconnectDiscord();
+    if (discordSocket === socket) {
+      if (typeof onReady === "function") onReady(false);
+      disconnectDiscord();
+    }
   });
 
   try {
     socket.write(makeFrame(0, { v: 1, client_id: CLIENT_ID }));
   } catch (e) {
+    if (typeof onReady === "function") onReady(false);
     disconnectDiscord();
   }
 }
@@ -115,24 +139,18 @@ function connectPipe(pipe) {
 
     function onConnect() {
       try {
-        attachDiscord(socket);
-        finish(true);
+        attachDiscord(socket, finish);
       } catch (e) {
         finish(false);
       }
     }
 
-    function onError() {
-      finish(false);
-    }
-
-    function onClose() {
-      if (!done) finish(false);
-    }
+    function onError() { finish(false); }
+    function onClose() { if (!done) finish(false); }
 
     const timer = setTimeout(function () {
       finish(false);
-    }, 900);
+    }, 3000);
 
     try {
       socket = net.createConnection({ path: pipe });
@@ -146,24 +164,21 @@ function connectPipe(pipe) {
 }
 
 async function connectDiscord() {
-  if (discordSocket && !discordSocket.destroyed) return true;
+  if (discordSocket && !discordSocket.destroyed && discordReady) return true;
   if (discordConnecting) return discordConnecting;
 
   const slash = String.fromCharCode(92);
-
   discordConnecting = (async function () {
     for (let i = 0; i < 10; i += 1) {
       const pipeA = slash + slash + "?" + slash + "pipe" + slash + "discord-ipc-" + i;
       const pipeB = slash + slash + "." + slash + "pipe" + slash + "discord-ipc-" + i;
-
-      if (await connectPipe(pipeA) && discordSocket) return true;
-      if (await connectPipe(pipeB) && discordSocket) return true;
+      if (await connectPipe(pipeA) && discordSocket && discordReady) return true;
+      if (await connectPipe(pipeB) && discordSocket && discordReady) return true;
     }
     return false;
   })().finally(function () {
     discordConnecting = null;
   });
-
   return discordConnecting;
 }
 
@@ -393,6 +408,8 @@ app.whenReady().then(function () {
 
   setupAutoUpdater();
   createWindow();
+  setTimeout(function(){ connectDiscord().catch(function(){}); }, 250);
+  setInterval(function(){ if (!discordSocket || discordSocket.destroyed || !discordReady) connectDiscord().catch(function(){}); }, 3000);
 });
 
 app.on("before-quit", function () {
