@@ -3559,7 +3559,6 @@ $("#globalSearch").addEventListener("input",e=>{
   window.addEventListener("pagehide",()=>{creditListeningTime();flushSave(false)});
   setInterval(()=>{if(dirtySave && !saveInFlight) flushSave(false)},2000);
   window.addEventListener("beforeunload",()=>{clearDiscordPresence();if(storageBlocked||!storageReady){try{writeMetaFallback()}catch{}}});
-document.addEventListener("click",profileMenuSettingsCapture,true);
   // Do not close modals by clicking/dragging the dark edge. This prevents accidental loss of edits.
   $("#modal").addEventListener("input",markDirty);
   document.addEventListener("click",e=>{
