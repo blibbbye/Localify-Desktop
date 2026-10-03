@@ -274,6 +274,7 @@ function writePresenceActivity(socket, payload, resolvedCover="") {
     type: 2,
     details: song,
     state: artist,
+    status_display_type: 2,
     instance: false
   };
   if (cover && cover.length <= 300) {
