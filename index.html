@@ -74,7 +74,7 @@
     .hero{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(260px,.65fr);gap:18px;align-items:stretch;margin-bottom:28px}
     .heroCard,.quickCard{border:1px solid rgba(255,255,255,.06);background:linear-gradient(145deg,#171b20,#101318);border-radius:24px;box-shadow:var(--shadow)}
     .heroCard{padding:28px;min-height:260px;display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden}
-    .heroCard:after{content:"";position:absolute;inset:auto -80px -110px auto;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle,rgba(125,211,252,.2),transparent 65%)}
+    .heroCard:after{display:none}
     .heroKicker{font-size:12px;color:var(--accent);font-weight:1000;letter-spacing:.13em;text-transform:uppercase}
     h1{font-size:clamp(34px,5vw,66px);line-height:.97;letter-spacing:-2.6px;margin:9px 0 12px;max-width:760px}
     .heroDesc{color:#a7adb8;max-width:650px;line-height:1.5}
@@ -550,7 +550,7 @@ main{min-width:0;min-height:0}
 
   @media (max-width:780px){}
 /* Theme + profile menu */
-.profileMenu{position:absolute;right:18px;top:66px;width:300px;z-index:80;padding:9px;border:1px solid #2d3540;border-radius:18px;background:rgba(15,19,24,.98);box-shadow:0 24px 70px rgba(0,0,0,.48);backdrop-filter:blur(18px);display:none}.profileMenu.open{display:block}.profileMenuHead{display:flex;align-items:center;gap:11px;padding:10px 10px 12px;border-bottom:1px solid #252c34;margin-bottom:6px}.profileMenuAvatar{width:44px;height:44px;border-radius:50%;overflow:hidden;background:#17212a;border:1px solid #33404c;display:grid;place-items:center;color:var(--accent);font-weight:1000;flex:none}.profileMenuAvatar img{width:100%;height:100%;object-fit:cover;display:block}.profileMenuName{font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.profileMenuSub{font-size:10px;color:#76808c;margin-top:3px}.profileMenuItem{display:flex;align-items:center;gap:11px;width:100%;padding:11px 10px;background:transparent;border-radius:12px;text-align:left;color:#e6e9ed;font-weight:800}.profileMenuItem:hover{background:#1b2128}.profileMenuItem .menuIcon{width:20px;height:20px;display:grid;place-items:center;color:#aeb7c2;flex:none}.profileMenuItem small{display:block;color:#77828e;font-size:10px;font-weight:650;margin-top:2px}.profileMenuDivider{height:1px;background:#252c34;margin:7px 4px}.settingsToggleRow{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:11px 0;border-top:1px solid #232a32}.settingsToggleRow:first-child{border-top:0;padding-top:0}.settingsToggleCopy strong{display:block;font-size:12px}.settingsToggleCopy span{display:block;margin-top:3px;color:#75808c;font-size:10px;line-height:1.35}.settingsToggleRow input[type=checkbox]{width:19px;height:19px;accent-color:var(--accent);cursor:pointer;flex:none}.settingsRange{width:100%;accent-color:var(--accent)}@media(max-width:700px){.profileMenu{right:8px;top:58px;width:min(300px,calc(100vw - 16px))}.customThemeControls{grid-template-columns:1fr}}body.theme-gradient .primary,body.theme-gradient .logo,body.theme-gradient .nav button.active{background-image:linear-gradient(135deg,var(--theme-a),var(--theme-b));background-color:transparent}body.theme-solid .primary,body.theme-solid .logo{background-image:none;background-color:var(--theme-a)}
+.profileMenu{position:absolute;right:18px;top:66px;width:300px;z-index:80;padding:9px;border:1px solid #2d3540;border-radius:18px;background:rgba(15,19,24,.98);box-shadow:0 24px 70px rgba(0,0,0,.48);backdrop-filter:blur(18px);display:none}.profileMenu.open{display:block}.profileMenuHead{display:flex;align-items:center;gap:11px;padding:10px 10px 12px;border-bottom:1px solid #252c34;margin-bottom:6px}.profileMenuAvatar{width:44px;height:44px;border-radius:50%;overflow:hidden;background:#17212a;border:1px solid #33404c;display:grid;place-items:center;color:var(--accent);font-weight:1000;flex:none}.profileMenuAvatar img{width:100%;height:100%;object-fit:cover;display:block}.profileMenuName{font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.profileMenuSub{font-size:10px;color:#76808c;margin-top:3px}.profileMenuItem{display:flex;align-items:center;gap:11px;width:100%;padding:11px 10px;background:transparent;border-radius:12px;text-align:left;color:#e6e9ed;font-weight:800}.profileMenuItem:hover{background:#1b2128}.profileMenuItem .menuIcon{width:20px;height:20px;display:grid;place-items:center;color:#aeb7c2;flex:none}.profileMenuItem small{display:block;color:#77828e;font-size:10px;font-weight:650;margin-top:2px}.profileMenuDivider{height:1px;background:#252c34;margin:7px 4px}.settingsToggleRow{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:11px 0;border-top:1px solid #232a32}.settingsToggleRow:first-child{border-top:0;padding-top:0}.settingsToggleCopy strong{display:block;font-size:12px}.settingsToggleCopy span{display:block;margin-top:3px;color:#75808c;font-size:10px;line-height:1.35}.settingsToggleRow input[type=checkbox]{width:19px;height:19px;accent-color:var(--accent);cursor:pointer;flex:none}.settingsRange{width:100%;accent-color:var(--accent)}@media(max-width:700px){.profileMenu{right:8px;top:58px;width:min(300px,calc(100vw - 16px))}}
 /* Profile + compact topbar polish */
 .profileRecapMain{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}.profileRecapMain>div{padding:14px;border:1px solid #252d36;border-radius:14px;background:#11161c}.profileRecapMinutes{margin-top:5px;font-size:28px;font-weight:1000;letter-spacing:-.8px}.profileRecapColumns{display:grid;grid-template-columns:1fr 1fr;gap:16px}.profileRecapTitle{font-size:10px;color:#79838f;text-transform:uppercase;letter-spacing:.09em;font-weight:950;margin-bottom:7px}
 @media(max-width:780px){
@@ -595,6 +595,7 @@ body[data-localify-desktop="true"] .discordTopBtn,body[data-localify-desktop="tr
       <button data-view="playlists"><span class="icon"><svg class="svgIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 12h14M5 18h10"/></svg></span><span>Playlists</span></button>
       <button data-view="liked"><span class="icon"><svg class="svgIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 8.8c0 5.3-8 10.2-8 10.2S4 14.1 4 8.8A4.1 4.1 0 0 1 12 7a4.1 4.1 0 0 1 8 1.8Z"/></svg></span><span>Liked Songs</span></button>
       <button data-view="recent"><span class="icon"><svg class="svgIcon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg></span><span>Recently Played</span></button>
+      <button data-view="folders"><span class="icon"><svg class="svgIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 7.5h6l1.6 2H20a1 1 0 0 1 1 1v7.5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></span><span>Folders</span></button>
     <div class="folderNavHead"><div class="sectionTitle">Folders</div><button class="folderNavAdd" id="newFolderBtn" type="button" title="New folder" aria-label="New folder">+</button></div><div id="folderNav"></div></nav>
     <div class="sectionTitle">Library tools</div>
     <div class="sideBottom">
@@ -678,7 +679,9 @@ body[data-localify-desktop="true"] .discordTopBtn,body[data-localify-desktop="tr
   const $ = s => document.querySelector(s);
   const $$ = s => [...document.querySelectorAll(s)];
   const audio = $("#audio");
-  const LOCALIFY_MOBILE_MODE=new URLSearchParams(location.search).get("mobile")==="1";if(LOCALIFY_MOBILE_MODE)document.documentElement.classList.add("localify-mobile");
+  function updateLocalifyMediaSession(t,cover=""){if(!("mediaSession"in navigator)||!t)return;try{navigator.mediaSession.metadata=new MediaMetadata({title:displayTrackTitle(t,true)||"Unknown song",artist:artistName(t)||"Unknown Artist",album:albumName(t)||"Localify",artwork:cover?[{src:cover,sizes:"512x512",type:"image/*"}]:[]})}catch{}}
+
+  const LOCALIFY_MOBILE_MODE=new URLSearchParams(location.search).get("mobile")==="1"||/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)||!!globalThis.Capacitor;if(LOCALIFY_MOBILE_MODE)document.documentElement.classList.add("localify-mobile");
 
   const state = {
     version: 12, tracks: [], albums: [], artists: [], playlists: [], folders: [], liked: [], recent: [],
@@ -1178,7 +1181,7 @@ body[data-localify-desktop="true"] .discordTopBtn,body[data-localify-desktop="tr
       al.artistIds=artistIdsForAlbum(al);al.artistId=al.artistIds[0]||null;
       t.albumId=al.id;t.album=al.title;if(!t.cover&&al.cover)t.cover=al.cover;t.credits=normalizeCredits(t.credits||al.credits||{});if(t.explicit==null)t.explicit=false;if(!t.addedAt)t.addedAt=Date.now();if(!t.lyrics)t.lyrics="";
     }
-    state.version=11;
+    state.version=12;
   }
 
   async function openPreviousV6(){
@@ -1297,6 +1300,8 @@ body[data-localify-desktop="true"] .discordTopBtn,body[data-localify-desktop="tr
     return raw.match(/^0*(\d+)\s*(?:[.)-:]\s*|\s+(?=\D))/);
   }
   function trackNo(t){
+    const filenameNo=parseInt(t?.fileTrack,10);
+    if(Number.isFinite(filenameNo))return filenameNo;
     const explicit=parseInt(t?.track,10);
     if(Number.isFinite(explicit))return explicit;
     const m=trackPrefixMatch(t?.title);
@@ -2370,7 +2375,7 @@ body[data-localify-desktop="true"] .discordTopBtn,body[data-localify-desktop="tr
     m.innerHTML='<div class="profileMenuHead"><div class="profileMenuAvatar">'+avatar+'</div><div style="min-width:0"><div class="profileMenuName">'+esc(name)+'</div><div class="profileMenuSub">Localify account on this device</div></div></div>'+
       '<button type="button" class="profileMenuItem" id="profileMenuProfile"><span class="menuIcon">'+uiIcon("artist")+'</span><span>Profile<small>Library overview and profile picture</small></span></button>'+
       '<button type="button" class="profileMenuItem" id="profileMenuStats"><span class="menuIcon">'+uiIcon("clock")+'</span><span>Listening stats<small>Weekly and all-time listening</small></span></button>'+
-      '<button type="button" class="profileMenuItem" id="profileMenuSettings"><span class="menuIcon">'+uiIcon("equalizer")+'</span><span>Account settings<small>Playback, Discord and themes</small></span></button>';
+      '<button type="button" class="profileMenuItem" id="profileMenuSettings"><span class="menuIcon">'+uiIcon("equalizer")+'</span><span>Account settings<small>Playback, Discord and folders</small></span></button>';
     m.classList.add("open");m.setAttribute("aria-hidden","false");
     const stop=e=>{e.preventDefault();e.stopPropagation()};
     $("#profileMenuProfile").onclick=e=>{stop(e);closeProfileMenu();showProfile()};
@@ -3539,9 +3544,9 @@ $("#globalSearch").addEventListener("input",e=>{
     try{const duration=Number(audio.duration||0),position=Number(audio.currentTime||0);if(duration>0&&Number.isFinite(duration)&&Number.isFinite(position)&&position>=0)navigator.mediaSession.setPositionState({duration,playbackRate:Number(audio.playbackRate||1)||1,position:Math.min(position,duration)})}catch{}
   }
   audio.addEventListener("timeupdate",()=>{updatePlayerTime();creditListeningTime();updateDesktopMediaSessionPosition();sendDiscordPresence(false)});
-  audio.addEventListener("play",()=>{renderPlayer();renderCurrentViewWithoutScroll();sendDiscordPresence(true)});
-  audio.addEventListener("pause",()=>{creditListeningTime();autoSave();renderPlayer();renderCurrentViewWithoutScroll();clearDiscordPresence()});
-  audio.addEventListener("loadedmetadata",()=>{updatePlayerTime();updateDesktopMediaSessionPosition();sendDiscordPresence(true)});
+  audio.addEventListener("play",()=>{try{if("mediaSession"in navigator){navigator.mediaSession.playbackState="playing";updateLocalifyMediaSession(trackById(state.currentId));}}catch{};renderPlayer();renderCurrentViewWithoutScroll();sendDiscordPresence(true)});
+  audio.addEventListener("pause",()=>{try{if("mediaSession"in navigator)navigator.mediaSession.playbackState="paused"}catch{};creditListeningTime();autoSave();renderPlayer();renderCurrentViewWithoutScroll();clearDiscordPresence()});
+  audio.addEventListener("loadedmetadata",()=>{updatePlayerTime();try{updateLocalifyMediaSession(trackById(state.currentId))}catch{};updateDesktopMediaSessionPosition();sendDiscordPresence(true)});
   audio.addEventListener("seeking",()=>sendDiscordPresence(true));
   audio.addEventListener("seeked",()=>sendDiscordPresence(true));
   audio.addEventListener("error",()=>{
