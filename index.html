@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no" />
   <meta name="theme-color" content="#7dd3fc" />
-  <meta name="localify-build" content="2026-10-01-desktop-profile-settings-3" />
+  <meta name="localify-build" content="2026-10-04-mobile-folders-meta" />
   <meta name="application-name" content="Localify Desktop">
   <meta name="localify-platform" content="desktop">
   <meta name="localify-version" content="3.0">
@@ -580,7 +580,53 @@ body[data-localify-desktop="true"] .discordTopBtn,body[data-localify-desktop="tr
  .folderNavHead,#folderNav{display:none!important}
  html.localify-mobile .app{display:block;height:100dvh}html.localify-mobile .app>aside:first-child,html.localify-mobile .nowSidebar{display:none!important}html.localify-mobile main{height:100dvh;width:100%;overflow:auto;padding-bottom:84px}html.localify-mobile .topbar{position:sticky;top:0;z-index:30;padding:10px;background:rgba(9,11,14,.94);gap:7px}html.localify-mobile .topbar .search{max-width:none}html.localify-mobile .content{padding:16px 12px 150px}html.localify-mobile .grid,html.localify-mobile .viewGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}html.localify-mobile .profileStatsGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}html.localify-mobile .profileGrid{grid-template-columns:1fr}html.localify-mobile .profileHero{grid-template-columns:80px minmax(0,1fr);gap:12px;align-items:center}html.localify-mobile .profileArt,html.localify-mobile .collectionArt{width:80px;height:80px;border-radius:15px}.mobileNav{position:fixed}html.localify-mobile .mobileNav{display:grid!important;grid-template-columns:repeat(6,1fr);left:8px;right:8px;bottom:8px;height:58px;z-index:100;padding:4px;background:rgba(14,18,23,.97);border:1px solid #252d36;border-radius:16px;box-shadow:0 14px 40px rgba(0,0,0,.42)}html.localify-mobile .mobileNav button{background:transparent;color:#818b97;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;font-weight:850}html.localify-mobile .mobileNav button.active{color:var(--accent);background:#171d24}html.localify-mobile .player{left:0;right:0;bottom:66px;width:100%;padding:8px 10px}html.localify-mobile .folderDetailCollage{width:80px;height:80px}
 }
-.logoGlyph{font-size:19px;font-weight:1000;color:#081017;line-height:1;display:grid;place-items:center}</style>
+.logoGlyph{font-size:19px;font-weight:1000;color:#081017;line-height:1;display:grid;place-items:center}
+/* Localify mobile mode */
+html.localify-mobile,html.localify-mobile body{background:#090b0e;overflow:hidden;overscroll-behavior:none}
+html.localify-mobile .app{display:flex;flex-direction:column;grid-template-columns:none;grid-template-rows:none;height:100svh;min-height:100svh}
+html.localify-mobile aside{display:none!important}
+html.localify-mobile main{flex:1;min-height:0;width:100%;overflow:auto;background:#090b0e;padding-bottom:0}
+html.localify-mobile .topbar{position:sticky;top:0;padding:calc(8px + env(safe-area-inset-top)) 10px 8px;gap:7px;background:rgba(9,11,14,.96);backdrop-filter:blur(18px)}
+html.localify-mobile .search{min-width:0;max-width:none;flex:1}
+html.localify-mobile .search input{height:42px;border-radius:13px;padding:10px 13px 10px 38px}
+html.localify-mobile .topSpacer,html.localify-mobile .discordTopBtn,html.localify-mobile .discordStatus,html.localify-mobile .pill{display:none!important}
+html.localify-mobile .topbar #quickAdd{display:grid!important;width:42px;height:42px;padding:0;border-radius:13px;place-items:center}
+html.localify-mobile .topbar #quickAdd span:last-child{display:none}
+html.localify-mobile .profileTopBtn{display:grid!important;width:42px;height:42px;padding:0;border-radius:50%;place-items:center;overflow:hidden;flex:none}
+html.localify-mobile .content{padding:14px 12px calc(190px + env(safe-area-inset-bottom));width:100%;max-width:none}
+html.localify-mobile .hero{grid-template-columns:1fr;gap:10px;margin-bottom:14px}
+html.localify-mobile .heroCard{min-height:210px;padding:19px;border-radius:19px}
+html.localify-mobile h1{font-size:42px;letter-spacing:-2px}
+html.localify-mobile .quickCard{min-height:120px;border-radius:19px}
+html.localify-mobile .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+html.localify-mobile .card{padding:9px;border-radius:14px}
+html.localify-mobile .cardTitle{font-size:12px;margin:8px 1px 3px}
+html.localify-mobile .cardSub{font-size:10px}
+html.localify-mobile .tableWrap{border-radius:14px}
+html.localify-mobile table{min-width:0!important;font-size:11px}
+html.localify-mobile th,html.localify-mobile td{padding:9px 7px!important}
+html.localify-mobile .section{margin-top:20px}
+html.localify-mobile .sectionHead h2{font-size:18px}
+html.localify-mobile .profileHero{grid-template-columns:86px minmax(0,1fr);gap:12px;align-items:center}
+html.localify-mobile .profileArt,html.localify-mobile .collectionArt{width:86px;height:86px;border-radius:18px;font-size:34px}
+html.localify-mobile .profileName{font-size:24px!important}
+html.localify-mobile .profileGrid,.localify-mobile .profileRecapColumns{grid-template-columns:1fr}
+html.localify-mobile .profileStatsGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+html.localify-mobile .profileStat{padding:11px;border-radius:13px}
+html.localify-mobile .profileStatValue{font-size:22px}
+html.localify-mobile .profileMenu{position:fixed;right:8px;top:calc(60px + env(safe-area-inset-top));width:min(320px,calc(100vw - 16px));max-height:calc(100dvh - 80px);overflow:auto}
+html.localify-mobile .modalShade{align-items:flex-end;padding:0!important}
+html.localify-mobile .modal{width:100%!important;max-width:none!important;max-height:90dvh;border-radius:20px 20px 0 0!important;margin:0!important}
+html.localify-mobile .player{left:8px!important;right:8px!important;bottom:calc(58px + env(safe-area-inset-bottom))!important;width:auto!important;border-radius:17px!important;padding:9px!important}
+html.localify-mobile .player .playerCenter{gap:7px}
+html.localify-mobile .player .playerMeta{min-width:0}
+html.localify-mobile .mobileNav{display:grid!important;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:90;padding:7px 6px calc(7px + env(safe-area-inset-bottom));background:rgba(10,12,15,.97);border-top:1px solid #242a31;backdrop-filter:blur(18px)}
+html.localify-mobile .mobileNav button{min-width:0;padding:5px 3px;background:transparent;color:#737c88;border-radius:11px;font-size:10px}
+html.localify-mobile .mobileNav button.active{color:var(--accent);background:rgba(125,211,252,.08)}
+html.localify-mobile .mobileNav button span{display:grid;place-items:center}
+html.localify-mobile .mobileNav .svgIcon{width:20px;height:20px}
+@media(max-width:390px){html.localify-mobile .grid{grid-template-columns:repeat(2,minmax(0,1fr))}html.localify-mobile h1{font-size:36px}}
+</style>
 </head>
 <body data-localify-desktop="true">
 <div class="app">
@@ -2543,7 +2589,7 @@ function editLocalProfile(){
   }
   async function addFiles(files,context={}){
     const arr=files.filter(isAudioFile);
-    if(!arr.length){toast("No audio files found.");return}
+    if(!arr.length){toast("No audio files found.");return []}
     const album=context.albumId?albumById(context.albumId):null;
     const forcedArtist=context.artistId?artistById(context.artistId):album?artistById(firstArtistId(album)):null;
     const playlist=context.playlistId?playlistById(context.playlistId):null;
@@ -2603,7 +2649,7 @@ function editLocalProfile(){
       }
     }
     importContext={};
-    if(!added.length){toast("Nothing new was imported.");return}
+    if(!added.length){toast("Nothing new was imported.");return []}
 
     save(false,added.map(t=>t.id));
     toast(context.folderImport?`Added ${added.length} ${added.length===1?"song":"songs"} from ${new Set(added.map(t=>t.albumId)).size} folder ${new Set(added.map(t=>t.albumId)).size===1?"album":"albums"}.`:`Added ${added.length} ${added.length===1?"song":"songs"}.`);
@@ -2627,6 +2673,18 @@ function editLocalProfile(){
       autoSave();
       if(state.currentView==="library"||state.detail?.type||state.currentView==="recent"||state.currentView==="liked"||state.currentView==="search"||state.currentView==="albums"||state.currentView==="playlists"||state.currentView==="home")renderCurrentViewWithoutScroll();
     })().catch(e=>console.warn("Localify duration scan failed",e));
+  }
+  function createFolderFromImportedTracks(name,tracks){
+    const list=Array.isArray(tracks)?tracks.filter(Boolean):[];
+    if(!list.length)return null;
+    const folder=createFolderEntity(String(name||"Imported folder"));
+    ensureFolderArrays(folder);
+    for(const t of list){
+      if(!folder.trackIds.includes(t.id))folder.trackIds.push(t.id);
+      if(t.albumId&&!folder.albumIds.includes(t.albumId))folder.albumIds.push(t.albumId);
+      for(const aid of artistIdsForTrack(t))if(aid&&!folder.artistIds.includes(aid))folder.artistIds.push(aid);
+    }
+    return folder;
   }
   function inferTrackNumberFromFilename(name){const m=String(name||"").match(/^(?:Track\s*)?0*(\d+)(?:[.\-_)\s])/i);return m?parseInt(m[1],10):null}
   function setupDrop(z){if(!z)return;["dragenter","dragover"].forEach(e=>z.addEventListener(e,x=>{x.preventDefault();z.classList.add("drag")}));["dragleave","drop"].forEach(e=>z.addEventListener(e,x=>{x.preventDefault();z.classList.remove("drag")}));z.addEventListener("drop",e=>addFiles([...e.dataTransfer.files],{}))}
