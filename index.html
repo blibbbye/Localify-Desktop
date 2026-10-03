@@ -574,6 +574,12 @@ body[data-localify-desktop="true"] .desktopBrandText{font-size:16px!important;fo
 body[data-localify-desktop="true"] .desktopBrandText small{font-size:8px!important;letter-spacing:.07em!important;margin-left:5px}
 body[data-localify-desktop="true"] .discordTopBtn,body[data-localify-desktop="true"] .discordStatus{display:none!important}
 
+
+.folderNavHead{display:flex;align-items:center;justify-content:space-between;padding-right:7px}.folderNavAdd{width:26px;height:26px;border-radius:8px;background:#151a20;border:1px solid #29313b;color:#aeb7c2;font-size:18px;line-height:1}.folderNavBtn{background:transparent;color:#aeb6c1;padding:8px 10px;border-radius:10px;text-align:left;display:flex;gap:9px;align-items:center;width:100%;font-size:12px;font-weight:800}.folderNavBtn:hover{background:#171b21;color:#fff}.folderNavBtn.active{background:#171b21;color:var(--accent)}.folderNavBtn span:last-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.folderCollage{aspect-ratio:1/1;border-radius:13px;overflow:hidden;background:#161b21;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:2px}.folderTile{background:#20242b;display:grid;place-items:center;overflow:hidden;color:#697482}.folderTile img{width:100%;height:100%;object-fit:cover;display:block}.folderDetailCollage{width:175px;height:175px;border-radius:22px}.folderPickerGrid{display:grid;gap:7px;max-height:52vh;overflow:auto}.folderPickerItem{display:flex;align-items:center;gap:10px;padding:10px 11px;border:1px solid #252d36;border-radius:11px;background:#11161c}.folderPickerItem input{width:17px;height:17px;accent-color:var(--accent)}.folderPickerCopy{min-width:0}.folderPickerCopy strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.folderPickerCopy span{display:block;margin-top:2px;font-size:10px;color:#727d89;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.folderTypeGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.folderTypeButton{padding:13px 9px;border:1px solid #29313b;background:#11161b;border-radius:12px;text-align:center;font-weight:850;font-size:11px}.folderTypeButton strong{display:block;margin-top:4px}.statsPageHero{display:flex;align-items:center;gap:14px;padding:16px;border:1px solid #252d36;border-radius:18px;background:#11161c}.statsPageHeroText{min-width:0}.statsHeroIcon{width:60px;height:60px;border-radius:17px;display:grid;place-items:center;background:#171d24;color:var(--accent);font-size:24px;font-weight:1000;border:1px solid #2a333d;flex:0 0 60px}.mobileNav{display:none}
+@media(max-width:780px){
+ .folderNavHead,#folderNav{display:none!important}
+ html.localify-mobile .app{display:block;height:100dvh}html.localify-mobile .app>aside:first-child,html.localify-mobile .nowSidebar{display:none!important}html.localify-mobile main{height:100dvh;width:100%;overflow:auto;padding-bottom:84px}html.localify-mobile .topbar{position:sticky;top:0;z-index:30;padding:10px;background:rgba(9,11,14,.94);gap:7px}html.localify-mobile .topbar .search{max-width:none}html.localify-mobile .content{padding:16px 12px 150px}html.localify-mobile .grid,html.localify-mobile .viewGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}html.localify-mobile .profileStatsGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}html.localify-mobile .profileGrid{grid-template-columns:1fr}html.localify-mobile .profileHero{grid-template-columns:80px minmax(0,1fr);gap:12px;align-items:center}html.localify-mobile .profileArt,html.localify-mobile .collectionArt{width:80px;height:80px;border-radius:15px}.mobileNav{position:fixed}html.localify-mobile .mobileNav{display:grid!important;grid-template-columns:repeat(5,1fr);left:8px;right:8px;bottom:8px;height:58px;z-index:100;padding:4px;background:rgba(14,18,23,.97);border:1px solid #252d36;border-radius:16px;box-shadow:0 14px 40px rgba(0,0,0,.42)}html.localify-mobile .mobileNav button{background:transparent;color:#818b97;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;font-weight:850}html.localify-mobile .mobileNav button.active{color:var(--accent);background:#171d24}html.localify-mobile .player{left:0;right:0;bottom:66px;width:100%;padding:8px 10px}html.localify-mobile .folderDetailCollage{width:80px;height:80px}
+}
 </style>
 </head>
 <body data-localify-desktop="true">
@@ -589,7 +595,7 @@ body[data-localify-desktop="true"] .discordTopBtn,body[data-localify-desktop="tr
       <button data-view="playlists"><span class="icon"><svg class="svgIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 12h14M5 18h10"/></svg></span><span>Playlists</span></button>
       <button data-view="liked"><span class="icon"><svg class="svgIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 8.8c0 5.3-8 10.2-8 10.2S4 14.1 4 8.8A4.1 4.1 0 0 1 12 7a4.1 4.1 0 0 1 8 1.8Z"/></svg></span><span>Liked Songs</span></button>
       <button data-view="recent"><span class="icon"><svg class="svgIcon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg></span><span>Recently Played</span></button>
-    </nav>
+    <div class="folderNavHead"><div class="sectionTitle">Folders</div><button class="folderNavAdd" id="newFolderBtn" type="button" title="New folder" aria-label="New folder">+</button></div><div id="folderNav"></div></nav>
     <div class="sectionTitle">Library tools</div>
     <div class="sideBottom">
       <button class="sideAction btnIcon" id="importBtn"><span class="iconInline"><svg class="svgIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span><span>Add music</span></button>
@@ -616,7 +622,7 @@ body[data-localify-desktop="true"] .discordTopBtn,body[data-localify-desktop="tr
       <button class="secondary mobileTools" id="mobileTools" title="Library tools" aria-label="Library tools"><span class="mobileToolsGlyph" aria-hidden="true"><svg class="svgIcon" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span><span class="mobileToolsLabel">Library tools</span></button>
     </div>
     <div id="content" class="content"></div>
-  </main>
+  </main><div class="mobileNav" id="mobileNav"><button type="button" data-mobile-view="home"><span>⌂</span><small>Home</small></button><button type="button" data-mobile-view="library"><span>▤</span><small>Library</small></button><button type="button" data-mobile-view="albums"><span>▧</span><small>Albums</small></button><button type="button" data-mobile-view="playlists"><span>☷</span><small>Playlists</small></button><button type="button" data-mobile-view="profile"><span>♙</span><small>Profile</small></button></div>
 
   <aside class="nowSidebar" id="nowSidebar" aria-label="Now Playing panel"></aside>
 
@@ -672,9 +678,10 @@ body[data-localify-desktop="true"] .discordTopBtn,body[data-localify-desktop="tr
   const $ = s => document.querySelector(s);
   const $$ = s => [...document.querySelectorAll(s)];
   const audio = $("#audio");
+  const LOCALIFY_MOBILE_MODE=new URLSearchParams(location.search).get("mobile")==="1";if(LOCALIFY_MOBILE_MODE)document.documentElement.classList.add("localify-mobile");
 
   const state = {
-    version: 11, tracks: [], albums: [], artists: [], playlists: [], liked: [], recent: [],
+    version: 12, tracks: [], albums: [], artists: [], playlists: [], folders: [], liked: [], recent: [],
     queue: [], queueIndex: -1, currentId: null,
     settings: { volume:.9, shuffle:false, repeat:"off", eq:{bass:0,mid:0,treble:0,gain:0,preset:"flat",compressor:true}, discordPresence:true, nowSidebarHidden:false },
     profile: { displayName:"", avatar:null },
@@ -1051,6 +1058,7 @@ body[data-localify-desktop="true"] .discordTopBtn,body[data-localify-desktop="tr
     state.albums=Array.isArray(state.albums)?state.albums:[];
     state.artists=Array.isArray(state.artists)?state.artists:[];
     state.playlists=Array.isArray(state.playlists)?state.playlists:[];
+    state.folders=Array.isArray(state.folders)?state.folders:[];
     state.liked=Array.isArray(state.liked)?state.liked:[];
     state.recent=Array.isArray(state.recent)?state.recent:[];
     state.queue=Array.isArray(state.queue)?state.queue:[];
@@ -1077,7 +1085,7 @@ body[data-localify-desktop="true"] .discordTopBtn,body[data-localify-desktop="tr
       t.blob=null;
       t._blobDirty=false;
     }
-    state.version=11;
+    state.version=12;
     state._restoredFromFallback=restoredFromFallback;
     return true;
   }
@@ -1109,10 +1117,21 @@ body[data-localify-desktop="true"] .discordTopBtn,body[data-localify-desktop="tr
     else if(cover&&!a.cover)a.cover=cover;
     return a;
   }
+  function folderById(id){return state.folders.find(f=>f.id===id)||null}
+  function ensureFolderArrays(f){if(!f)return f;f.albumIds=Array.isArray(f.albumIds)?f.albumIds:[];f.trackIds=Array.isArray(f.trackIds)?f.trackIds:[];f.artistIds=Array.isArray(f.artistIds)?f.artistIds:[];f.playlistIds=Array.isArray(f.playlistIds)?f.playlistIds:[];return f}
+  function folderAlbumIds(f){ensureFolderArrays(f);const ids=[...f.albumIds];for(const id of f.trackIds){const t=trackById(id);if(t?.albumId)ids.push(t.albumId)}return [...new Set(ids)].filter(id=>albumById(id))}
+  function folderTrackIds(f){ensureFolderArrays(f);return [...new Set(f.trackIds)].filter(id=>trackById(id))}
+  function folderArtistIds(f){ensureFolderArrays(f);const ids=[...f.artistIds];for(const id of f.trackIds){const t=trackById(id);for(const aid of artistIdsForTrack(t))ids.push(aid)}for(const id of f.albumIds){const a=albumById(id);for(const aid of artistIdsForAlbum(a))ids.push(aid)}return [...new Set(ids)].filter(id=>artistById(id))}
+  function folderPlaylistIds(f){ensureFolderArrays(f);return [...new Set(f.playlistIds)].filter(id=>playlistById(id))}
+  function createFolderEntity(name="New folder"){const f={id:uid(),name:String(name||"New folder").trim()||"New folder",albumIds:[],trackIds:[],artistIds:[],playlistIds:[],createdAt:Date.now()};state.folders.push(f);return f}
+  function folderItemKey(kind){return kind==="albums"?"albumIds":kind==="tracks"?"trackIds":kind==="artists"?"artistIds":"playlistIds"}
+  function folderHasItem(f,kind,id){ensureFolderArrays(f);return f[folderItemKey(kind)].includes(id)}
+  function folderToggleItem(f,kind,id,on){ensureFolderArrays(f);const key=folderItemKey(kind);if(on){if(!f[key].includes(id))f[key].push(id)}else f[key]=f[key].filter(x=>x!==id)}
+
   function migrate(raw){
     if(!raw)return;
     const incoming=raw;
-    for(const k of ["tracks","albums","artists","playlists","liked","recent","queue","selected"])if(!Array.isArray(incoming[k]))incoming[k]=[];
+    for(const k of ["tracks","albums","artists","playlists","folders","liked","recent","queue","selected"])if(!Array.isArray(incoming[k]))incoming[k]=[];
     incoming.analytics=Object.assign({totalSeconds:0,plays:{},trackSeconds:{},days:{},history:[]},incoming.analytics||{});
     incoming.profile=Object.assign({displayName:"",avatar:null},incoming.profile||{});
     Object.assign(state,incoming);
@@ -2605,7 +2624,7 @@ function editLocalProfile(){
     audio.pause();
     audio.removeAttribute("src");
     try{audio.load()}catch{}
-    state.tracks=[];state.albums=[];state.artists=[];state.playlists=[];state.liked=[];state.recent=[];
+    state.tracks=[];state.albums=[];state.artists=[];state.playlists=[];state.folders=[];state.liked=[];state.recent=[];
     state.queue=[];state.queueIndex=-1;state.currentId=null;state.selected=[];state.detail=null;
     state.currentView="home";state.search="";state.searchFilter="all";
     state.librarySort="added";state.librarySortDir="desc";
