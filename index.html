@@ -3609,7 +3609,8 @@ function editLocalProfile(){
         "<div class=\"presetHero\"><div class=\"presetHeroTop\"><div><h3>Portable Localify presets</h3><p>Save and share your Localify library as <code>.localify</code> files. Audio is included in the package, and large exports use ZIP64 and streaming when your browser supports it.</p></div><div class=\"presetHeroIcon\">"+uiIcon("save")+"</div></div></div>"+
         "<div class=\"presetActionGrid\">"+
           "<button class=\"presetAction\" id=\"presetExportBtn\"><span class=\"presetActionIcon\">"+uiIcon("download")+"</span><span><strong>Export preset</strong><span>Back up or share your library</span></span></button>"+
-          "<button class=\"presetAction\" id=\"presetImportBtn\"><span class=\"presetActionIcon\">"+uiIcon("upload")+"</span><span><strong>Import preset</strong><span>Load a Localify file onto this device</span></span></button>"+\n          "<button class=\"presetAction\" id=\"presetShareBtn\"><span class=\"presetActionIcon\">"+uiIcon("upload")+"</span><span><strong>Share preset preview</strong><span>Make a link showing some albums, artists, songs and folders</span></span></button>"+
+          "<button class=\"presetAction\" id=\"presetImportBtn\"><span class=\"presetActionIcon\">"+uiIcon("upload")+"</span><span><strong>Import preset</strong><span>Load a Localify file onto this device</span></span></button>"+
+          "<button class=\"presetAction\" id=\"presetShareBtn\"><span class=\"presetActionIcon\">"+uiIcon("upload")+"</span><span><strong>Share preset preview</strong><span>Make a link showing some albums, artists, songs and folders</span></span></button>"+
         "</div>"+
         "<div class=\"presetQuickTitle\">Quick tools</div>"+
         "<div class=\"presetQuickGrid\">"+
@@ -3622,7 +3623,8 @@ function editLocalProfile(){
     setModal(html,{large:true});
     $("#closeModal").onclick=()=>closeModal(true);
     $("#presetExportBtn").onclick=()=>{closeModal(true);openPresetExportChooser()};
-    $("#presetImportBtn").onclick=()=>{closeModal(true);pickPresetFile()};\n    $("#presetShareBtn").onclick=()=>{closeModal(true);sharePresetPreview()};
+    $("#presetImportBtn").onclick=()=>{closeModal(true);pickPresetFile()};
+    $("#presetShareBtn").onclick=()=>{closeModal(true);sharePresetPreview()};
     $("#presetExportArtistsBtn").onclick=()=>{closeModal(true);openPresetExportSelection("artists")};
     $("#presetImportArtistsBtn").onclick=()=>{closeModal(true);pickPresetFile("artists")};
     $("#presetExportAlbumsBtn").onclick=()=>{closeModal(true);openPresetExportSelection("albums")};
