@@ -3453,7 +3453,7 @@ function editLocalProfile(){
   function findArtistImport(a){return state.artists.find(x=>presetKey(x.name)===presetKey(a.name))||null}
   function findAlbumImport(a,m){const ids=artistIdsForAlbum(a).map(id=>m.get(id)||id).filter(Boolean);return state.albums.find(x=>presetKey(x.title)===presetKey(a.title)&&artistIdsForAlbum(x).length===ids.length&&artistIdsForAlbum(x).every(id=>ids.includes(id)))||null}
   function findTrackImport(t,am,atm){const aid=t.albumId?am.get(t.albumId)||null:null,arts=artistIdsForTrack(t).map(id=>atm.get(id)||id).filter(Boolean);return state.tracks.find(x=>presetKey(x.title)===presetKey(t.title)&&(aid?x.albumId===aid:!x.albumId)&&artistIdsForTrack(x).length===arts.length&&artistIdsForTrack(x).every(id=>arts.includes(id)))||null}
-  async function importPresetData(p,files,mode){try{const kind=p.presetKind||'full',artists=Array.isArray(p.artists)?p.artists:[],albums=Array.isArray(p.albums)?p.albums:[],tracks=Array.isArray(p.tracks)?p.tracks:[],playlists=Array.isArray(p.playlists)?p.playlists:[];if(kind==='settings'){state.settings=mode==='set'?JSON.parse(JSON.stringify(p.settings||state.settings)):{...state.settings,...(p.settings||{})};applyEQ();await save(true);render();toast('Settings imported.');return}if(kind==='full'&&mode==='set'){for(const id of state.tracks.map(t=>t.id))queueBlobDelete(id);state.artists=[];state.albums=[];state.playlists=[];state.liked=[];state.recent=[];state.tracks=[];state.queue=[];state.queueIndex=-1;state.currentId=null}if(kind==='artists'&&mode==='set')state.artists=[];if(kind==='albums'&&mode==='set'){state.albums=[];for(const t of state.tracks){if(t.albumId&&!albums.some(a=>a.id===t.albumId)){t.albumId=null;t.album='Unknown Album'}}}if(kind==='songs'&&mode==='set'){for(const id of state.tracks.map(t=>t.id))queueBlobDelete(id);state.tracks=[];state.liked=[];state.recent=[];state.queue=[];state.queueIndex=-1;state.currentId=null}if(kind==='playlists'&&mode==='set')state.playlists=[];if(kind==='liked'&&mode==='set')state.liked=[];if(kind==='recent'&&mode==='set')state.recent=[];
+  async function importPresetData(p,files,mode){try{const kind=p.presetKind||'full',artists=Array.isArray(p.artists)?p.artists:[],albums=Array.isArray(p.albums)?p.albums:[],tracks=Array.isArray(p.tracks)?p.tracks:[],playlists=Array.isArray(p.playlists)?p.playlists:[];if(kind==='settings'){state.settings=mode==='set'?JSON.parse(JSON.stringify(p.settings||state.settings)):{...state.settings,...(p.settings||{})};applyEQ();await save(true);render();toast('Settings imported.');return}if(kind==='full'&&mode==='set'){for(const id of state.tracks.map(t=>t.id))queueBlobDelete(id);state.artists=[];state.albums=[];state.playlists=[];state.folders=[];state.liked=[];state.recent=[];state.tracks=[];state.queue=[];state.queueIndex=-1;state.currentId=null}if(kind==='artists'&&mode==='set')state.artists=[];if(kind==='albums'&&mode==='set'){state.albums=[];for(const t of state.tracks){if(t.albumId&&!albums.some(a=>a.id===t.albumId)){t.albumId=null;t.album='Unknown Album'}}}if(kind==='songs'&&mode==='set'){for(const id of state.tracks.map(t=>t.id))queueBlobDelete(id);state.tracks=[];state.liked=[];state.recent=[];state.queue=[];state.queueIndex=-1;state.currentId=null}if(kind==='playlists'&&mode==='set')state.playlists=[];if(kind==='liked'&&mode==='set')state.liked=[];if(kind==='recent'&&mode==='set')state.recent=[];
     const artistMap=new Map();
     for(const a0 of artists){
       const a=cloneEntity(a0);
@@ -3524,7 +3524,27 @@ function editLocalProfile(){
       if(entry){target.blob=await zipEntryBlob(entry);target._blobDirty=true;dirty.push(target.id);if(dirty.length>=2)await persistImportBatch();}
     }
     await persistImportBatch(true);
-    for(const p0 of playlists){const pl=cloneEntity(p0);pl.trackIds=(Array.isArray(p0.trackIds)?p0.trackIds:[]).map(id=>trackMap.get(id)||id).filter(id=>trackById(id));const existing=mode==='add'?state.playlists.find(x=>presetKey(x.name)===presetKey(pl.name)):null;if(existing){if(kind!=='playlists')existing.trackIds=[...new Set([...(existing.trackIds||[]),...pl.trackIds])]}else{pl.id=uid();state.playlists.push(pl)}}
+    const playlistMap=new Map();
+    for(const p0 of playlists){
+      const pl=cloneEntity(p0);
+      pl.trackIds=(Array.isArray(p0.trackIds)?p0.trackIds:[]).map(id=>trackMap.get(id)||id).filter(id=>trackById(id));
+      const existing=mode==='add'?state.playlists.find(x=>presetKey(x.name)===presetKey(pl.name)):null;
+      if(existing){playlistMap.set(p0.id,existing.id);if(kind!=='playlists')existing.trackIds=[...new Set([...(existing.trackIds||[]),...pl.trackIds])]}
+      else{pl.id=uid();state.playlists.push(pl);playlistMap.set(p0.id,pl.id)}
+    }
+    for(const f0 of (Array.isArray(p.folders)?p.folders:[])){
+      const f=cloneEntity(f0);
+      const items=(Array.isArray(f0.items)?f0.items:[]).map(item=>{
+        if(!item||!item.type||!item.id)return null;
+        const id=item.type==='song'?(trackMap.get(item.id)||item.id):item.type==='album'?(albumMap.get(item.id)||item.id):item.type==='artist'?(artistMap.get(item.id)||item.id):item.type==='playlist'?(playlistMap.get(item.id)||item.id):null;
+        if(!id)return null;
+        const valid=item.type==='song'?trackById(id):item.type==='album'?albumById(id):item.type==='artist'?artistById(id):playlistById(id);
+        return valid?{type:item.type,id}:null;
+      }).filter(Boolean);
+      const existing=mode==='add'?state.folders.find(x=>presetKey(x.name)===presetKey(f.name)):null;
+      if(existing)existing.items=[...new Map([...(existing.items||[]),...items].map(x=>[x.type+":"+x.id,x])).values()];
+      else{f.id=uid();f.items=items;state.folders.push(f)}
+    }
     const mapped=arr=>[...new Set((arr||[]).map(id=>trackMap.get(id)||id).filter(id=>trackById(id)))];if(kind==='full'){const l=mapped(p.liked),r=mapped(p.recent);if(mode==='set'){state.liked=l;state.recent=r}else{state.liked=[...new Set([...state.liked,...l])];state.recent=[...new Set([...state.recent,...r])]}}if(kind==='liked'){const l=mapped(p.liked);state.liked=mode==='set'?l:[...new Set([...state.liked,...l])]}if(kind==='recent'){const r=mapped(p.recent);state.recent=mode==='set'?r:[...new Set([...state.recent,...r])]}
     if(kind==='artists'&&mode==='set'){const valid=new Set(state.artists.map(a=>a.id));for(const a of state.albums)applyArtistIds(a,artistIdsForAlbum(a).filter(id=>valid.has(id)));for(const t of state.tracks){applyArtistIds(t,artistIdsForTrack(t).filter(id=>valid.has(id)));if(Array.isArray(t.albumArtistIds))applyAlbumArtistIds(t,t.albumArtistIds.filter(id=>valid.has(id)))}}
     if(kind==='albums'&&mode==='set'){const valid=new Set(state.albums.map(a=>a.id));for(const t of state.tracks)if(t.albumId&&!valid.has(t.albumId)){t.albumId=null;t.album='Unknown Album'}}
