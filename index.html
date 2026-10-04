@@ -723,7 +723,7 @@ html.localify-mobile .mobileNav .svgIcon{width:20px;height:20px}
   const META_BACKUP_KEY = "localify-persistent-meta-backup-v1";
   const LEGACY_DB_NAMES = ["localify-db-v7-save","localify-db-v6","localify-db-v5","localify-db-v1"];
   const $ = s => document.querySelector(s);
-  const $$ = s => [...document.querySelectorAll(s)];
+  const $ = (s,root=document) => [...root.querySelectorAll(s)];
   const audio = $("#audio");
   function updateLocalifyMediaSession(t,cover=""){if(!("mediaSession"in navigator)||!t)return;try{const art=cover||knownCoverUrlForTrack(t)||"";navigator.mediaSession.metadata=new MediaMetadata({title:displayTrackTitle(t,true)||"Unknown song",artist:artistName(t)||"Unknown Artist",album:albumName(t)||"Localify",artwork:art?[{src:art,sizes:"512x512",type:"image/*"}]:[]})}catch{}}
 
