@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no" />
   <meta name="theme-color" content="#7dd3fc" />
   <meta name="localify-build" content="2026-10-04-dark-no-theme-discord" />
-  <meta name="application-name" content="Localify Desktop">
+  <meta name="application-name" content="Localio Desktop">
   <meta name="localify-platform" content="desktop">
   <meta name="localify-version" content="3.0">
-  <title>Localify Desktop — Your Music, Your Files</title>
+  <title>Localio Desktop — Your Music, Your Files</title>
   <style>
     :root{
       --bg:#090b0e; --panel:#111419; --panel2:#171a20; --panel3:#20242c;
@@ -325,7 +325,7 @@
     }
     @media (hover:none){.card:hover{transform:none}.card:hover .playOverlay{opacity:1;transform:none}}
 
-/* Localify phone fit patch */
+/* Localio phone fit patch */
 .topbar{min-width:0}
 .topbar>*{min-width:0}
 .mobileTools{display:none;white-space:nowrap}
@@ -340,7 +340,7 @@ main,#main,.content{min-width:0;max-width:100%;overflow-x:hidden}
 .viewIntro>*,.profileHero>*,.sectionHead>*{min-width:0;max-width:100%}
 .player{box-sizing:border-box}
 
-/* Localify responsive/layout patch v2 */
+/* Localio responsive/layout patch v2 */
 .svgIcon{width:18px;height:18px;display:block;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
 .btnIcon{display:inline-flex;align-items:center;justify-content:center;gap:7px}.btnIcon .svgIcon{width:16px;height:16px}.iconOnly .svgIcon{width:18px;height:18px}
 .btnIcon .iconInline{display:inline-flex;align-items:center;justify-content:center}.btnIcon{vertical-align:middle}
@@ -531,7 +531,7 @@ main{min-width:0;min-height:0}
   .sideBottom .sideAction > span:first-child{display:inline-flex;align-items:center;justify-content:flex-start;flex:none;}
   .sideBottom .sideAction > span:last-child{display:inline-block;text-align:left;margin-left:0;}
 }
-    /* Localify performance layer: keep large catalog pages responsive. */
+    /* Localio performance layer: keep large catalog pages responsive. */
     .grid,.viewGrid{contain:layout style;content-visibility:auto;contain-intrinsic-size:1px 320px}
     .card{contain:layout paint style;content-visibility:auto;contain-intrinsic-size:1px 250px}
     .track-row{contain:layout paint style;content-visibility:auto;contain-intrinsic-size:1px 64px}
@@ -581,7 +581,7 @@ body[data-localify-desktop="true"] .discordTopBtn,body[data-localify-desktop="tr
  html.localify-mobile .app{display:block;height:100dvh}html.localify-mobile .app>aside:first-child,html.localify-mobile .nowSidebar{display:none!important}html.localify-mobile main{height:100dvh;width:100%;overflow:auto;padding-bottom:84px}html.localify-mobile .topbar{position:sticky;top:0;z-index:30;padding:10px;background:rgba(9,11,14,.94);gap:7px}html.localify-mobile .topbar .search{max-width:none}html.localify-mobile .content{padding:16px 12px 150px}html.localify-mobile .grid,html.localify-mobile .viewGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}html.localify-mobile .profileStatsGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}html.localify-mobile .profileGrid{grid-template-columns:1fr}html.localify-mobile .profileHero{grid-template-columns:80px minmax(0,1fr);gap:12px;align-items:center}html.localify-mobile .profileArt,html.localify-mobile .collectionArt{width:80px;height:80px;border-radius:15px}.mobileNav{position:fixed}html.localify-mobile .mobileNav{display:grid!important;grid-template-columns:repeat(6,1fr);left:8px;right:8px;bottom:8px;height:58px;z-index:100;padding:4px;background:rgba(14,18,23,.97);border:1px solid #252d36;border-radius:16px;box-shadow:0 14px 40px rgba(0,0,0,.42)}html.localify-mobile .mobileNav button{background:transparent;color:#818b97;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;font-weight:850}html.localify-mobile .mobileNav button.active{color:var(--accent);background:#171d24}html.localify-mobile .player{left:0;right:0;bottom:66px;width:100%;padding:8px 10px}html.localify-mobile .folderDetailCollage{width:80px;height:80px}
 }
 .logoGlyph{font-size:19px;font-weight:1000;color:#081017;line-height:1;display:grid;place-items:center}
-/* Localify mobile mode */
+/* Localio mobile mode */
 html.localify-mobile,html.localify-mobile body{background:#090b0e;overflow:hidden;overscroll-behavior:none}
 html.localify-mobile .app{display:flex;flex-direction:column;grid-template-columns:none;grid-template-rows:none;height:100svh;min-height:100svh}
 html.localify-mobile aside{display:none!important}
@@ -647,7 +647,7 @@ html.localify-mobile .mobileNav .svgIcon{width:20px;height:20px}
     <div class="sideBottom">
       <button class="sideAction btnIcon" id="importBtn"><span class="iconInline"><svg class="svgIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span><span>Add music</span></button>
       <button class="sideAction btnIcon" id="folderBtn"><span class="iconInline"><svg class="svgIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 7.5h6l2 2h9v8.5a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/><path d="M3.5 7.5v-2h6l2 2"/></svg></span><span>Add folder</span></button>
-      <button class="sideAction btnIcon" id="presetBtn"><span class="iconInline"><svg class="svgIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="8" cy="7" r="1.5" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="11" cy="17" r="1.5" fill="currentColor" stroke="none"/></svg></span><span>Presets</span></button>
+      <button class="sideAction btnIcon" id="presetBtn"><span class="iconInline"><svg class="svgIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="8" cy="7" r="1.5" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="11" cy="17" r="1.5" fill="currentColor" stroke="none"/></svg></span><span>Backups</span></button>
       <button class="sideAction deleteLibraryBtn" id="deleteLibraryBtn"><span><svg class="svgIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M9 7V4h6v3M8 10v7M12 10v7M16 10v7"/><path d="M6 7l1 13h10l1-13"/></svg></span><span>Delete library</span></button>
       <input type="file" id="filePicker" accept="audio/*,.mp3,.m4a,.mp4,.aac,.flac,.wav,.ogg,.oga,.opus,.webm,.aiff,.aif,.alac,.caf" multiple hidden>
       <input type="file" id="directoryPicker" webkitdirectory directory mozdirectory multiple hidden accept="audio/*,.mp3,.m4a,.mp4,.aac,.flac,.wav,.ogg,.oga,.opus,.webm,.aiff,.aif,.alac,.caf,image/*">
@@ -725,7 +725,7 @@ html.localify-mobile .mobileNav .svgIcon{width:20px;height:20px}
   const $ = s => document.querySelector(s);
   const qAll = (s,root=document) => [...root.querySelectorAll(s)];
   const audio = $("#audio");
-  function updateLocalifyMediaSession(t,cover=""){if(!("mediaSession"in navigator)||!t)return;try{const art=cover||knownCoverUrlForTrack(t)||"";navigator.mediaSession.metadata=new MediaMetadata({title:displayTrackTitle(t,true)||"Unknown song",artist:artistName(t)||"Unknown Artist",album:albumName(t)||"Localify",artwork:art?[{src:art,sizes:"512x512",type:"image/*"}]:[]})}catch{}}
+  function updateLocalifyMediaSession(t,cover=""){if(!("mediaSession"in navigator)||!t)return;try{const art=cover||knownCoverUrlForTrack(t)||"";navigator.mediaSession.metadata=new MediaMetadata({title:displayTrackTitle(t,true)||"Unknown song",artist:artistName(t)||"Unknown Artist",album:albumName(t)||"Localio",artwork:art?[{src:art,sizes:"512x512",type:"image/*"}]:[]})}catch{}}
 
   const LOCALIFY_MOBILE_MODE=new URLSearchParams(location.search).get("mobile")==="1"||/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)||!!globalThis.Capacitor;if(LOCALIFY_MOBILE_MODE)document.documentElement.classList.add("localify-mobile");
 
@@ -884,7 +884,7 @@ html.localify-mobile .mobileNav .svgIcon{width:20px;height:20px}
     try{
       const blob=await idbGetBlob(t.id);
       if(isBlobLike(blob)){ t.blob=blob; return blob; }
-    }catch(e){ console.warn("Localify could not restore audio",t.id,e); }
+    }catch(e){ console.warn("Localio could not restore audio",t.id,e); }
     return null;
   }
 
@@ -911,7 +911,7 @@ html.localify-mobile .mobileNav .svgIcon{width:20px;height:20px}
           if(!d.objectStoreNames.contains("meta")) d.createObjectStore("meta");
           if(!d.objectStoreNames.contains("blobs")) d.createObjectStore("blobs");
         };
-        req.onblocked=()=>console.warn("Localify database upgrade is blocked");
+        req.onblocked=()=>console.warn("Localio database upgrade is blocked");
         req.onsuccess=()=>{
           db=req.result;
           storageReady=true;
@@ -942,8 +942,8 @@ html.localify-mobile .mobileNav .svgIcon{width:20px;height:20px}
         tx.onerror=()=>reject(tx.error||new Error("Library storage clear failed"));
         tx.onabort=()=>reject(tx.error||new Error("Library storage clear aborted"));
       });
-    }catch(e){console.warn("Localify IndexedDB clear failed",e)}
-    try{localStorage.removeItem(META_KEY)}catch(e){console.warn("Localify metadata fallback clear failed",e)}
+    }catch(e){console.warn("Localio IndexedDB clear failed",e)}
+    try{localStorage.removeItem(META_KEY)}catch(e){console.warn("Localio metadata fallback clear failed",e)}
   }
 
   const AUDIO_EXT_RE=/\.(mp3|m4a|mp4|aac|flac|wav|ogg|oga|opus|webm|aiff|aif|alac|caf)$/i;
@@ -1051,7 +1051,7 @@ html.localify-mobile .mobileNav .svgIcon{width:20px;height:20px}
         if(!raw)continue;
         const parsed=JSON.parse(raw);
         if(parsed&&Array.isArray(parsed.tracks)&&Array.isArray(parsed.albums)&&Array.isArray(parsed.artists))return parsed;
-      }catch(e){console.warn("Localify metadata fallback read failed",key,e)}
+      }catch(e){console.warn("Localio metadata fallback read failed",key,e)}
     }
     return null;
   }
@@ -1060,10 +1060,10 @@ html.localify-mobile .mobileNav .svgIcon{width:20px;height:20px}
     try{
       const raw=JSON.stringify(cloneMeta());
       localStorage.setItem(META_KEY,raw);
-      try{localStorage.setItem(META_BACKUP_KEY,raw)}catch(e){console.warn("Localify backup metadata write failed",e)}
+      try{localStorage.setItem(META_BACKUP_KEY,raw)}catch(e){console.warn("Localio backup metadata write failed",e)}
       return true;
     }catch(e){
-      console.warn("Localify metadata fallback unavailable",e);
+      console.warn("Localio metadata fallback unavailable",e);
       return false;
     }
   }
@@ -1085,14 +1085,14 @@ html.localify-mobile .mobileNav .svgIcon{width:20px;height:20px}
     let okMeta=false,failed=0,deleted=0,failedIds=[];
     if(!storageReady || storageBlocked){try{writeMetaFallback()}catch{}}
     try{await idbPutMeta(meta);okMeta=true;storageReady=true;storageBlocked=false}
-    catch(e){storageBlocked=true;console.warn('Localify metadata save failed',e);try{writeMetaFallback()}catch{}}
+    catch(e){storageBlocked=true;console.warn('Localio metadata save failed',e);try{writeMetaFallback()}catch{}}
     for(const id of ids){
       const t=trackById(id);
       if(!isBlobLike(t?.blob))continue;
-      try{await idbPutBlob(id,t.blob);t._blobDirty=false}catch(e){failed++;failedIds.push(id);console.warn('Localify audio save failed',id,e)}
+      try{await idbPutBlob(id,t.blob);t._blobDirty=false}catch(e){failed++;failedIds.push(id);console.warn('Localio audio save failed',id,e)}
     }
     for(const id of deletes){
-      try{await idbDeleteBlob(id);deleted++}catch(e){console.warn('Localify audio delete failed',id,e)}
+      try{await idbDeleteBlob(id);deleted++}catch(e){console.warn('Localio audio delete failed',id,e)}
     }
     if(failedIds.length){
       for(const id of failedIds)pendingBlobIds.add(id);
@@ -1101,7 +1101,7 @@ html.localify-mobile .mobileNav .svgIcon{width:20px;height:20px}
     lastSaveAt=Date.now();
     saveInFlight=false;
     if(dirtySave)setTimeout(()=>flushSave(false),failedIds.length?5000:50);
-    if(showMessage)toast(failed?'Saved, but '+failed+' audio file(s) could not be stored yet. Localify will retry automatically.':(okMeta?'Library saved on this device'+(deleted?' • '+deleted+' removed':'')+'.':'Metadata fallback saved; browser storage is blocked.'));
+    if(showMessage)toast(failed?'Saved, but '+failed+' audio file(s) could not be stored yet. Localio will retry automatically.':(okMeta?'Library saved on this device'+(deleted?' • '+deleted+' removed':'')+'.':'Metadata fallback saved; browser storage is blocked.'));
     return failed===0 && (okMeta || storageBlocked);
   }
   function save(showMessage=false,blobIds=[]){
@@ -1116,7 +1116,7 @@ html.localify-mobile .mobileNav .svgIcon{width:20px;height:20px}
   async function restoreSaved(){
     let meta=null;
     let restoredFromFallback=false;
-    try{meta=await idbGetMeta()}catch(e){console.warn("Localify IndexedDB restore failed",e)}
+    try{meta=await idbGetMeta()}catch(e){console.warn("Localio IndexedDB restore failed",e)}
     if(!meta){
       meta=readMetaFallback();
       restoredFromFallback=!!meta;
@@ -1295,7 +1295,7 @@ html.localify-mobile .mobileNav .svgIcon{width:20px;height:20px}
   async function load(){
     await ensureStorageAccess();
     let restored=false;
-    try{restored=await restoreSaved()}catch(e){console.warn("Localify restore failed",e)}
+    try{restored=await restoreSaved()}catch(e){console.warn("Localio restore failed",e)}
     state.settings=Object.assign({volume:.9,shuffle:false,repeat:"off",eq:{bass:0,mid:0,treble:0,gain:0,preset:"flat",compressor:true},discordPresence:true,nowSidebarHidden:false},state.settings||{});
     delete state.settings.theme;
     if(!Array.isArray(state.selected))state.selected=[]; if(!Array.isArray(state.recent))state.recent=[];
@@ -1303,13 +1303,13 @@ html.localify-mobile .mobileNav .svgIcon{width:20px;height:20px}
     $("#volume").value=state.settings.volume??.9;audio.volume=state.settings.volume??.9;
     try{if(navigator.storage?.persist)await navigator.storage.persist()}catch{}
     const repaired=repairAllLibraryMetadata();
-    if(repaired){try{await save(false);await flushSave(false)}catch(e){console.warn("Localify metadata repair save failed",e)}}
+    if(repaired){try{await save(false);await flushSave(false)}catch(e){console.warn("Localio metadata repair save failed",e)}}
     if(restored&&state._restoredFromFallback&&!storageBlocked){
-      try{await idbPutMeta(cloneMeta())}catch(e){console.warn("Localify could not re-save fallback metadata",e)}
+      try{await idbPutMeta(cloneMeta())}catch(e){console.warn("Localio could not re-save fallback metadata",e)}
     }
     if(!restored){
-      if(storageBlocked)toast("Localify could not access saved storage. Your previous backup was preserved; refresh and try again.");
-      else{writeMetaFallback();toast("Localify started a new saved library on this device.")}
+      if(storageBlocked)toast("Localio could not access saved storage. Your previous backup was preserved; refresh and try again.");
+      else{writeMetaFallback();toast("Localio started a new saved library on this device.")}
     }else if(storageBlocked)toast("Library loaded, but this browser may be blocking persistent storage.");
     delete state._restoredFromFallback;
     return restored;
@@ -1536,7 +1536,7 @@ html.localify-mobile .mobileNav .svgIcon{width:20px;height:20px}
     $("#bulkEdit")?.addEventListener("click",()=>bulkEdit(state.selected.map(trackById).filter(Boolean)));
     $("#bulkLike")?.addEventListener("click",async()=>{for(const id of state.selected)if(!state.liked.includes(id))state.liked.push(id);await save();renderCurrentViewWithoutScroll()});
     $("#bulkPlaylist")?.addEventListener("click",()=>bulkAddPlaylist(state.selected));
-    $("#bulkDelete")?.addEventListener("click",async()=>{if(confirm(`Remove ${state.selected.length} selected songs from Localify?`)){removeTracks(state.selected);state.selected=[];await save();render()}});
+    $("#bulkDelete")?.addEventListener("click",async()=>{if(confirm(`Remove ${state.selected.length} selected songs from Localio?`)){removeTracks(state.selected);state.selected=[];await save();render()}});
     $("#bulkClear")?.addEventListener("click",()=>{state.selected=[];renderCurrentViewWithoutScroll()});
   }
   function renderCurrentViewWithoutScroll(){
@@ -1607,9 +1607,9 @@ html.localify-mobile .mobileNav .svgIcon{width:20px;height:20px}
   let discordPresenceRequest=0;
   const discordCoverCache=new Map();
   const discordCoverRequests=new Map();
-  // Public artwork lives in the Localify GitHub repository. Absolute HTTPS
+  // Public artwork lives in the Localio GitHub repository. Absolute HTTPS
   // URLs make the same cover work in the website, Google Sites embeds, and Discord.
-  const LOCALIFY_GITHUB_RAW_BASE="https://raw.githubusercontent.com/blibbbye/Localify/main/";
+  const LOCALIFY_GITHUB_RAW_BASE="https://raw.githubusercontent.com/blibbbye/Localio/main/";
   const LOCALIFY_COVER_DIRECTORY=LOCALIFY_GITHUB_RAW_BASE+"covers/";
   const LOCALIFY_COVER_MAP_URL=LOCALIFY_GITHUB_RAW_BASE+"covers.json";
   const LOCALIFY_COVER_EXTENSIONS=[".jpg",".jpeg",".png",".webp",".gif",".avif"];
@@ -1907,7 +1907,7 @@ html.localify-mobile .mobileNav .svgIcon{width:20px;height:20px}
         const controller=new AbortController();
         const timeout=setTimeout(()=>controller.abort(),LOCALIFY_COVER_LOAD_TIMEOUT);
         try{
-          const r=await fetch("https://api.github.com/repos/blibbbye/Localify/contents/covers?ref=main",{cache:"no-store",signal:controller.signal,credentials:"omit"});
+          const r=await fetch("https://api.github.com/repos/blibbbye/Localio/contents/covers?ref=main",{cache:"no-store",signal:controller.signal,credentials:"omit"});
           if(!r.ok)throw new Error(`HTTP ${r.status}`);
           const files=await r.json();
           if(Array.isArray(files)){
@@ -1918,7 +1918,7 @@ html.localify-mobile .mobileNav .svgIcon{width:20px;height:20px}
             }
           }
         }finally{clearTimeout(timeout)}
-      }catch(e){console.warn("Localify cover directory index could not be loaded.",e)}
+      }catch(e){console.warn("Localio cover directory index could not be loaded.",e)}
       localifyCoverFileIndex=out;return out;
     })();
     return localifyCoverFileIndexPromise;
@@ -1952,7 +1952,7 @@ html.localify-mobile .mobileNav .svgIcon{width:20px;height:20px}
             }
           }
         }finally{clearTimeout(timeout)}
-      }catch(e){console.warn("Localify covers.json could not be loaded; built-in cover map remains active.",e)}
+      }catch(e){console.warn("Localio covers.json could not be loaded; built-in cover map remains active.",e)}
       localifyCoverMap=out;return out;
     })();
     return localifyCoverMapPromise;
@@ -2093,7 +2093,7 @@ html.localify-mobile .mobileNav .svgIcon{width:20px;height:20px}
       status_display_type:1,
       instance:false
     }:null;
-    if(activity&&p.coverUrl&&String(p.coverUrl).length<=800)activity.assets={large_image:String(p.coverUrl),large_text:"Localify Desktop"};
+    if(activity&&p.coverUrl&&String(p.coverUrl).length<=800)activity.assets={large_image:String(p.coverUrl),large_text:"Localio Desktop"};
     if(activity&&Number(p.end)>0)activity.timestamps={start:Number(p.start||0),end:Number(p.end||0)};
     try{
       __localifyDiscordSocket.write(__localifyRpcFrame(1,{cmd:"SET_ACTIVITY",args:{pid:Number(proc?.pid||0),activity},nonce:String(Date.now())}));
@@ -2137,7 +2137,7 @@ html.localify-mobile .mobileNav .svgIcon{width:20px;height:20px}
     // the song title itself becomes the artwork lookup reference. Neither is sent
     // as an album field in the Discord payload, and album artists are never used here.
     if(resolveCover&&!coverUrl){
-      try{coverUrl=await resolveGithubAlbumCover(t)}catch(e){console.warn("Localify Discord cover resolver failed",e)}
+      try{coverUrl=await resolveGithubAlbumCover(t)}catch(e){console.warn("Localio Discord cover resolver failed",e)}
     }
     if(!coverUrl)coverUrl=discordDirectCoverUrl(t);
 
@@ -2164,7 +2164,7 @@ html.localify-mobile .mobileNav .svgIcon{width:20px;height:20px}
     // cover could make Discord appear completely broken for a long time.
     let p;
     try{p=await discordPayload(t,true,false)}catch(e){
-      console.warn("Localify Discord payload build failed",e);
+      console.warn("Localio Discord payload build failed",e);
       p={kind:"presence",playing:true,song:sanitizeDiscordText(displayTrackTitle(t,true),"Unknown song"),artist:sanitizeDiscordText(artistName(t),"Unknown Artist"),coverUrl:discordDirectCoverUrl(t),currentTime:Number(audio.currentTime||0),duration:Number(audio.duration||t?.duration||0),start:Math.round(Date.now()-Number(audio.currentTime||0)*1000),end:0};
     }
     if(requestId!==discordPresenceRequest||state.currentId!==t.id||audio.paused||state.settings.discordPresence===false)return;
@@ -2186,7 +2186,7 @@ html.localify-mobile .mobileNav .svgIcon{width:20px;height:20px}
       if(updatedKey===discordLastPayloadKey)return;
       discordLastPayloadKey=updatedKey;discordLastSentAt=Date.now();sendDiscordMessage(updated);
       window.dispatchEvent(new CustomEvent("localify:discord-presence",{detail:updated}));window.LocalifyDiscordPresence=updated;
-    }).catch(e=>console.warn("Localify background Discord cover lookup failed",e));
+    }).catch(e=>console.warn("Localio background Discord cover lookup failed",e));
   }
 
   function clearDiscordPresence(){
@@ -2218,12 +2218,12 @@ html.localify-mobile .mobileNav .svgIcon{width:20px;height:20px}
     const t=trackById(state.currentId);
     setModal(`<div class="modalHead"><h2>Discord Rich Presence</h2><button class="circle iconOnly" id="closeModal" title="Close" aria-label="Close">${uiIcon("close")}</button></div>
       <div class="discordPanel">
-        <div class="discordConnectCard"><div class="discordConnectIcon"><svg class="svgIcon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M8.5 10.5c1.8 1.3 5.2 1.3 7 0"/><circle cx="9" cy="12" r=".7" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r=".7" fill="currentColor" stroke="none"/></svg></div><div><div class="discordConnectTitle">Built into Localify Desktop</div><div class="discordConnectSub">Connects directly to Discord on this computer. No connector or separate player is needed.</div></div></div>
+        <div class="discordConnectCard"><div class="discordConnectIcon"><svg class="svgIcon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M8.5 10.5c1.8 1.3 5.2 1.3 7 0"/><circle cx="9" cy="12" r=".7" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r=".7" fill="currentColor" stroke="none"/></svg></div><div><div class="discordConnectTitle">Built into Localio Desktop</div><div class="discordConnectSub">Connects directly to Discord on this computer. No connector or separate player is needed.</div></div></div>
         <div class="modalSection"><div class="modalSectionTitle">Listening status</div>
           <div style="display:flex;align-items:center;gap:10px;padding:7px 0"><input id="discordPresenceToggle" type="checkbox" ${enabled?"checked":""} style="width:18px;height:18px;accent-color:var(--accent)"><label for="discordPresenceToggle"><strong>Show what I am listening to on Discord</strong></label></div>
           <div class="creditsBox" style="margin-top:10px"><div><strong>Now playing</strong><div class="subtle" style="margin-top:3px">${t?esc(displayTrackTitle(t,true))+" • "+esc(artistName(t)):"Nothing is playing right now."}</div></div></div>
         </div>
-        <div class="help">Discord Desktop must be running. Localify reconnects automatically.</div>
+        <div class="help">Discord Desktop must be running. Localio reconnects automatically.</div>
       </div>`);
     $("#closeModal").onclick=()=>closeModal(true);
     $("#discordPresenceToggle").onchange=async e=>{state.settings.discordPresence=!!e.target.checked;await save();if(state.settings.discordPresence===false)clearDiscordPresence();else connectDiscordBridge()};
@@ -2355,7 +2355,7 @@ html.localify-mobile .mobileNav .svgIcon{width:20px;height:20px}
       audio.load();
       audio.currentTime=0;
     }catch(e){
-      console.warn("Localify audio setup failed",e);
+      console.warn("Localio audio setup failed",e);
       toast("Could not load this audio file.");
       return;
     }
@@ -2363,7 +2363,7 @@ html.localify-mobile .mobileNav .svgIcon{width:20px;height:20px}
     try{
       await audio.play();
     }catch(e){
-      console.warn("Localify playback failed",e);
+      console.warn("Localio playback failed",e);
       if(e?.name==="NotAllowedError")toast("Playback was blocked by the browser. Press Play once more.");
       else if(audio.error?.code===audio.error.MEDIA_ERR_SRC_NOT_SUPPORTED)toast("This browser cannot play that audio format. Try MP3, WAV, FLAC, OGG or another browser.");
       else toast("The browser could not play this audio file.");
@@ -2416,10 +2416,10 @@ html.localify-mobile .mobileNav .svgIcon{width:20px;height:20px}
   function profileWeeklyData(){const days=recentAnalyticsDays(7),week=profileWeekRange(),weekDays=days.filter(([key])=>{const parts=key.split("-").map(Number);const d=new Date(Date.UTC(parts[0],parts[1]-1,parts[2]));return d.getTime()>=Date.UTC(week.start.getFullYear(),week.start.getMonth(),week.start.getDate())}),seconds=weekDays.reduce((n,[,sec])=>n+sec,0),history=profileWeekHistory();return {days:weekDays,seconds,plays:history.length,topSongs:profileWeeklyTopSongs(),topArtists:profileWeeklyTopArtists()}}
   function closeProfileMenu(){const m=$("#profileMenu");if(m){m.classList.remove("open");m.setAttribute("aria-hidden","true")}}
   function openProfileMenu(){
-    const m=$("#profileMenu"),name=String(state.profile?.displayName||"").trim()||"Localify listener";
+    const m=$("#profileMenu"),name=String(state.profile?.displayName||"").trim()||"Localio listener";
     if(!m)return;
     const avatar=state.profile?.avatar?'<img src="'+esc(state.profile.avatar)+'" alt="">':'<span>'+esc(name.slice(0,1).toUpperCase()||"L")+'</span>';
-    m.innerHTML='<div class="profileMenuHead"><div class="profileMenuAvatar">'+avatar+'</div><div style="min-width:0"><div class="profileMenuName">'+esc(name)+'</div><div class="profileMenuSub">Localify account on this device</div></div></div>'+
+    m.innerHTML='<div class="profileMenuHead"><div class="profileMenuAvatar">'+avatar+'</div><div style="min-width:0"><div class="profileMenuName">'+esc(name)+'</div><div class="profileMenuSub">Localio account on this device</div></div></div>'+
       '<button type="button" class="profileMenuItem" id="profileMenuProfile"><span class="menuIcon">'+uiIcon("artist")+'</span><span>Profile<small>Library overview and profile picture</small></span></button>'+
       '<button type="button" class="profileMenuItem" id="profileMenuStats"><span class="menuIcon">'+uiIcon("clock")+'</span><span>Listening stats<small>Weekly and all-time listening</small></span></button>'+
       '<button type="button" class="profileMenuItem" id="profileMenuSettings"><span class="menuIcon">'+uiIcon("equalizer")+'</span><span>Account settings<small>Playback, Discord and folders</small></span></button>';
@@ -2434,7 +2434,7 @@ html.localify-mobile .mobileNav .svgIcon{width:20px;height:20px}
   function renderProfileTopButton(){
     const b=$("#profileBtn"),g=$("#profileGlyph");
     if(!b||!g)return;
-    const name=String(state.profile?.displayName||"").trim()||"Localify listener";
+    const name=String(state.profile?.displayName||"").trim()||"Localio listener";
     if(state.profile?.avatar)g.innerHTML=`<img src="${esc(state.profile.avatar)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
     else g.innerHTML=`<span style="display:grid;place-items:center;width:100%;height:100%;font-weight:1000">${esc(name.slice(0,1).toUpperCase()||"L")}</span>`;
     g.style.cssText="display:grid;place-items:center;width:100%;height:100%;overflow:hidden;border-radius:50%";
@@ -2443,10 +2443,10 @@ html.localify-mobile .mobileNav .svgIcon{width:20px;height:20px}
   }
   function showProfile(){
     closeProfileMenu();ensureAnalytics();state.currentView="profile";state.detail=null;state.selected=[];
-    const name=String(state.profile?.displayName||"").trim()||"Localify listener",initials=esc(name.slice(0,1).toUpperCase()||"L");
+    const name=String(state.profile?.displayName||"").trim()||"Localio listener",initials=esc(name.slice(0,1).toUpperCase()||"L");
     const recent=state.recent.map(trackById).filter(Boolean).slice(0,8),liked=state.liked.filter(id=>trackById(id)).length;
     const albumCount=state.albums.length,artistCount=state.artists.length,songCount=state.tracks.length,playlistCount=state.playlists.length;
-    $("#content").innerHTML='<div class="profilePage"><div class="profileHeader"><div class="profileAvatar">'+(state.profile?.avatar?'<img src="'+esc(state.profile.avatar)+'" alt="">':initials)+'</div><div><div class="profileName">'+esc(name)+'</div><div class="profileSub">Your Localify profile and library overview.</div><div class="profileActions"><button class="secondary small" id="profileEdit">Edit profile</button></div></div></div>'+
+    $("#content").innerHTML='<div class="profilePage"><div class="profileHeader"><div class="profileAvatar">'+(state.profile?.avatar?'<img src="'+esc(state.profile.avatar)+'" alt="">':initials)+'</div><div><div class="profileName">'+esc(name)+'</div><div class="profileSub">Your Localio profile and library overview.</div><div class="profileActions"><button class="secondary small" id="profileEdit">Edit profile</button></div></div></div>'+
       '<div class="profileStatsGrid"><div class="profileStat"><div class="profileStatLabel">Songs</div><div class="profileStatValue">'+songCount.toLocaleString()+'</div></div><div class="profileStat"><div class="profileStatLabel">Albums</div><div class="profileStatValue">'+albumCount.toLocaleString()+'</div></div><div class="profileStat"><div class="profileStatLabel">Artists</div><div class="profileStatValue">'+artistCount.toLocaleString()+'</div></div><div class="profileStat"><div class="profileStatLabel">Playlists</div><div class="profileStatValue">'+playlistCount.toLocaleString()+'</div></div><div class="profileStat"><div class="profileStatLabel">Folders</div><div class="profileStatValue">'+state.folders.length.toLocaleString()+'</div></div></div>'+
       '<div class="profileGrid"><div class="profilePanel"><h3>Library</h3><div class="profileList"><div class="profileListRow"><div class="profileRank">♥</div><div><div class="profileTrackTitle">Liked songs</div><div class="profileTrackSub">Songs in your liked collection</div></div><div class="profileCount">'+liked+'</div></div><div class="profileListRow"><div class="profileRank">▶</div><div><div class="profileTrackTitle">Recently played</div><div class="profileTrackSub">Tracks in your recent history</div></div><div class="profileCount">'+state.recent.length+'</div></div></div></div>'+
       '<div class="profilePanel"><h3>Listening</h3><div class="profileList"><div class="profileListRow"><div class="profileRank">◷</div><div><div class="profileTrackTitle">Listening time</div><div class="profileTrackSub">Total tracked playback</div></div><div class="profileCount">'+formatHours(Number(state.analytics?.totalSeconds)||0)+'</div></div><div class="profileListRow"><div class="profileRank">#</div><div><div class="profileTrackTitle">Total plays</div><div class="profileTrackSub">Plays recorded on this device</div></div><div class="profileCount">'+Object.values(state.analytics?.plays||{}).reduce((n,v)=>n+(Number(v)||0),0).toLocaleString()+'</div></div></div></div></div>'+
@@ -2468,7 +2468,7 @@ function showListeningStats(){
 function editLocalProfile(){
     const name=String(state.profile?.displayName||"").trim(),avatar=state.profile?.avatar||null;
     setModal(`<div class="modalHead"><h2>Edit profile</h2><button class="circle iconOnly" id="closeModal" title="Close" aria-label="Close"><svg class="svgIcon" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
-      <div class="coverEdit"><div id="profileEditAvatar" class="profileAvatar" style="width:92px;height:92px;font-size:30px">${avatar?`<img src="${esc(avatar)}" alt="">`:esc(name.slice(0,1).toUpperCase()||"L")}</div><div><button class="secondary" id="profileAvatarBtn">Choose profile picture</button><div class="help" style="margin-top:6px">The picture is saved locally with your Localify profile.</div></div></div>
+      <div class="coverEdit"><div id="profileEditAvatar" class="profileAvatar" style="width:92px;height:92px;font-size:30px">${avatar?`<img src="${esc(avatar)}" alt="">`:esc(name.slice(0,1).toUpperCase()||"L")}</div><div><button class="secondary" id="profileAvatarBtn">Choose profile picture</button><div class="help" style="margin-top:6px">The picture is saved locally with your Localio profile.</div></div></div>
       <div class="field"><label>Display name</label><input id="profileNameInput" maxlength="60" value="${esc(name)}" placeholder="Your name"></div>
       <div class="modalFoot"><button class="secondary" id="profileCancel">Cancel</button><button class="primary" id="profileSave">Save</button></div>`);
     $("#closeModal").onclick=()=>closeModal(true);$("#profileCancel").onclick=()=>closeModal(true);
@@ -2478,7 +2478,7 @@ function editLocalProfile(){
 
   function showAccountSettings(){
     closeProfileMenu();
-    setModal('<div class="modalHead"><h2>Account settings</h2><button class="circle iconOnly" id="closeModal" title="Close" aria-label="Close">'+uiIcon("close")+'</button></div><div class="settingsGrid"><section class="settingsSection"><div class="settingsSectionTitle">Playback</div><div class="settingsSectionSub">Control how Localify Desktop plays your music.</div><div class="settingsToggleRow" style="margin-top:10px"><div class="settingsToggleCopy"><strong>Shuffle</strong><span>Randomize the current queue.</span></div><input type="checkbox" id="accountShuffle" '+(state.settings.shuffle?"checked":"")+'></div><div class="settingsToggleRow"><div class="settingsToggleCopy"><strong>Now Playing panel</strong><span>Show or hide the side panel.</span></div><input type="checkbox" id="accountNowPanel" '+(!state.settings.nowSidebarHidden?"checked":"")+'></div><div style="padding-top:13px"><div class="settingsSectionSub" style="margin-bottom:7px">Volume</div><input class="settingsRange" id="accountVolume" type="range" min="0" max="1" step="0.01" value="'+esc(state.settings.volume??.9)+'"></div></section><section class="settingsSection"><div class="settingsSectionTitle">Discord Rich Presence</div><div class="settingsSectionSub">Built into Localify Desktop. Discord connects automatically in the background.</div><div class="help" style="margin-top:10px">Play a song while Discord Desktop is running.</div></section><section class="settingsSection"><div class="settingsSectionTitle">Library & data</div><div class="settingsSectionSub">Portable presets and Localify folders.</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="secondary" id="accountPresets">Open presets</button><button class="secondary" id="accountNewFolder">New folder</button></div></section></div><div class="modalFoot"><button class="primary" id="settingsDone">Done</button></div>',{large:true});
+    setModal('<div class="modalHead"><h2>Account settings</h2><button class="circle iconOnly" id="closeModal" title="Close" aria-label="Close">'+uiIcon("close")+'</button></div><div class="settingsGrid"><section class="settingsSection"><div class="settingsSectionTitle">Playback</div><div class="settingsSectionSub">Control how Localio Desktop plays your music.</div><div class="settingsToggleRow" style="margin-top:10px"><div class="settingsToggleCopy"><strong>Shuffle</strong><span>Randomize the current queue.</span></div><input type="checkbox" id="accountShuffle" '+(state.settings.shuffle?"checked":"")+'></div><div class="settingsToggleRow"><div class="settingsToggleCopy"><strong>Now Playing panel</strong><span>Show or hide the side panel.</span></div><input type="checkbox" id="accountNowPanel" '+(!state.settings.nowSidebarHidden?"checked":"")+'></div><div style="padding-top:13px"><div class="settingsSectionSub" style="margin-bottom:7px">Volume</div><input class="settingsRange" id="accountVolume" type="range" min="0" max="1" step="0.01" value="'+esc(state.settings.volume??.9)+'"></div></section><section class="settingsSection"><div class="settingsSectionTitle">Discord Rich Presence</div><div class="settingsSectionSub">Built into Localio Desktop. Discord connects automatically in the background.</div><div class="help" style="margin-top:10px">Play a song while Discord Desktop is running.</div></section><section class="settingsSection"><div class="settingsSectionTitle">Library & data</div><div class="settingsSectionSub">Portable backups and Localio folders.</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="secondary" id="accountPresets">Open backups</button><button class="secondary" id="accountNewFolder">New folder</button></div></section></div><div class="modalFoot"><button class="primary" id="settingsDone">Done</button></div>',{large:true});
     $("#closeModal").onclick=()=>closeModal(true);
     $("#settingsDone").onclick=()=>closeModal(true);
     $("#accountShuffle").onchange=async e=>{state.settings.shuffle=e.target.checked;await save();renderPlayer()};
@@ -2522,7 +2522,7 @@ function editLocalProfile(){
     try{
       input.click();
     }catch(e){
-      console.warn("Localify file picker failed",e);
+      console.warn("Localio file picker failed",e);
       if(window.showOpenFilePicker){
         try{
           const handles=await window.showOpenFilePicker({multiple:true,types:[{description:"Audio",accept:{"audio/*":[".mp3",".m4a",".aac",".flac",".wav",".ogg",".opus",".webm",".aiff",".alac"]}}]});
@@ -2664,8 +2664,8 @@ function editLocalProfile(){
     else if(context.playlistId)showPlaylist(context.playlistId);
     else render();
 
-    window.addEventListener("unhandledrejection",e=>{console.warn("Localify unhandled promise rejection",e.reason);e.preventDefault()});
-  window.addEventListener("error",e=>{console.warn("Localify runtime error",e.error||e.message)});
+    window.addEventListener("unhandledrejection",e=>{console.warn("Localio unhandled promise rejection",e.reason);e.preventDefault()});
+  window.addEventListener("error",e=>{console.warn("Localio runtime error",e.error||e.message)});
 
   (async()=>{
       let cursor=0;
@@ -2678,7 +2678,7 @@ function editLocalProfile(){
       await Promise.all(workers);
       autoSave();
       if(state.currentView==="library"||state.detail?.type||state.currentView==="recent"||state.currentView==="liked"||state.currentView==="search"||state.currentView==="albums"||state.currentView==="playlists"||state.currentView==="home")renderCurrentViewWithoutScroll();
-    })().catch(e=>console.warn("Localify duration scan failed",e));
+    })().catch(e=>console.warn("Localio duration scan failed",e));
     return added;
   }
   function createFolderFromImportedTracks(name,tracks){
@@ -2712,8 +2712,8 @@ function editLocalProfile(){
     setModal(`
       <div class="modalHead"><h2>Delete entire library?</h2><button class="circle iconOnly" id="closeDeleteLibrary" title="Close" aria-label="Close">${uiIcon("close")}</button></div>
       <div class="deleteWarning">
-        <div class="deleteWarningBox"><strong>This will permanently remove this Localify library from this device.</strong><br>It will delete ${count} saved song${count===1?"":"s"}, artists, albums, playlists, liked/recent data, and stored audio files from this browser.</div>
-        <div class="help">This does not delete files from your computer or phone. It only removes Localify's saved library data. A previously exported <code>.localify</code> backup can be imported again.</div>
+        <div class="deleteWarningBox"><strong>This will permanently remove this Localio library from this device.</strong><br>It will delete ${count} saved song${count===1?"":"s"}, artists, albums, playlists, liked/recent data, and stored audio files from this browser.</div>
+        <div class="help">This does not delete files from your computer or phone. It only removes Localio's saved library data. A previously exported <code>.localify</code> backup can be imported again.</div>
         <div class="modalFoot">
           <button class="secondary" id="cancelDeleteLibrary">Cancel</button>
           <button class="deleteLibraryBtn btnIcon" id="confirmDeleteLibrary">${uiIcon("trash")} Delete everything</button>
@@ -2729,7 +2729,7 @@ function editLocalProfile(){
       closeModal(true);
       render();
       renderPlayer();
-      toast("Your Localify library was deleted from this device.");
+      toast("Your Localio library was deleted from this device.");
     };
   }
 
@@ -2915,7 +2915,7 @@ function editLocalProfile(){
       if(a==="folder")openFolderChooser("tracks",id);
       if(a==="lyrics")showLyrics(id);
       if(a==="edit")editTrack(id);
-      if(a==="delete"){if(confirm(`Remove this song from Localify?`)){removeTracks([id]);await save();render()}}
+      if(a==="delete"){if(confirm(`Remove this song from Localio?`)){removeTracks([id]);await save();render()}}
       if(a==="savePreset")exportPreset("songs",[id]);
       if(a==="download")downloadTrack(id);
     })
@@ -2965,7 +2965,7 @@ function editLocalProfile(){
     setAudioParam(eqNodes.output.gain,.82);
   }
   // ============================================================
-  // SOUND PRESETS — edit this section to add/remove presets
+  // SOUND PRESETS — edit this section to add/remove backups
   // ============================================================
   // Format:
   //   presetId:{bass:X,mid:X,treble:X,gain:X},
@@ -2984,7 +2984,7 @@ function editLocalProfile(){
     const q={...EQ_PRESETS.flat,...(state.settings.eq||{})};
     if(!EQ_PRESETS[q.preset])q.preset="flat";
     q.compressor=q.compressor===true;
-    // Add matching entries here when you create new presets above.
+    // Add matching entries here when you create new backups above.
     const options=[["flat","Flat"],["bass","Bass"]];
     setModal(`
       <div class="modalHead"><h2>Sound filters</h2><button class="circle iconOnly" id="closeModal" title="Close" aria-label="Close">${uiIcon("close")}</button></div>
@@ -3027,7 +3027,7 @@ function editLocalProfile(){
   function guessMime(name){const e=(String(name||'').match(/\.([a-z0-9]+)$/i)||[])[1]?.toLowerCase();return ({mp3:'audio/mpeg',m4a:'audio/mp4',mp4:'audio/mp4',aac:'audio/aac',flac:'audio/flac',wav:'audio/wav',ogg:'audio/ogg',oga:'audio/ogg',opus:'audio/ogg',webm:'audio/webm',aiff:'audio/aiff',aif:'audio/aiff',alac:'audio/mp4',caf:'audio/x-caf'})[e]||'application/octet-stream'}
   async function blobToBytes(blob){return new Uint8Array(await blob.arrayBuffer())}
 
-  // ZIP64 headers are used for all new exports. This removes Localify's old
+  // ZIP64 headers are used for all new exports. This removes Localio's old
   // 65,535-entry and 4 GiB ZIP32 limits. Streaming is used when the browser
   // provides showSaveFilePicker, so large libraries are not built in RAM.
   function zip64Extra(values){const extra=new Uint8Array(4+8*values.length),dv=new DataView(extra.buffer);dv.setUint16(0,1,true);dv.setUint16(2,8*values.length,true);let o=4;for(const v of values){extra.set(u64(v),o);o+=8}return extra}
@@ -3036,7 +3036,7 @@ function editLocalProfile(){
   function zipEnd(count,cdSize,cdOffset){const eocd64Offset=cdOffset+cdSize,body=new Uint8Array(56),dv=new DataView(body.buffer);dv.setUint32(0,0x06064b50,true);dv.setUint32(4,44,true);dv.setUint16(8,45,true);dv.setUint16(10,45,true);dv.setUint32(12,0,true);dv.setUint32(16,0,true);body.set(u64(count),24);body.set(u64(count),32);body.set(u64(cdSize),40);body.set(u64(cdOffset),48);const locator=new Uint8Array(20),ldv=new DataView(locator.buffer);ldv.setUint32(0,0x07064b50,true);ldv.setUint32(4,0,true);locator.set(u64(eocd64Offset),8);ldv.setUint32(16,1,true);const classic=new Uint8Array(22),ev=new DataView(classic.buffer);ev.setUint32(0,0x06054b50,true);ev.setUint16(4,0,true);ev.setUint16(6,0,true);ev.setUint16(8,0xffff,true);ev.setUint16(10,0xffff,true);ev.setUint32(12,0xffffffff,true);ev.setUint32(16,0xffffffff,true);ev.setUint16(20,0,true);return new Uint8Array([...body,...locator,...classic])}
   function downloadBlob(blob,name){
     const url=URL.createObjectURL(blob),a=document.createElement("a");
-    a.href=url;a.download=name||"Localify.localify";a.style.display="none";
+    a.href=url;a.download=name||"Localio.localify";a.style.display="none";
     document.body.appendChild(a);a.click();a.remove();
     setTimeout(()=>URL.revokeObjectURL(url),1000);
   }
@@ -3115,7 +3115,7 @@ function editLocalProfile(){
   }
   function safeDownloadName(t){
     const artist=artistNamesForTrack(t).filter(x=>x&&x!==NONE_LABEL).join(", "),title=displayTrackTitle(t,true)||"Unknown song";
-    return (artist?artist+" - "+title:title).replace(/[\\/:*?"<>|]+/g,"-").replace(/\\s+/g," ").trim().slice(0,180)||"Localify song";
+    return (artist?artist+" - "+title:title).replace(/[\\/:*?"<>|]+/g,"-").replace(/\\s+/g," ").trim().slice(0,180)||"Localio song";
   }
   async function downloadTrack(id){
     const t=trackById(id);if(!t)return;
@@ -3132,7 +3132,7 @@ function editLocalProfile(){
         name+="."+ext;downloadBlob(out,name);
         toast("Downloaded the original audio. Full MP3 tags are applied when the source is MP3.");
       }
-    }catch(e){console.error("Localify song download failed",e);toast("Could not download this song.");}
+    }catch(e){console.error("Localio song download failed",e);toast("Could not download this song.");}
   }
 
   async function makeZip(entries){const chunks=[],central=[];let offset=0;const enc=new TextEncoder();for(const entry of entries){const nb=enc.encode(entry.name),data=entry.bytes instanceof Uint8Array?entry.bytes:new Uint8Array(entry.bytes),crc=crc32(data),size=data.length,h=zipLocalHeader(nb,crc,size);chunks.push(h,data);central.push(zipCentralHeader(nb,crc,size,offset));offset+=h.length+size}const cdOffset=offset;let cdSize=0;for(const c of central){chunks.push(c);cdSize+=c.length}chunks.push(zipEnd(central.length,cdSize,cdOffset));return new Blob(chunks,{type:'application/zip'})}
@@ -3146,7 +3146,7 @@ function editLocalProfile(){
     const tail=new Uint8Array(await file.slice(tailStart).arrayBuffer());
     let eocd=-1;
     for(let i=tail.length-22;i>=0;i--){if(tail[i]===0x50&&tail[i+1]===0x4b&&tail[i+2]===0x05&&tail[i+3]===0x06){eocd=i;break}}
-    if(eocd<0)throw Error('Not a Localify ZIP');
+    if(eocd<0)throw Error('Not a Localio ZIP');
     const eocdView=new DataView(tail.buffer,tail.byteOffset+eocd,22);
     let count=eocdView.getUint16(10,true),cdSize=eocdView.getUint32(12,true),cdOffset=eocdView.getUint32(16,true);
     if(count===0xffff||cdOffset===0xffffffff||cdSize===0xffffffff){
@@ -3166,35 +3166,35 @@ function editLocalProfile(){
     const central=new Uint8Array(await file.slice(cdOffset,cdOffset+cdSize).arrayBuffer()),dv=new DataView(central.buffer,central.byteOffset,central.byteLength),dec=new TextDecoder();
     const files=new Map();let pos=0;
     for(let i=0;i<count;i++){
-      if(pos+46>central.length||dv.getUint32(pos,true)!==0x02014b50)throw Error('Invalid Localify entry');
+      if(pos+46>central.length||dv.getUint32(pos,true)!==0x02014b50)throw Error('Invalid Localio entry');
       const method=dv.getUint16(pos+10,true),crc=dv.getUint32(pos+16,true),c32=dv.getUint32(pos+20,true),u32v=dv.getUint32(pos+24,true),nameLen=dv.getUint16(pos+28,true),extraLen=dv.getUint16(pos+30,true),commentLen=dv.getUint16(pos+32,true),off32=dv.getUint32(pos+42,true);
-      const recordEnd=pos+46+nameLen+extraLen+commentLen;if(recordEnd>central.length)throw Error('Invalid Localify entry');
+      const recordEnd=pos+46+nameLen+extraLen+commentLen;if(recordEnd>central.length)throw Error('Invalid Localio entry');
       const name=dec.decode(central.slice(pos+46,pos+46+nameLen)),extra=central.slice(pos+46+nameLen,pos+46+nameLen+extraLen);
       const usize=u32v===0xffffffff?zip64Value(extra,'usize'):u32v,csize=c32===0xffffffff?zip64Value(extra,'csize'):c32,localOffset=off32===0xffffffff?zip64Value(extra,'offset'):off32;
       if(usize==null||csize==null||localOffset==null)throw Error('Invalid ZIP64 entry');
       const lh=new Uint8Array(await file.slice(localOffset,localOffset+30).arrayBuffer());
-      if(lh.length<30||new DataView(lh.buffer,lh.byteOffset,30).getUint32(0,true)!==0x04034b50)throw Error('Invalid Localify entry');
+      if(lh.length<30||new DataView(lh.buffer,lh.byteOffset,30).getUint32(0,true)!==0x04034b50)throw Error('Invalid Localio entry');
       const lhdv=new DataView(lh.buffer,lh.byteOffset,30),ln=lhdv.getUint16(26,true),le=lhdv.getUint16(28,true),dataStart=localOffset+30+ln+le;
-      if(dataStart<0||dataStart+csize>file.size)throw Error('Corrupt Localify entry: '+name);
-      if(files.has(name))throw Error('Corrupt Localify archive: duplicate entry '+name);
+      if(dataStart<0||dataStart+csize>file.size)throw Error('Corrupt Localio entry: '+name);
+      if(files.has(name))throw Error('Corrupt Localio archive: duplicate entry '+name);
       files.set(name,{blob:file.slice(dataStart,dataStart+csize),method,size:usize,crc:crc>>>0});
       pos=recordEnd;
     }
     return files;
   }
   async function zipEntryBytes(entry){
-    if(!entry)throw Error('Missing Localify archive entry.');
+    if(!entry)throw Error('Missing Localio archive entry.');
     let data;
     if(entry.method===0){data=new Uint8Array(await entry.blob.arrayBuffer());}
     else if(entry.method===8&&'DecompressionStream' in window){const stream=entry.blob.stream().pipeThrough(new DecompressionStream('deflate-raw'));data=new Uint8Array(await new Response(stream).arrayBuffer());}
     else throw Error('Unsupported ZIP compression method.');
-    if(data.length!==entry.size)throw Error('Corrupt Localify archive: size mismatch.');
-    if(crc32(data)!==entry.crc)throw Error('Corrupt Localify archive: checksum mismatch.');
+    if(data.length!==entry.size)throw Error('Corrupt Localio archive: size mismatch.');
+    if(crc32(data)!==entry.crc)throw Error('Corrupt Localio archive: checksum mismatch.');
     return data;
   }
   async function zipEntryBlob(entry){
-    if(!entry)throw Error('Missing Localify archive entry.');
-    if(entry.method===0){if(entry.blob.size!==entry.size)throw Error('Corrupt Localify archive: size mismatch.');return entry.blob;}
+    if(!entry)throw Error('Missing Localio archive entry.');
+    if(entry.method===0){if(entry.blob.size!==entry.size)throw Error('Corrupt Localio archive: size mismatch.');return entry.blob;}
     return new Blob([await zipEntryBytes(entry)]);
   }
 
@@ -3411,11 +3411,11 @@ function editLocalProfile(){
       throw e;
     }
   }
-  async function exportPreset(kind,ids=[],options=null){let handle=null;try{if(window.showSaveFilePicker)handle=await window.showSaveFilePicker({suggestedName:`Localify-${kind==='full'&&options?'library':kind}.localify`,types:[{description:'Localify Preset',accept:{'application/octet-stream':['.localify']}}]});await flushSave(false);const manifest=await collectPresetMeta(kind,ids,options);if(handle){await writePresetStreaming(handle,manifest);await openPresetShareMenu(manifest);return true}const entries=[{name:'library.json',bytes:new TextEncoder().encode(JSON.stringify(manifest))}];for(const t of manifest.tracks){const src=trackById(t.id),blob=src?await ensureTrackBlob(src):null;if(isBlobLike(blob))entries.push({name:t.audioFile,bytes:await blobToBytes(blob)})}downloadBlob(await makeZip(entries),`Localify-${kind==='full'&&options?'library':kind}.localify`);toast(`${manifest.presetName} exported.`);await openPresetShareMenu(manifest);return true}catch(e){if(e?.name==='AbortError')return false;console.error(e);toast(e?.message||'Could not export this preset.');return false}}
+  async function exportPreset(kind,ids=[],options=null){let handle=null;try{if(window.showSaveFilePicker)handle=await window.showSaveFilePicker({suggestedName:`Localio-${kind==='full'&&options?'library':kind}.localify`,types:[{description:'Localio Preset',accept:{'application/octet-stream':['.localify']}}]});await flushSave(false);const manifest=await collectPresetMeta(kind,ids,options);if(handle){await writePresetStreaming(handle,manifest);await openPresetShareMenu(manifest);return true}const entries=[{name:'library.json',bytes:new TextEncoder().encode(JSON.stringify(manifest))}];for(const t of manifest.tracks){const src=trackById(t.id),blob=src?await ensureTrackBlob(src):null;if(isBlobLike(blob))entries.push({name:t.audioFile,bytes:await blobToBytes(blob)})}downloadBlob(await makeZip(entries),`Localio-${kind==='full'&&options?'library':kind}.localify`);toast(`${manifest.presetName} exported.`);await openPresetShareMenu(manifest);return true}catch(e){if(e?.name==='AbortError')return false;console.error(e);toast(e?.message||'Could not export this preset.');return false}}
 
-  function openPresetExportSelection(kind){const lists={artists:state.artists,albums:state.albums,songs:state.tracks,playlists:state.playlists},items=lists[kind]||[];setModal(`<div class="modalHead"><h2>Export ${presetLabel(kind)}</h2><button class="circle iconOnly" id="closeModal" title="Close" aria-label="Close">${uiIcon('close')}</button></div><div class="help">Choose what to export. Album presets include their connected artists, artist profile pictures/info, and songs. Song and playlist presets include their connected artists and albums.</div><div style="display:flex;gap:8px;align-items:center;margin:14px 0"><button class="secondary small" id="presetSelectAll">Select all</button><button class="secondary small" id="presetClearAll">Clear</button><span class="subtle" id="presetSelectedCount">${items.length} selected</span></div><div class="artistPickerMenu" style="display:grid;position:static;max-height:50vh;overflow:auto">${items.map(x=>kind==='artists'?`<label class="artistChoice"><input class="presetCheck" type="checkbox" value="${esc(x.id)}" checked><span class="artistChoiceName">${esc(x.name)}</span></label>`:kind==='albums'?`<label class="artistChoice"><input class="presetCheck" type="checkbox" value="${esc(x.id)}" checked><span class="artistChoiceName"><strong>${esc(x.title)}</strong> <span class="muted">— ${esc(artistNamesForAlbum(x).join(', ')||'Unknown Artist')}</span></span></label>`:kind==='songs'?`<label class="artistChoice"><input class="presetCheck" type="checkbox" value="${esc(x.id)}" checked><span class="artistChoiceName"><strong>${esc(x.title)}</strong> <span class="muted">— ${esc(artistName(x))}</span></span></label>`:`<label class="artistChoice"><input class="presetCheck" type="checkbox" value="${esc(x.id)}" checked><span class="artistChoiceName"><strong>${esc(x.name)}</strong> <span class="muted">— ${(x.trackIds||[]).length} songs</span></span></label>`).join('')}</div><div class="modalFoot"><button class="secondary" id="presetCancel">Cancel</button><button class="primary" id="presetExport">Export preset</button></div>`,{large:true});const refresh=()=>{$('#presetSelectedCount').textContent=`${qAll('.presetCheck:checked').length} selected`};$('.presetCheck').forEach(x=>x.addEventListener('change',refresh));qAll('#presetSelectAll').onclick=()=>{qAll('.presetCheck').forEach(x=>x.checked=true);refresh()};qAll('#presetClearAll').onclick=()=>{qAll('.presetCheck').forEach(x=>x.checked=false);refresh()};$('#closeModal').onclick=()=>closeModal(true);$('#presetCancel').onclick=()=>closeModal(true);$('#presetExport').onclick=async()=>{const ids=qAll('.presetCheck:checked').map(x=>x.value);if(!ids.length){toast('Choose at least one item.');return}closeModal(true);await exportPreset(kind,ids)}}
+  function openPresetExportSelection(kind){const lists={artists:state.artists,albums:state.albums,songs:state.tracks,playlists:state.playlists},items=lists[kind]||[];setModal(`<div class="modalHead"><h2>Export ${presetLabel(kind)}</h2><button class="circle iconOnly" id="closeModal" title="Close" aria-label="Close">${uiIcon('close')}</button></div><div class="help">Choose what to export. Album backups include their connected artists, artist profile pictures/info, and songs. Song and playlist backups include their connected artists and albums.</div><div style="display:flex;gap:8px;align-items:center;margin:14px 0"><button class="secondary small" id="presetSelectAll">Select all</button><button class="secondary small" id="presetClearAll">Clear</button><span class="subtle" id="presetSelectedCount">${items.length} selected</span></div><div class="artistPickerMenu" style="display:grid;position:static;max-height:50vh;overflow:auto">${items.map(x=>kind==='artists'?`<label class="artistChoice"><input class="presetCheck" type="checkbox" value="${esc(x.id)}" checked><span class="artistChoiceName">${esc(x.name)}</span></label>`:kind==='albums'?`<label class="artistChoice"><input class="presetCheck" type="checkbox" value="${esc(x.id)}" checked><span class="artistChoiceName"><strong>${esc(x.title)}</strong> <span class="muted">— ${esc(artistNamesForAlbum(x).join(', ')||'Unknown Artist')}</span></span></label>`:kind==='songs'?`<label class="artistChoice"><input class="presetCheck" type="checkbox" value="${esc(x.id)}" checked><span class="artistChoiceName"><strong>${esc(x.title)}</strong> <span class="muted">— ${esc(artistName(x))}</span></span></label>`:`<label class="artistChoice"><input class="presetCheck" type="checkbox" value="${esc(x.id)}" checked><span class="artistChoiceName"><strong>${esc(x.name)}</strong> <span class="muted">— ${(x.trackIds||[]).length} songs</span></span></label>`).join('')}</div><div class="modalFoot"><button class="secondary" id="presetCancel">Cancel</button><button class="primary" id="presetExport">Export preset</button></div>`,{large:true});const refresh=()=>{$('#presetSelectedCount').textContent=`${qAll('.presetCheck:checked').length} selected`};$('.presetCheck').forEach(x=>x.addEventListener('change',refresh));qAll('#presetSelectAll').onclick=()=>{qAll('.presetCheck').forEach(x=>x.checked=true);refresh()};qAll('#presetClearAll').onclick=()=>{qAll('.presetCheck').forEach(x=>x.checked=false);refresh()};$('#closeModal').onclick=()=>closeModal(true);$('#presetCancel').onclick=()=>closeModal(true);$('#presetExport').onclick=async()=>{const ids=qAll('.presetCheck:checked').map(x=>x.value);if(!ids.length){toast('Choose at least one item.');return}closeModal(true);await exportPreset(kind,ids)}}
   function openPresetExportChooser(){
-    const rows=[["artists","Artists","Artist profiles, pictures and info",true],["albums","Albums","Album details, covers and metadata",true],["songs","Songs","Songs, metadata and audio files",true],["playlists","Playlists","Your playlist names and song lists",true],["folders","Folders","Your Localify folders and their contents",true]];
+    const rows=[["artists","Artists","Artist profiles, pictures and info",true],["albums","Albums","Album details, covers and metadata",true],["songs","Songs","Songs, metadata and audio files",true],["playlists","Playlists","Your playlist names and song lists",true],["folders","Folders","Your Localio folders and their contents",true]];
     const personalRows=[["liked","Liked songs","Your liked-songs list"],["recent","Recently played","Your recently played list"],["settings","Settings","Playback and app settings"],["analytics","Listening stats","Listening time, plays, history and top songs/artists"]];
     setModal('<div class="modalHead"><h2>Export library</h2><button class="circle iconOnly" id="closeModal" title="Close" aria-label="Close">'+uiIcon('close')+'</button></div><div class="help">Choose exactly what goes into the .localify file. Unchecked sections are not exported.</div><div style="display:grid;gap:8px;margin-top:16px">'+rows.map(r=>'<label class="settingsToggleRow" style="padding:12px 0;border-top:1px solid #232a32;cursor:pointer"><div class="settingsToggleCopy"><strong>'+r[1]+'</strong><span>'+r[2]+'</span></div><input class="exportSectionCheck" data-export-section="'+r[0]+'" type="checkbox" '+(r[3]?'checked':'')+'></label>').join('')+'<div style="font-size:10px;color:#737e8b;text-transform:uppercase;letter-spacing:.1em;font-weight:950;padding:14px 0 5px">Personal Saves</div><div style="display:grid;gap:8px">'+personalRows.map(r=>'<label class="settingsToggleRow" style="padding:12px 0;border-top:1px solid #232a32;cursor:pointer"><div class="settingsToggleCopy"><strong>'+r[1]+'</strong><span>'+r[2]+'</span></div><input class="exportSectionCheck" data-export-section="'+r[0]+'" type="checkbox"></label>').join('')+'</div><div style="display:flex;gap:8px;margin-top:12px"><button class="secondary small" id="exportSelectAll">Select all</button><button class="secondary small" id="exportClearAll">Clear</button><span class="subtle" id="exportSectionCount" style="align-self:center">5 selected</span></div><div class="modalFoot"><button class="secondary" id="closeExport">Cancel</button><button class="primary" id="doLibraryExport">'+uiIcon('download')+' Export library</button></div>',{large:true});
     const checks=()=>qAll('.exportSectionCheck'),refresh=()=>{$('#exportSectionCount').textContent=checks().filter(x=>x.checked).length+' selected'};
@@ -3436,20 +3436,20 @@ function editLocalProfile(){
       if(head[0]===0x50&&head[1]===0x4b&&head[2]===0x03&&head[3]===0x04){
         files=await parseZip(file);
         const mf=files.get('library.json');
-        if(!mf)throw new Error('This Localify file is missing library.json.');
+        if(!mf)throw new Error('This Localio file is missing library.json.');
         p=JSON.parse(new TextDecoder().decode(await zipEntryBytes(mf)));
       }else{
         let raw;try{raw=await file.arrayBuffer()}catch(e){throw new Error('The preset could not be read. The file may be unavailable or too large for this browser.')}
         p=JSON.parse(new TextDecoder().decode(raw));
       }
     }catch(e){
-      if(e instanceof SyntaxError)throw new Error('The Localify file is damaged or is not valid JSON.');
+      if(e instanceof SyntaxError)throw new Error('The Localio file is damaged or is not valid JSON.');
       throw e;
     }
-    if(!p||typeof p!=='object')throw new Error('Invalid Localify preset.');
-    if(!Array.isArray(p.tracks)&&!Array.isArray(p.artists)&&!Array.isArray(p.albums)&&!Array.isArray(p.playlists)&&!p.settings)throw new Error('Invalid Localify preset: no supported library data was found.');
+    if(!p||typeof p!=='object')throw new Error('Invalid Localio preset.');
+    if(!Array.isArray(p.tracks)&&!Array.isArray(p.artists)&&!Array.isArray(p.albums)&&!Array.isArray(p.playlists)&&!p.settings)throw new Error('Invalid Localio preset: no supported library data was found.');
     p.presetKind=p.presetKind||'full';
-    if(!['full','artists','albums','songs','playlists','liked','recent','settings'].includes(p.presetKind))throw new Error('Unsupported Localify preset type: '+String(p.presetKind)+'.');
+    if(!['full','artists','albums','songs','playlists','liked','recent','settings'].includes(p.presetKind))throw new Error('Unsupported Localio preset type: '+String(p.presetKind)+'.');
     const missing=[],badPaths=[];
     if(Array.isArray(p.tracks)){
       for(const t of p.tracks){
@@ -3468,8 +3468,8 @@ function editLocalProfile(){
     }
     return {p,files};
   }
-  function openPresetImportMode(p,files){pendingPresetImport={p,files};const kind=presetLabel(p.presetKind),setText=({full:'Replace your entire Localify library.',artists:'Delete every artist and replace the artist list with this file.',albums:'Delete every album and replace the album list with this file.',songs:'Delete every song and replace the song list with this file.',playlists:'Delete every playlist and replace the playlist list with this file.',liked:'Replace your liked songs list with this file.',recent:'Replace your recently played list with this file.',settings:'Replace your Localify settings with this file.'})[p.presetKind]||'Replace the data represented by this file.',summary=[['artists',p.artists?.length||0],['albums',p.albums?.length||0],['songs',p.tracks?.length||0],['playlists',p.playlists?.length||0]].filter(x=>x[1]).map(x=>`${x[1]} ${x[0]}`).join(' • ')||'Settings preset';setModal(`<div class="modalHead"><h2>Import ${esc(kind)}</h2><button class="circle iconOnly" id="closeModal" title="Close" aria-label="Close">${uiIcon('close')}</button></div><div class="creditsBox" style="margin-top:0"><strong>${esc(p.presetName||kind)}</strong><div class="subtle">${esc(summary)}</div></div><div class="help" style="margin-top:12px">Choose how to import this Localify file.</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px"><button class="primary" id="presetAdd">Add file</button><button class="dangerBtn" id="presetSet">Set file</button></div>`);$('#closeModal').onclick=()=>{pendingPresetImport=null;closeModal(true)};$('#presetAdd').onclick=async()=>{const x=pendingPresetImport;pendingPresetImport=null;closeModal(true);await importPresetData(x.p,x.files,'add')};$('#presetSet').onclick=async()=>{const x=pendingPresetImport;pendingPresetImport=null;closeModal(true);if(confirm(`Set ${kind}? This will replace the existing ${kind.toLowerCase()} data in Localify.`))await importPresetData(x.p,x.files,'set')}}
-  async function importPresetFile(file,expectedKind=''){try{const x=await readPresetFile(file);if(expectedKind&&x.p.presetKind!==expectedKind)throw Error(`This file is not an ${presetLabel(expectedKind)} preset.`);openPresetImportMode(x.p,x.files)}catch(e){console.error(e);toast(e?.message||'Could not read that Localify preset.')}finally{pendingExpectedPresetKind='';$('#bundlePicker').value=''}}
+  function openPresetImportMode(p,files){pendingPresetImport={p,files};const kind=presetLabel(p.presetKind),setText=({full:'Replace your entire Localio library.',artists:'Delete every artist and replace the artist list with this file.',albums:'Delete every album and replace the album list with this file.',songs:'Delete every song and replace the song list with this file.',playlists:'Delete every playlist and replace the playlist list with this file.',liked:'Replace your liked songs list with this file.',recent:'Replace your recently played list with this file.',settings:'Replace your Localio settings with this file.'})[p.presetKind]||'Replace the data represented by this file.',summary=[['artists',p.artists?.length||0],['albums',p.albums?.length||0],['songs',p.tracks?.length||0],['playlists',p.playlists?.length||0]].filter(x=>x[1]).map(x=>`${x[1]} ${x[0]}`).join(' • ')||'Settings preset';setModal(`<div class="modalHead"><h2>Import ${esc(kind)}</h2><button class="circle iconOnly" id="closeModal" title="Close" aria-label="Close">${uiIcon('close')}</button></div><div class="creditsBox" style="margin-top:0"><strong>${esc(p.presetName||kind)}</strong><div class="subtle">${esc(summary)}</div></div><div class="help" style="margin-top:12px">Choose how to import this Localio file.</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px"><button class="primary" id="presetAdd">Add file</button><button class="dangerBtn" id="presetSet">Set file</button></div>`);$('#closeModal').onclick=()=>{pendingPresetImport=null;closeModal(true)};$('#presetAdd').onclick=async()=>{const x=pendingPresetImport;pendingPresetImport=null;closeModal(true);await importPresetData(x.p,x.files,'add')};$('#presetSet').onclick=async()=>{const x=pendingPresetImport;pendingPresetImport=null;closeModal(true);if(confirm(`Set ${kind}? This will replace the existing ${kind.toLowerCase()} data in Localio.`))await importPresetData(x.p,x.files,'set')}}
+  async function importPresetFile(file,expectedKind=''){try{const x=await readPresetFile(file);if(expectedKind&&x.p.presetKind!==expectedKind)throw Error(`This file is not an ${presetLabel(expectedKind)} preset.`);openPresetImportMode(x.p,x.files)}catch(e){console.error(e);toast(e?.message||'Could not read that Localio preset.')}finally{pendingExpectedPresetKind='';$('#bundlePicker').value=''}}
   function findArtistImport(a){return state.artists.find(x=>presetKey(x.name)===presetKey(a.name))||null}
   function findAlbumImport(a,m){const ids=artistIdsForAlbum(a).map(id=>m.get(id)||id).filter(Boolean);return state.albums.find(x=>presetKey(x.title)===presetKey(a.title)&&artistIdsForAlbum(x).length===ids.length&&artistIdsForAlbum(x).every(id=>ids.includes(id)))||null}
   function findTrackImport(t,am,atm){const aid=t.albumId?am.get(t.albumId)||null:null,arts=artistIdsForTrack(t).map(id=>atm.get(id)||id).filter(Boolean);return state.tracks.find(x=>presetKey(x.title)===presetKey(t.title)&&(aid?x.albumId===aid:!x.albumId)&&artistIdsForTrack(x).length===arts.length&&artistIdsForTrack(x).every(id=>arts.includes(id)))||null}
@@ -3508,7 +3508,7 @@ function editLocalProfile(){
       await save(false,ids);
       const persisted=await flushSave(false);
       if(persisted){for(const id of ids){const saved=trackById(id);if(saved)saved.blob=null;saved&& (saved._blobDirty=false)}}
-      if(!persisted&&!force)throw new Error('Some audio files could not be saved yet. Keep Localify open and try the import again if the browser blocks storage.');
+      if(!persisted&&!force)throw new Error('Some audio files could not be saved yet. Keep Localio open and try the import again if the browser blocks storage.');
       return persisted;
     };
     for(const t0 of tracks){
@@ -3574,12 +3574,12 @@ function editLocalProfile(){
     const persisted=true;
     render();renderPlayer();
     toast(presetLabel(kind)+' preset '+(mode==='set'?'set':'added')+'.')
-  }catch(e){console.error('Localify preset import failed',e);toast(e?.message||'Could not import this Localify preset.')}}
+  }catch(e){console.error('Localio preset import failed',e);toast(e?.message||'Could not import this Localio preset.')}}
   function publicShareCover(v){const s=typeof v==="string"?v:"";return /^(https?:\/\/)/i.test(s)?s:""}
 function buildPresetSharePayload(source=null){
  const x=source||state,artists=Array.isArray(x.artists)?x.artists:[],albums=Array.isArray(x.albums)?x.albums:[],tracks=Array.isArray(x.tracks)?x.tracks:[],folders=Array.isArray(x.folders)?x.folders:[],playlists=Array.isArray(x.playlists)?x.playlists:[];
  const artistNameFor=a=>String(a?.name||a?.title||"Unknown Artist"),albumArtists=a=>Array.isArray(a?.artistNames)?a.artistNames.join(", "):String(a?.artist||"Unknown Artist");
- return {v:2,n:String(x.presetName||x.name||"Localify Library"),x:String(x.exportedAt||x.createdAt||new Date().toISOString()),c:{albums:albums.length,artists:artists.length,songs:tracks.length,folders:folders.length,playlists:playlists.length},
+ return {v:2,n:String(x.presetName||x.name||"Localio Library"),x:String(x.exportedAt||x.createdAt||new Date().toISOString()),c:{albums:albums.length,artists:artists.length,songs:tracks.length,folders:folders.length,playlists:playlists.length},
   a:albums.slice(0,12).map(a=>({t:String(a?.title||"Untitled album"),a:albumArtists(a),k:publicShareCover(a?.cover),y:String(a?.year||"")})),
   r:artists.slice(0,12).map(a=>({n:artistNameFor(a),k:publicShareCover(a?.image||a?.picture||a?.avatar),g:Array.isArray(a?.genres)?a.genres.slice(0,2).join(", "):String(a?.genre||"")})),
   s:tracks.slice(0,24).map(t=>({t:String(t?.title||t?.fileName||"Untitled song"),a:String(t?.artist||"Unknown Artist"),k:publicShareCover(t?.cover),n:String(t?.trackNumber||t?.track||"")})),
@@ -3598,18 +3598,18 @@ async function openPresetShareMenu(source=null){
  setModal('<div class="modalHead"><div><h2>Share preset</h2><div class="settingsSectionSub">Your preset is saved. Share a lightweight preview link.</div></div><button class="circle iconOnly" id="closeModal" title="Close" aria-label="Close">'+uiIcon("close")+'</button></div><div class="sharePreviewHero"><div><div class="sharePreviewKicker">LOCALIFY SHARE</div><h3>'+esc(d.n)+'</h3><p>'+Number(d.c.albums||0).toLocaleString()+' albums • '+Number(d.c.artists||0).toLocaleString()+' artists • '+Number(d.c.songs||0).toLocaleString()+' songs • '+Number(d.c.folders||0).toLocaleString()+' folders</p></div><div class="sharePreviewIcon">♫</div></div><div class="shareLinkBox"><input id="shareLinkInput" readonly value="'+esc(url)+'"><button class="primary" id="copyShareLink">'+uiIcon("copy")+' Copy link</button></div><div class="shareTabs">'+tabs.map(t=>'<button class="themeModeBtn '+(t[0]==="overview"?"active":"")+'" data-share-tab="'+t[0]+'">'+t[1]+'</button>').join("")+'</div><div id="sharePreviewList" class="sharePreviewList"></div><div class="modalFoot"><button class="secondary" id="openSharePreview">Open preview</button><button class="primary" id="shareNative">Share link</button></div>',{large:true});
  const renderTab=tab=>{$("#sharePreviewList").innerHTML=tab==="overview"?'<div class="shareCounts">'+tabs.slice(1).map(t=>'<button class="shareCount" data-share-jump="'+t[0]+'"><strong>'+Number(d.c[t[0]]||0).toLocaleString()+'</strong><span>'+t[1]+'</span></button>').join("")+'</div><div class="shareOverviewGrid"><div><h4>Albums</h4>'+makeRows("albums")+'</div><div><h4>Artists</h4>'+makeRows("artists")+'</div></div>':makeRows(tab)};
  const activateTab=tab=>{qAll("[data-share-tab]").forEach(x=>x.classList.toggle("active",x.dataset.shareTab===tab));renderTab(tab);qAll(".shareCount").forEach(x=>x.onclick=()=>activateTab(x.dataset.shareJump))};renderTab("overview");qAll("[data-share-tab]").forEach(b=>b.onclick=()=>activateTab(b.dataset.shareTab));
- $("#closeModal").onclick=()=>closeModal(true);$("#copyShareLink").onclick=async()=>{try{await navigator.clipboard.writeText(url);toast("Share link copied.")}catch{prompt("Copy this Localify share link:",url)}};$("#openSharePreview").onclick=()=>window.open(url,"_blank","noopener");$("#shareNative").onclick=async()=>{try{if(navigator.share)await navigator.share({title:d.n,text:"Localify library preview",url});else await navigator.clipboard.writeText(url);toast("Share link ready.")}catch(e){if(e?.name!=="AbortError")toast("Could not share the link.")}};
+ $("#closeModal").onclick=()=>closeModal(true);$("#copyShareLink").onclick=async()=>{try{await navigator.clipboard.writeText(url);toast("Share link copied.")}catch{prompt("Copy this Localio share link:",url)}};$("#openSharePreview").onclick=()=>window.open(url,"_blank","noopener");$("#shareNative").onclick=async()=>{try{if(navigator.share)await navigator.share({title:d.n,text:"Localio library preview",url});else await navigator.clipboard.writeText(url);toast("Share link ready.")}catch(e){if(e?.name!=="AbortError")toast("Could not share the link.")}};
 }
 async function sharePresetPreview(){await openPresetShareMenu(null)}
 
 function openPresetsMenu(){
     const html =
-      "<div class=\"modalHead\"><h2>Presets</h2><button class=\"circle iconOnly\" id=\"closeModal\" title=\"Close\" aria-label=\"Close\">"+uiIcon("close")+"</button></div>"+
+      "<div class=\"modalHead\"><h2>Backups</h2><button class=\"circle iconOnly\" id=\"closeModal\" title=\"Close\" aria-label=\"Close\">"+uiIcon("close")+"</button></div>"+
       "<div class=\"presetHome\">"+
-        "<div class=\"presetHero\"><div class=\"presetHeroTop\"><div><h3>Portable Localify presets</h3><p>Save and share your Localify library as <code>.localify</code> files. Audio is included in the package, and large exports use ZIP64 and streaming when your browser supports it.</p></div><div class=\"presetHeroIcon\">"+uiIcon("save")+"</div></div></div>"+
+        "<div class=\"presetHero\"><div class=\"presetHeroTop\"><div><h3>Portable Localio backups</h3><p>Save and share your Localio library as <code>.localify</code> files. Audio is included in the package, and large exports use ZIP64 and streaming when your browser supports it.</p></div><div class=\"presetHeroIcon\">"+uiIcon("save")+"</div></div></div>"+
         "<div class=\"presetActionGrid\">"+
           "<button class=\"presetAction\" id=\"presetExportBtn\"><span class=\"presetActionIcon\">"+uiIcon("download")+"</span><span><strong>Export preset</strong><span>Back up or share your library</span></span></button>"+
-          "<button class=\"presetAction\" id=\"presetImportBtn\"><span class=\"presetActionIcon\">"+uiIcon("upload")+"</span><span><strong>Import preset</strong><span>Load a Localify file onto this device</span></span></button>"+
+          "<button class=\"presetAction\" id=\"presetImportBtn\"><span class=\"presetActionIcon\">"+uiIcon("upload")+"</span><span><strong>Import preset</strong><span>Load a Localio file onto this device</span></span></button>"+
           "<button class=\"presetAction\" id=\"presetShareBtn\"><span class=\"presetActionIcon\">"+uiIcon("upload")+"</span><span><strong>Share preset preview</strong><span>Make a link showing some albums, artists, songs and folders</span></span></button>"+
         "</div>"+
         "<div class=\"presetQuickTitle\">Quick tools</div>"+
@@ -3632,7 +3632,7 @@ function openPresetsMenu(){
   }
   function openMobileTools(){openPresetsMenu()}
 
-  async function unlockPersistentStorage(){await ensureStorageAccess();try{if(navigator.storage?.persist)await navigator.storage.persist()}catch{};try{await openDB();storageReady=true;storageBlocked=false;toast("Persistent library storage is enabled.")}catch{storageBlocked=true;writeMetaFallback();toast("Your browser/Google Sites embed is blocking persistent storage. Open Localify as its own site for automatic saving.")}}
+  async function unlockPersistentStorage(){await ensureStorageAccess();try{if(navigator.storage?.persist)await navigator.storage.persist()}catch{};try{await openDB();storageReady=true;storageBlocked=false;toast("Persistent library storage is enabled.")}catch{storageBlocked=true;writeMetaFallback();toast("Your browser/Google Sites embed is blocking persistent storage. Open Localio as its own site for automatic saving.")}}
 
   // Static controls
   qAll("[data-mobile-view]").forEach(b=>b.onclick=e=>{e.preventDefault();setView(b.dataset.mobileView)});
@@ -3668,7 +3668,7 @@ $("#globalSearch").addEventListener("input",e=>{
   setInterval(checkDesktopPlayer,5000);
   function updateDesktopMediaSessionMetadata(t,cover=""){
     if(!LOCALIFY_DESKTOP_MODE||!("mediaSession"in navigator)||!t)return;
-    try{navigator.mediaSession.metadata=new MediaMetadata({title:displayTrackTitle(t,true)||"Unknown song",artist:artistNamesForTrack(t).join(", ")||"Unknown Artist",album:albumName(t)||"Localify",artwork:cover?[{src:cover,sizes:"512x512",type:"image/*"}]:[]})}catch{}
+    try{navigator.mediaSession.metadata=new MediaMetadata({title:displayTrackTitle(t,true)||"Unknown song",artist:artistNamesForTrack(t).join(", ")||"Unknown Artist",album:albumName(t)||"Localio",artwork:cover?[{src:cover,sizes:"512x512",type:"image/*"}]:[]})}catch{}
   }
   function updateDesktopMediaSessionPosition(){
     if(!LOCALIFY_DESKTOP_MODE||!("mediaSession"in navigator))return;
@@ -3708,15 +3708,15 @@ $("#globalSearch").addEventListener("input",e=>{
       await Promise.all([load(),loadLocalifyCoverMap()]);
       if(navigator.storage?.persist)try{await navigator.storage.persist()}catch{}
     }catch(e){
-      console.error("Localify startup error",e);
+      console.error("Localio startup error",e);
       // Never overwrite an existing fallback backup when storage temporarily fails.
       try{
         const recovered=await restoreSaved();
-        if(recovered)toast("Localify restored your saved library from its safety backup. Check browser storage permissions.");
-        else toast("Localify could not access saved storage yet. Your previous backup was preserved; refresh and try again.");
+        if(recovered)toast("Localio restored your saved library from its safety backup. Check browser storage permissions.");
+        else toast("Localio could not access saved storage yet. Your previous backup was preserved; refresh and try again.");
       }catch(recoverError){
-        console.warn("Localify emergency restore failed",recoverError);
-        toast("Localify could not access saved storage yet. Your previous backup was preserved; refresh and try again.");
+        console.warn("Localio emergency restore failed",recoverError);
+        toast("Localio could not access saved storage yet. Your previous backup was preserved; refresh and try again.");
       }
     }
     renderProfileTopButton();
