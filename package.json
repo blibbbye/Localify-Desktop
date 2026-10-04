@@ -1,8 +1,8 @@
 {
-  "name": "localify-desktop",
-  "productName": "Localify Desktop",
+  "name": "localio-desktop",
+  "productName": "Localio Desktop",
   "version": "1.0.1",
-  "description": "Localify desktop music player with built-in Discord Rich Presence.",
+  "description": "Localio desktop music player with built-in Discord Rich Presence.",
   "main": "main.cjs",
   "author": "blib",
   "license": "MIT",
@@ -19,9 +19,9 @@
     "electron-builder": "26.15.3"
   },
   "build": {
-    "appId": "com.blibbby.localify.desktop",
+    "appId": "com.blibbby.localio.desktop",
     "productName": "Localify Desktop",
-    "artifactName": "Localify-Desktop-${version}-${arch}.${ext}",
+    "artifactName": "Localio-Desktop-${version}-${arch}.${ext}",
     "directories": {
       "output": "dist"
     },
@@ -55,7 +55,7 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Localify Desktop",
+      "shortcutName": "Localio Desktop",
       "runAfterFinish": false
     },
     "publish": [
