@@ -1,18 +1,18 @@
-# Localify Desktop
+# Localio Desktop
 
-Real Windows desktop build of Localify using Electron.
+Real Windows desktop build of Localio using Electron.
 
 ## Features
 
-- Full current Localify interface and library features.
+- Full current Localio interface and library features.
 - Local playback, albums, artists, playlists, likes, search, presets, EQ and compressor.
 - Native Discord Rich Presence built into the app.
 - Direct Discord IPC connection with automatic reconnect.
 - Discord activity shows the current song and artist.
-- Discord artwork uses the Localify cover registry and external image URLs.
-- `covers.json` is included, and `npm run sync-covers` populates the local `covers/` folder from the main Localify repo.
-- No Localify Discord Connector is required.
-- No separate Localify Desktop Player is required.
+- Discord artwork uses the Localio cover registry and external image URLs.
+- `covers.json` is included, and `npm run sync-covers` populates the local `covers/` folder from the main Localio repo.
+- No Localio Discord Connector is required.
+- No separate Localio Desktop Player is required.
 - Normal right-clicks are disabled; editable fields keep Cut/Copy/Paste/Select All.
 - Windows NSIS installer and portable EXE builds.
 - Installed NSIS builds automatically check for GitHub releases and download updates in the background.
@@ -51,7 +51,7 @@ Portable EXE builds are provided for convenience but are not the auto-update cha
 
 ## Cover system
 
-`npm run sync-covers` downloads the current cover files and `covers.json` from the main Localify repository into:
+`npm run sync-covers` downloads the current cover files and `covers.json` from the main Localio repository into:
 
 ```text
 covers/
@@ -62,10 +62,10 @@ The desktop app can also fall back to the public GitHub cover registry when need
 
 ## Discord
 
-Discord Desktop must be running. Localify Desktop connects directly through Discord IPC and automatically publishes the current song, artist, timing, and cover artwork.
+Discord Desktop must be running. Localio Desktop connects directly through Discord IPC and automatically publishes the current song, artist, timing, and cover artwork.
 
 ## Why Electron
 
-Electron provides Chromium plus a Node.js main process. Localify keeps Node integration out of the page and exposes only the small native bridge needed by the desktop app, including Discord IPC and updater functionality.
+Electron provides Chromium plus a Node.js main process. Localio keeps Node integration out of the page and exposes only the small native bridge needed by the desktop app, including Discord IPC and updater functionality.
 
 Electron 44.5.1 and electron-builder 26.15.3 are used in this repository.
