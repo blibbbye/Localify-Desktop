@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Localify Preset Preview</title>
+<meta name="description" content="Preview a Localify music library preset — albums, artists, songs and folders.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Localify Preset Preview">
+<meta property="og:description" content="Preview a Localify music library preset — albums, artists, songs and folders.">
+<meta property="og:image" content="https://raw.githubusercontent.com/blibbbye/Localify/main/Localify%20Logo.png">
+<meta property="og:url" content="">
+<meta name="theme-color" content="#7dd3fc">
+<style>
+:root{color-scheme:dark;--bg:#080a0d;--panel:#10151b;--panel2:#151b22;--line:#262e38;--text:#f5f7fa;--muted:#85909d;--accent:#7dd3fc}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(850px 420px at 15% 0%,rgba(125,211,252,.08),transparent 60%),linear-gradient(180deg,#090c10,#07090c);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text)}
+.wrap{max-width:980px;margin:0 auto;padding:34px 18px 60px}.brand{display:flex;align-items:center;gap:10px;font-weight:950;font-size:20px}.logo{width:36px;height:36px;border-radius:11px;background:var(--accent);display:grid;place-items:center;overflow:hidden}.logo img{width:100%;height:100%;object-fit:cover}.hero{margin-top:28px;padding:24px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(145deg,#131920,#0d1217);box-shadow:0 24px 70px rgba(0,0,0,.35)}h1{margin:0;font-size:clamp(28px,5vw,46px);letter-spacing:-1.8px}.sub{margin-top:8px;color:var(--muted);line-height:1.5}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}.stat{padding:14px;border:1px solid var(--line);border-radius:15px;background:var(--panel2)}.stat b{display:block;font-size:25px}.stat span{display:block;margin-top:2px;color:var(--muted);font-size:11px}.section{margin-top:18px}.section h2{font-size:15px;margin:0 0 9px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.card{padding:12px 13px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}.card strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.card span{display:block;margin-top:4px;color:var(--muted);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.empty{padding:18px;border:1px dashed var(--line);border-radius:14px;color:var(--muted);font-size:12px}.note{margin-top:18px;padding:13px 14px;border:1px solid #25313b;border-radius:13px;background:#0e1419;color:#8d99a6;font-size:11px;line-height:1.45}@media(max-width:680px){.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><div class="logo"><img src="https://raw.githubusercontent.com/blibbbye/Localify/main/Localify%20Logo.png" alt=""></div><span>LOCALIFY</span></div>
+  <section class="hero">
+    <h1 id="title">Localify Preset</h1>
+    <div class="sub" id="subtitle">Loading preset preview…</div>
+    <div class="stats" id="stats"></div>
+  </section>
+  <div id="sections"></div>
+  <div class="note">This link is a lightweight preview of a Localify preset. It does not contain the audio files themselves.</div>
+</div>
+<script>
+(function(){
+  const $=s=>document.querySelector(s);
+  const esc=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));
+  function decode(){
+    const raw=location.hash.slice(1);
+    if(!raw)return null;
+    try{
+      const bin=atob(raw.replace(/-/g,"+").replace(/_/g,"/"));
+      const bytes=Uint8Array.from(bin,c=>c.charCodeAt(0));
+      return JSON.parse(new TextDecoder().decode(bytes));
+    }catch{return null}
+  }
+  const d=decode();
+  document.querySelector('meta[property="og:url"]').setAttribute("content",location.href.split("#")[0]);
+  if(!d){$("#subtitle").textContent="No preview data was found in this link.";$("#stats").innerHTML='<div class="empty" style="grid-column:1/-1">Create a new share preview from Localify.</div>';return}
+  const label=v=>{const n=Number(v)||0;return n.toLocaleString()};
+  const title=String(d.name||"Localify Preset");
+  $("#title").textContent=title;
+  $("#subtitle").textContent=(d.createdAt?"Created "+new Date(d.createdAt).toLocaleString():"Localify library preview")+" • "+label(d.totalTracks||0)+" songs";
+  const stats=[["albums",d.counts?.albums],["artists",d.counts?.artists],["songs",d.counts?.songs],["folders",d.counts?.folders]];
+  $("#stats").innerHTML=stats.map(x=>'<div class="stat"><b>'+label(x[1])+'</b><span>'+esc(x[0])+'</span></div>').join("");
+  const sections=[
+    ["Albums",d.albums||[],"title","artist"],
+    ["Artists",d.artists||[],"name","extra"],
+    ["Songs",d.songs||[],"title","artist"],
+    ["Folders",d.folders||[],"name","extra"]
+  ];
+  $("#sections").innerHTML=sections.map(([name,items,a,b])=>'<section class="section"><h2>'+name+'</h2>'+(items.length?'<div class="grid">'+items.slice(0,4).map(x=>'<div class="card"><strong>'+esc(x[a]||"Untitled")+'</strong><span>'+esc(x[b]||"")+'</span></div>').join("")+'</div>':'<div class="empty">No '+name.toLowerCase()+' in this preview.</div>')+'</section>').join("");
+})();
+</script>
+</body>
+</html>
