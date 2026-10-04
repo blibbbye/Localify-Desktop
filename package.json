@@ -20,7 +20,7 @@
   },
   "build": {
     "appId": "com.blibbby.localio.desktop",
-    "productName": "Localify Desktop",
+    "productName": "Localio Desktop",
     "artifactName": "Localio-Desktop-${version}-${arch}.${ext}",
     "directories": {
       "output": "dist"
