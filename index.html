@@ -626,7 +626,7 @@ html.localify-mobile .mobileNav button.active{color:var(--accent);background:rgb
 html.localify-mobile .mobileNav button span{display:grid;place-items:center}
 html.localify-mobile .mobileNav .svgIcon{width:20px;height:20px}
 @media(max-width:390px){html.localify-mobile .grid{grid-template-columns:repeat(2,minmax(0,1fr))}html.localify-mobile h1{font-size:36px}}
-</style>
+/* Share preview modal */.sharePreviewHero{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:16px;border:1px solid #2a333d;border-radius:16px;background:linear-gradient(145deg,#121920,#0d1217);margin-bottom:12px}.sharePreviewKicker{font-size:9px;letter-spacing:.12em;color:var(--accent);font-weight:950}.sharePreviewHero h3{margin:5px 0 4px;font-size:22px;letter-spacing:-.5px}.sharePreviewHero p{margin:0;color:#7e8995;font-size:11px}.sharePreviewIcon{width:54px;height:54px;border-radius:15px;background:rgba(125,211,252,.08);border:1px solid rgba(125,211,252,.2);display:grid;place-items:center;color:var(--accent);font-size:24px;flex:none}.shareLinkBox{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin-bottom:11px}.shareLinkBox input{min-width:0;background:#0c1116;border:1px solid #2a323c;border-radius:11px;padding:10px 11px;color:#aeb7c1;font-size:10px}.shareTabs{display:flex;gap:7px;overflow:auto;padding:2px 0 8px}.sharePreviewList{max-height:390px;overflow:auto;border:1px solid #252d36;border-radius:14px;background:#0d1217;padding:6px}.sharePreviewRow{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px;border-radius:10px}.sharePreviewRow:hover{background:#151b21}.sharePreviewArt{width:38px;height:38px;border-radius:8px;background:#172028;display:grid;place-items:center;color:#687685;overflow:hidden}.sharePreviewArt img{width:100%;height:100%;object-fit:cover}.sharePreviewRow strong{display:block;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sharePreviewRow span{display:block;margin-top:2px;color:#788591;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sharePreviewRow em{font-style:normal;color:#71808d;font-size:9px}.shareCounts{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:8px}.shareCount{padding:10px 7px;border:1px solid #28313a;border-radius:10px;background:#11171d;text-align:center}.shareCount strong{display:block;font-size:17px}.shareCount span{display:block;margin-top:2px;color:#75818d;font-size:8px;text-transform:uppercase;letter-spacing:.08em}.shareOverviewGrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.shareOverviewGrid h4{margin:7px 2px;font-size:10px;color:#7d8895;text-transform:uppercase;letter-spacing:.08em}@media(max-width:700px){.sharePreviewHero{align-items:flex-start}.shareLinkBox{grid-template-columns:1fr}.shareCounts{grid-template-columns:repeat(2,1fr)}.shareOverviewGrid{grid-template-columns:1fr}}</style>
 </head>
 <body data-localify-desktop="true">
 <div class="app">
@@ -3411,7 +3411,7 @@ function editLocalProfile(){
       throw e;
     }
   }
-  async function exportPreset(kind,ids=[],options=null){let handle=null;try{if(window.showSaveFilePicker)handle=await window.showSaveFilePicker({suggestedName:`Localify-${kind==='full'&&options?'library':kind}.localify`,types:[{description:'Localify Preset',accept:{'application/octet-stream':['.localify']}}]});await flushSave(false);const manifest=await collectPresetMeta(kind,ids,options);if(handle){await writePresetStreaming(handle,manifest);return true}const entries=[{name:'library.json',bytes:new TextEncoder().encode(JSON.stringify(manifest))}];for(const t of manifest.tracks){const src=trackById(t.id),blob=src?await ensureTrackBlob(src):null;if(isBlobLike(blob))entries.push({name:t.audioFile,bytes:await blobToBytes(blob)})}downloadBlob(await makeZip(entries),`Localify-${kind==='full'&&options?'library':kind}.localify`);toast(`${manifest.presetName} exported.`);return true}catch(e){if(e?.name==='AbortError')return false;console.error(e);toast(e?.message||'Could not export this preset.');return false}}
+  async function exportPreset(kind,ids=[],options=null){let handle=null;try{if(window.showSaveFilePicker)handle=await window.showSaveFilePicker({suggestedName:`Localify-${kind==='full'&&options?'library':kind}.localify`,types:[{description:'Localify Preset',accept:{'application/octet-stream':['.localify']}}]});await flushSave(false);const manifest=await collectPresetMeta(kind,ids,options);if(handle){await writePresetStreaming(handle,manifest);return true}const entries=[{name:'library.json',bytes:new TextEncoder().encode(JSON.stringify(manifest))}];for(const t of manifest.tracks){const src=trackById(t.id),blob=src?await ensureTrackBlob(src):null;if(isBlobLike(blob))entries.push({name:t.audioFile,bytes:await blobToBytes(blob)})}downloadBlob(await makeZip(entries),`Localify-${kind==='full'&&options?'library':kind}.localify`);toast(`${manifest.presetName} exported.`);await openPresetShareMenu(manifest);return true}catch(e){if(e?.name==='AbortError')return false;console.error(e);toast(e?.message||'Could not export this preset.');return false}}
 
   function openPresetExportSelection(kind){const lists={artists:state.artists,albums:state.albums,songs:state.tracks,playlists:state.playlists},items=lists[kind]||[];setModal(`<div class="modalHead"><h2>Export ${presetLabel(kind)}</h2><button class="circle iconOnly" id="closeModal" title="Close" aria-label="Close">${uiIcon('close')}</button></div><div class="help">Choose what to export. Album presets include their connected artists, artist profile pictures/info, and songs. Song and playlist presets include their connected artists and albums.</div><div style="display:flex;gap:8px;align-items:center;margin:14px 0"><button class="secondary small" id="presetSelectAll">Select all</button><button class="secondary small" id="presetClearAll">Clear</button><span class="subtle" id="presetSelectedCount">${items.length} selected</span></div><div class="artistPickerMenu" style="display:grid;position:static;max-height:50vh;overflow:auto">${items.map(x=>kind==='artists'?`<label class="artistChoice"><input class="presetCheck" type="checkbox" value="${esc(x.id)}" checked><span class="artistChoiceName">${esc(x.name)}</span></label>`:kind==='albums'?`<label class="artistChoice"><input class="presetCheck" type="checkbox" value="${esc(x.id)}" checked><span class="artistChoiceName"><strong>${esc(x.title)}</strong> <span class="muted">— ${esc(artistNamesForAlbum(x).join(', ')||'Unknown Artist')}</span></span></label>`:kind==='songs'?`<label class="artistChoice"><input class="presetCheck" type="checkbox" value="${esc(x.id)}" checked><span class="artistChoiceName"><strong>${esc(x.title)}</strong> <span class="muted">— ${esc(artistName(x))}</span></span></label>`:`<label class="artistChoice"><input class="presetCheck" type="checkbox" value="${esc(x.id)}" checked><span class="artistChoiceName"><strong>${esc(x.name)}</strong> <span class="muted">— ${(x.trackIds||[]).length} songs</span></span></label>`).join('')}</div><div class="modalFoot"><button class="secondary" id="presetCancel">Cancel</button><button class="primary" id="presetExport">Export preset</button></div>`,{large:true});const refresh=()=>{$('#presetSelectedCount').textContent=`${qAll('.presetCheck:checked').length} selected`};$('.presetCheck').forEach(x=>x.addEventListener('change',refresh));qAll('#presetSelectAll').onclick=()=>{qAll('.presetCheck').forEach(x=>x.checked=true);refresh()};qAll('#presetClearAll').onclick=()=>{qAll('.presetCheck').forEach(x=>x.checked=false);refresh()};$('#closeModal').onclick=()=>closeModal(true);$('#presetCancel').onclick=()=>closeModal(true);$('#presetExport').onclick=async()=>{const ids=qAll('.presetCheck:checked').map(x=>x.value);if(!ids.length){toast('Choose at least one item.');return}closeModal(true);await exportPreset(kind,ids)}}
   function openPresetExportChooser(){
@@ -3575,34 +3575,35 @@ function editLocalProfile(){
     render();renderPlayer();
     toast(presetLabel(kind)+' preset '+(mode==='set'?'set':'added')+'.')
   }catch(e){console.error('Localify preset import failed',e);toast(e?.message||'Could not import this Localify preset.')}}
-  function buildPresetSharePayload(){
-    const folders=Array.isArray(state.folders)?state.folders:[];
-    return {version:1,name:"Localify Preset",createdAt:new Date().toISOString(),totalTracks:state.tracks.length,
-      counts:{albums:state.albums.length,artists:state.artists.length,songs:state.tracks.length,folders:folders.length},
-      albums:state.albums.slice(0,4).map(a=>({title:String(a?.title||"Untitled album"),artist:artistNamesForAlbum(a).join(", ")||"Unknown Artist"})),
-      artists:state.artists.slice(0,4).map(a=>({name:String(a?.name||"Unknown Artist")})),
-      songs:state.tracks.slice(0,4).map(t=>({title:String(t?.title||t?.fileName||"Untitled song"),artist:String(artistName(t)||"Unknown Artist")})),
-      folders:folders.slice(0,4).map(f=>({name:String(f?.name||"Untitled folder"),extra:((f?.albumIds||[]).length+(f?.trackIds||[]).length)+" items"}))};
-  }
-  function presetShareUrl(){
-    const bytes=new TextEncoder().encode(JSON.stringify(buildPresetSharePayload()));
-    let bin="";for(let i=0;i<bytes.length;i+=0x8000)bin+=String.fromCharCode(...bytes.subarray(i,i+0x8000));
-    const data=btoa(bin).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
-    return new URL("share.html",location.href).href+"#"+data;
-  }
-  async function sharePresetPreview(){
-    const url=presetShareUrl();
-    try{
-      if(navigator.share)await navigator.share({title:"Localify Preset Preview",text:"Preview this Localify preset",url});
-      else await navigator.clipboard.writeText(url);
-      toast("Preset preview link copied/shared.");
-    }catch(e){
-      if(e?.name==="AbortError")return;
-      try{await navigator.clipboard.writeText(url);toast("Preset preview link copied.");}catch{prompt("Copy this Localify preview link:",url);}
-    }
-  }
+  function publicShareCover(v){const s=typeof v==="string"?v:"";return /^(https?:\/\/)/i.test(s)?s:""}
+function buildPresetSharePayload(source=null){
+ const x=source||state,artists=Array.isArray(x.artists)?x.artists:[],albums=Array.isArray(x.albums)?x.albums:[],tracks=Array.isArray(x.tracks)?x.tracks:[],folders=Array.isArray(x.folders)?x.folders:[],playlists=Array.isArray(x.playlists)?x.playlists:[];
+ const artistNameFor=a=>String(a?.name||a?.title||"Unknown Artist"),albumArtists=a=>Array.isArray(a?.artistNames)?a.artistNames.join(", "):String(a?.artist||"Unknown Artist");
+ return {v:2,n:String(x.presetName||x.name||"Localify Library"),x:String(x.exportedAt||x.createdAt||new Date().toISOString()),c:{albums:albums.length,artists:artists.length,songs:tracks.length,folders:folders.length,playlists:playlists.length},
+  a:albums.slice(0,12).map(a=>({t:String(a?.title||"Untitled album"),a:albumArtists(a),k:publicShareCover(a?.cover),y:String(a?.year||"")})),
+  r:artists.slice(0,12).map(a=>({n:artistNameFor(a),k:publicShareCover(a?.image||a?.picture||a?.avatar),g:Array.isArray(a?.genres)?a.genres.slice(0,2).join(", "):String(a?.genre||"")})),
+  s:tracks.slice(0,24).map(t=>({t:String(t?.title||t?.fileName||"Untitled song"),a:String(t?.artist||"Unknown Artist"),k:publicShareCover(t?.cover),n:String(t?.trackNumber||t?.track||"")})),
+  f:folders.slice(0,12).map(f=>({n:String(f?.name||"Untitled folder"),i:((f?.albumIds||[]).length+(f?.trackIds||[]).length+(f?.artistIds||[]).length+(f?.playlistIds||[]).length)})),
+  p:playlists.slice(0,12).map(p=>({n:String(p?.name||"Untitled playlist"),i:Array.isArray(p?.trackIds)?p.trackIds.length:0}))};
+}
+async function presetShareUrl(source=null){
+ const bytes=new TextEncoder().encode(JSON.stringify(buildPresetSharePayload(source)));let out=bytes;
+ try{if("CompressionStream"in window){const cs=new CompressionStream("gzip"),stream=new Blob([bytes]).stream().pipeThrough(cs);out=new Uint8Array(await new Response(stream).arrayBuffer())}}catch{}
+ let bin="";for(let i=0;i<out.length;i+=0x8000)bin+=String.fromCharCode(...out.subarray(i,i+0x8000));
+ return new URL("share.html",location.href).href+"#"+btoa(bin).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+}
+async function openPresetShareMenu(source=null){
+ const d=buildPresetSharePayload(source),url=await presetShareUrl(source),rows={albums:d.a,artists:d.r,songs:d.s,folders:d.f,playlists:d.p},tabs=[["overview","Overview"],["albums","Albums"],["artists","Artists"],["songs","Songs"],["folders","Folders"],["playlists","Playlists"]];
+ const makeRows=k=>rows[k].map(x=>'<div class="sharePreviewRow"><div class="sharePreviewArt">'+(x.k?'<img src="'+esc(x.k)+'" alt="">':'♫')+'</div><div style="min-width:0"><strong>'+esc(x.t||x.n||"Untitled")+'</strong><span>'+esc(x.a||x.g||((x.i??"")+" items"))+'</span></div><em>'+esc(x.y||"")+'</em></div>').join("")||'<div class="profileEmpty">Nothing in this category.</div>';
+ setModal('<div class="modalHead"><div><h2>Share preset</h2><div class="settingsSectionSub">Your preset is saved. Share a lightweight preview link.</div></div><button class="circle iconOnly" id="closeModal" title="Close" aria-label="Close">'+uiIcon("close")+'</button></div><div class="sharePreviewHero"><div><div class="sharePreviewKicker">LOCALIFY SHARE</div><h3>'+esc(d.n)+'</h3><p>'+Number(d.c.albums||0).toLocaleString()+' albums • '+Number(d.c.artists||0).toLocaleString()+' artists • '+Number(d.c.songs||0).toLocaleString()+' songs • '+Number(d.c.folders||0).toLocaleString()+' folders</p></div><div class="sharePreviewIcon">♫</div></div><div class="shareLinkBox"><input id="shareLinkInput" readonly value="'+esc(url)+'"><button class="primary" id="copyShareLink">'+uiIcon("copy")+' Copy link</button></div><div class="shareTabs">'+tabs.map(t=>'<button class="themeModeBtn '+(t[0]==="overview"?"active":"")+'" data-share-tab="'+t[0]+'">'+t[1]+'</button>').join("")+'</div><div id="sharePreviewList" class="sharePreviewList"></div><div class="modalFoot"><button class="secondary" id="openSharePreview">Open preview</button><button class="primary" id="shareNative">Share link</button></div>',{large:true});
+ const renderTab=tab=>{$("#sharePreviewList").innerHTML=tab==="overview"?'<div class="shareCounts">'+tabs.slice(1).map(t=>'<button class="shareCount" data-share-tab="'+t[0]+'"><strong>'+Number(d.c[t[0]]||0).toLocaleString()+'</strong><span>'+t[1]+'</span></button>').join("")+'</div><div class="shareOverviewGrid"><div><h4>Albums</h4>'+makeRows("albums")+'</div><div><h4>Artists</h4>'+makeRows("artists")+'</div></div>':makeRows(tab)};
+ renderTab("overview");
+ $$("[data-share-tab]").forEach(b=>b.onclick=()=>{const tab=b.dataset.shareTab;$$("[data-share-tab]").forEach(x=>x.classList.toggle("active",x.dataset.shareTab===tab));renderTab(tab)});
+ $("#closeModal").onclick=()=>closeModal(true);$("#copyShareLink").onclick=async()=>{try{await navigator.clipboard.writeText(url);toast("Share link copied.")}catch{prompt("Copy this Localify share link:",url)}};$("#openSharePreview").onclick=()=>window.open(url,"_blank","noopener");$("#shareNative").onclick=async()=>{try{if(navigator.share)await navigator.share({title:d.n,text:"Localify library preview",url});else await navigator.clipboard.writeText(url);toast("Share link ready.")}catch(e){if(e?.name!=="AbortError")toast("Could not share the link.")}};
+}
+async function sharePresetPreview(){await openPresetShareMenu(null)}
 
-  function openPresetsMenu(){
+function openPresetsMenu(){
     const html =
       "<div class=\"modalHead\"><h2>Presets</h2><button class=\"circle iconOnly\" id=\"closeModal\" title=\"Close\" aria-label=\"Close\">"+uiIcon("close")+"</button></div>"+
       "<div class=\"presetHome\">"+
