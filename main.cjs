@@ -188,7 +188,7 @@ async function connectDiscord() {
 
 function download(url) {
   return new Promise(function (resolve, reject) {
-    https.get(url, { headers: { "User-Agent": "Localify-Desktop" } }, function (response) {
+    https.get(url, { headers: { "User-Agent": "Localio-Desktop" } }, function (response) {
       if (response.statusCode !== 200) {
         response.resume();
         reject(new Error("HTTP " + response.statusCode));
@@ -280,7 +280,7 @@ function writePresenceActivity(socket, payload, resolvedCover="") {
   if (cover && cover.length <= 300) {
     activity.assets = {
       large_image: cover,
-      large_text: "Localify Desktop"
+      large_text: "Localio Desktop"
     };
   }
   if (duration > 0) {
@@ -345,7 +345,7 @@ function createWindow() {
     minWidth: 1000,
     minHeight: 680,
     backgroundColor: "#07090c",
-    title: "Localify Desktop",
+    title: "Localio Desktop",
     show: false,
     autoHideMenuBar: true,
     webPreferences: {
@@ -397,7 +397,7 @@ function createWindow() {
   });
 }
 
-app.setAppUserModelId("com.blibbby.localify.desktop");
+app.setAppUserModelId("com.blibbby.localio.desktop");
 
 app.whenReady().then(function () {
   Menu.setApplicationMenu(null);
