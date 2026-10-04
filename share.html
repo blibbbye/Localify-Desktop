@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Localify Share</title>
-<meta name="description" content="A Localify library preview.">
+<title>Localio Share</title>
+<meta name="description" content="A Localio library preview.">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Localify Library">
-<meta property="og:description" content="A shared Localify library preview.">
-<meta property="og:image" content="https://raw.githubusercontent.com/blibbbye/Localify/main/Localify%20Logo.png">
+<meta property="og:title" content="Localio Library">
+<meta property="og:description" content="A shared Localio library preview.">
+<meta property="og:image" content="https://raw.githubusercontent.com/blibbbye/Localify/main/icon.svg">
 <meta name="theme-color" content="#7dd3fc">
 <style>
 :root{color-scheme:dark;--bg:#07090c;--panel:#0d1116;--panel2:#11171d;--panel3:#151c23;--line:#252d36;--text:#f5f7fa;--muted:#87929f;--accent:#7dd3fc;--glow:rgba(125,211,252,.10)}
@@ -23,9 +23,9 @@ button,input{font:inherit}.wrap{max-width:1080px;margin:auto;padding:22px 16px 5
 </head>
 <body>
 <div class="wrap">
- <div class="top"><div class="brand"><div class="logo"><img src="https://raw.githubusercontent.com/blibbbye/Localify/main/Localify%20Logo.png" alt=""></div><span>LOCALIFY</span></div><div class="shareChip">Shared library</div></div>
+ <div class="top"><div class="brand"><div class="logo"><img src="https://raw.githubusercontent.com/blibbbye/Localify/main/icon.svg" alt=""></div><span>LOCALIO</span></div><div class="shareChip">Shared library</div></div>
  <section class="hero">
-  <div class="heroGrid"><div class="coverWall" id="coverWall"><div class="coverCell">♫</div><div class="coverCell">♫</div><div class="coverCell">♫</div><div class="coverCell">♫</div></div><div><h1 class="heroTitle" id="title">Localify Library</h1><div class="heroSub" id="subtitle">Loading preview…</div><div class="stats" id="stats"></div></div></div>
+  <div class="heroGrid"><div class="coverWall" id="coverWall"><div class="coverCell">♫</div><div class="coverCell">♫</div><div class="coverCell">♫</div><div class="coverCell">♫</div></div><div><h1 class="heroTitle" id="title">Localio Library</h1><div class="heroSub" id="subtitle">Loading preview…</div><div class="stats" id="stats"></div></div></div>
  </section>
  <div class="tabs" id="tabs"></div>
  <div class="toolbar"><input id="search" class="search" placeholder="Search this preview…"><span id="count" class="count"></span></div>
@@ -48,7 +48,7 @@ button,input{font:inherit}.wrap{max-width:1080px;margin:auto;padding:22px 16px 5
    }catch{return null}
  }
  const d=await decode();
- if(!d){$("#subtitle").textContent="This share link is missing or invalid.";$("#list").innerHTML='<div class="empty">Create a new share preview from Localify.</div>';return}
+ if(!d){$("#subtitle").textContent="This share link is missing or invalid.";$("#list").innerHTML='<div class="empty">Create a new share preview from Localio.</div>';return}
  const cats={
   overview:{label:"Overview",items:[]},
   albums:{label:"Albums",items:d.a||d.albums||[]},
@@ -58,8 +58,8 @@ button,input{font:inherit}.wrap{max-width:1080px;margin:auto;padding:22px 16px 5
   playlists:{label:"Playlists",items:d.p||d.playlists||[]}
  };
  const counts=d.c||d.counts||{};
- $("#title").textContent=d.n||d.name||"Localify Library";
- $("#subtitle").textContent=(d.x||d.exportedAt||d.createdAt?"Shared Localify library":"Localify library preview")+" • "+Number(counts.songs??d.totalTracks??0).toLocaleString()+" songs";
+ $("#title").textContent=d.n||d.name||"Localio Library";
+ $("#subtitle").textContent=(d.x||d.exportedAt||d.createdAt?"Shared Localio library":"Localio library preview")+" • "+Number(counts.songs??d.totalTracks??0).toLocaleString()+" songs";
  const stats=[["Albums",counts.albums],["Artists",counts.artists],["Songs",counts.songs??d.totalTracks],["Folders",counts.folders]];
  $("#stats").innerHTML=stats.map(x=>'<div class="stat"><b>'+Number(x[1]||0).toLocaleString()+'</b><span>'+x[0]+'</span></div>').join("");
  const allCovers=[];
@@ -85,9 +85,9 @@ button,input{font:inherit}.wrap{max-width:1080px;margin:auto;padding:22px 16px 5
  function render(){renderTabs();const q=query.trim().toLocaleLowerCase();const items=dataFor(current).filter(x=>!q||(x.name+" "+x.sub).toLocaleLowerCase().includes(q));$("#count").textContent=items.length.toLocaleString()+" shown";$("#list").innerHTML=items.length?items.map(x=>'<div class="row"><div class="miniArt">'+(x.cover?'<img src="'+esc(x.cover)+'" alt="">':(x.type==="Folder"?"▣":x.type==="Artist"?"♟":x.type==="Playlist"?"☷":"♫"))+'</div><div><div class="name">'+esc(x.name)+'</div><div class="sub">'+esc(x.sub)+'</div></div><div class="badge">'+esc(x.badge||"")+'</div></div>').join(""):'<div class="empty">Nothing in this category matches your search.</div>'}
  $("#search").oninput=e=>{query=e.target.value;render()};
  render();
- document.title=(d.n||d.name||"Localify Library")+" — Localify";
+ document.title=(d.n||d.name||"Localio Library")+" — Localio";
  const ogT=document.querySelector('meta[property="og:title"]'),ogD=document.querySelector('meta[property="og:description"]');
- if(ogT)ogT.content=d.n||d.name||"Localify Library";
+ if(ogT)ogT.content=d.n||d.name||"Localio Library";
  if(ogD)ogD.content=Number(counts.albums||0).toLocaleString()+" albums • "+Number(counts.songs??d.totalTracks??0).toLocaleString()+" songs • "+Number(counts.artists||0).toLocaleString()+" artists";
 })();
 </script>
