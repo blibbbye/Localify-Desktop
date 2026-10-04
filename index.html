@@ -3565,7 +3565,7 @@ function editLocalProfile(){
 
   // Static controls
   $$("[data-mobile-view]").forEach(b=>b.onclick=e=>{e.preventDefault();setView(b.dataset.mobileView)});
-  $("#newFolderBtn").onclick=()=>editFolder(null);
+  const newFolderBtn=$("#newFolderBtn");if(newFolderBtn)newFolderBtn.onclick=()=>editFolder(null);
   document.addEventListener("pointerdown",e=>{
     const cardPlay=e.target.closest?.(".play-track");
     const rowPlay=e.target.closest?.(".play-row");
