@@ -26,7 +26,9 @@
     .app{height:100dvh;min-height:100%;width:100%;max-width:100vw;overflow:hidden;display:grid;grid-template-columns:clamp(190px,20vw,250px) minmax(0,1fr);grid-template-rows:1fr 92px}.app.nowPanelOpen{grid-template-columns:clamp(170px,16vw,220px) minmax(0,1fr) minmax(260px,320px)}
     aside{grid-row:1/2;background:#0c0f13;border-right:1px solid var(--line);padding:20px 14px;display:flex;flex-direction:column;min-width:0}
     .brand{display:flex;align-items:center;gap:8px;padding:4px 8px 18px;font-weight:900;font-size:18px;letter-spacing:-.55px;line-height:1}
-    .logo{width:28px;height:28px;border-radius:9px;background:var(--accent);display:grid;place-items:center;overflow:hidden;box-shadow:0 6px 20px rgba(125,211,252,.20);flex:none}
+    .logo{width:28px;height:28px;border-radius:9px;background:var(--logo-background,#ffffff);display:grid;place-items:center;overflow:hidden;box-shadow:0 6px 20px var(--logo-shadow,rgba(255,255,255,.16));flex:none}
+    .logo .logoMark{display:block;width:100%;height:100%;padding:3px}
+    .logoMarkL{fill:#080a0d;stroke:none}
     .logo img{width:100%;height:100%;display:block;object-fit:cover}
     .nav{display:grid;gap:5px}
     .nav button,.sideAction{background:transparent;padding:11px 12px;border-radius:11px;text-align:left;color:#c5cad2;font-weight:700;display:flex;align-items:center;gap:11px}
@@ -580,7 +582,7 @@ body[data-localify-desktop="true"] .discordTopBtn,body[data-localify-desktop="tr
  .folderNavHead,#folderNav{display:none!important}
  html.localify-mobile .app{display:block;height:100dvh}html.localify-mobile .app>aside:first-child,html.localify-mobile .nowSidebar{display:none!important}html.localify-mobile main{height:100dvh;width:100%;overflow:auto;padding-bottom:84px}html.localify-mobile .topbar{position:sticky;top:0;z-index:30;padding:10px;background:rgba(9,11,14,.94);gap:7px}html.localify-mobile .topbar .search{max-width:none}html.localify-mobile .content{padding:16px 12px 150px}html.localify-mobile .grid,html.localify-mobile .viewGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}html.localify-mobile .profileStatsGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}html.localify-mobile .profileGrid{grid-template-columns:1fr}html.localify-mobile .profileHero{grid-template-columns:80px minmax(0,1fr);gap:12px;align-items:center}html.localify-mobile .profileArt,html.localify-mobile .collectionArt{width:80px;height:80px;border-radius:15px}.mobileNav{position:fixed}html.localify-mobile .mobileNav{display:grid!important;grid-template-columns:repeat(6,1fr);left:8px;right:8px;bottom:8px;height:58px;z-index:100;padding:4px;background:rgba(14,18,23,.97);border:1px solid #252d36;border-radius:16px;box-shadow:0 14px 40px rgba(0,0,0,.42)}html.localify-mobile .mobileNav button{background:transparent;color:#818b97;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;font-weight:850}html.localify-mobile .mobileNav button.active{color:var(--accent);background:#171d24}html.localify-mobile .player{left:0;right:0;bottom:66px;width:100%;padding:8px 10px}html.localify-mobile .folderDetailCollage{width:80px;height:80px}
 }
-.logoGlyph{font-size:19px;font-weight:1000;color:#081017;line-height:1;display:grid;place-items:center}
+.logoGlyph{display:none}
 /* Localio mobile mode */
 html.localify-mobile,html.localify-mobile body{background:#090b0e;overflow:hidden;overscroll-behavior:none}
 html.localify-mobile .app{display:flex;flex-direction:column;grid-template-columns:none;grid-template-rows:none;height:100svh;min-height:100svh}
@@ -631,7 +633,7 @@ html.localify-mobile .mobileNav .svgIcon{width:20px;height:20px}
 <body data-localify-desktop="true">
 <div class="app">
   <aside>
-    <div class="brand"><div class="logo"><span class="logoGlyph">L</span></div></div><span class="desktopBrandText">LOCALIFY</span></div>
+    <div class="brand"><div class="logo"><svg class="logoMark" viewBox="0 0 36 36" aria-hidden="true"><path class="logoMarkL" d="M10 6h5v18h15v5H10z" transform="rotate(90 18 18)"/></svg></div><span class="desktopBrandText">LOCALIFY</span></div>
     <nav class="nav" id="nav">
       <button data-view="home" class="active"><span class="icon"><svg class="svgIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-7h6v7"/></svg></span><span>Home</span></button>
       <button data-view="search"><span class="icon"><svg class="svgIcon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg></span><span>Search</span></button>
